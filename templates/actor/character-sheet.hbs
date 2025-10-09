@@ -1,0 +1,66 @@
+{{!-- systems/fs2e/templates/actor/character-sheet.hbs --}}
+<form class="fs2e sheet actor character" autocomplete="off">
+  
+  <header class="sheet-header grid cols-sidebar-sm gap-sm">
+
+    <img class="profile" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+
+    <div class="header-fields">
+
+      <h1 class="sheetname">
+        <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
+      </h1>
+
+      <div class="container">
+
+        <div class="grid cols-3 gap-md">
+
+            <label class="field">
+              <span class="label">Player</span>
+              <input type="text" name="system.data.player.value" value="{{system.data.player.value}}" />
+            </label>
+
+            <label class="field species-field" data-drop-species>
+              <span class="label">Species</span>
+              <div class="ref-pill">
+                {{#if system.data.species.uuid}}
+                  <a class="open-species" data-uuid="{{system.data.species.uuid}}">
+                    {{system.data.species.name}}
+                  </a>
+                  <a class="clear-species" title="Clear">×</a>
+                {{else}}
+                  <span class="placeholder">Drop a Species item here</span>
+                {{/if}}
+              </div>
+            </label>
+
+            <div class="grid cols-2 gap-md">
+              <label class="field">
+                <span class="label">Age</span>
+                <input type="text" name="system.data.age.value" value="{{system.data.age.value}}" />
+              </label>
+
+              <label class="field">
+                <span class="label">Gender</span>
+                <input type="text" name="system.data.gender.value" value="{{system.data.gender.value}}" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="label">Planet</span>
+              <input type="text" name="system.data.planet.value" value="{{system.data.planet.value}}" />
+            </label>
+
+            <label class="field">
+              <span class="label">Alliance</span>
+              <input type="text" name="system.data.alliance.value" value="{{system.data.alliance.value}}" />
+            </label>
+
+            <label class="field">
+              <span class="label">Rank</span>
+              <input type="text" name="system.data.rank.value" value="{{system.data.rank.value}}" />
+            </label>
+
+        </div>
+      
+      </div>

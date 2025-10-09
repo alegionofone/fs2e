@@ -1,0 +1,126 @@
+{
+  "Actor": {
+    "types": ["character", "npc"],
+    "templates": {
+      "common": {
+        "system": {
+          "data": {
+            "species": "",
+            "planet": "",
+            "rank": "",
+            "faction": "",
+            "calling": "",
+            "reputation": ""
+          },
+          "languages": [],
+          "characteristics": {
+            "body": {
+              "strength": { "abbrev": "STR", "base": 3, "mod": 0, "temp": 0, "max": 0 },
+              "dexterity": { "abbrev": "DEX", "base": 3, "mod": 0, "temp": 0, "max": 0 },
+              "endurance": { "abbrev": "END", "base": 3, "mod": 0, "temp": 0, "max": 0 }
+            },
+            "mind": {
+              "wits": { "abbrev": "WIT", "base": 3, "mod": 0, "temp": 0, "max": 0 },
+              "perception": { "abbrev": "PER", "base": 3, "mod": 0, "temp": 0, "max": 0 },
+              "tech": { "abbrev": "TEC", "base": 3, "mod": 0, "temp": 0, "max": 0 }
+            },
+            "spirit": {
+              "extrovert": { "abbrev": "EXT", "base": 0, "mod": 0, "temp": 0, "max": 0 },
+              "introvert": { "abbrev": "INT", "base": 0, "mod": 0, "temp": 0, "max": 0 },
+              "passion":   { "abbrev": "PAS", "base": 0, "mod": 0, "temp": 0, "max": 0 },
+              "calm":      { "abbrev": "CAL", "base": 0, "mod": 0, "temp": 0, "max": 0 },
+              "faith":     { "abbrev": "FTH", "base": 0, "mod": 0, "temp": 0, "max": 0 },
+              "ego":       { "abbrev": "EGO", "base": 0, "mod": 0, "temp": 0, "max": 0 }
+            },
+            "occult": {
+              "psi":     { "abbrev": "PSI", "base": 0, "mod": 0, "temp": 0, "max": 0 },
+              "theurgy": { "abbrev": "THE", "base": 0, "mod": 0, "temp": 0, "max": 0 }
+            }
+          },
+          "pools": {
+            "vitality": { "value": 10, "max": 10, "temp": 0 },
+            "shock":    { "value": 0,  "max": 10 },
+            "occult":   { "value": 0,  "max": 0,  "temp": 0 }
+          },
+          "skills": {
+            "natural": {
+              "charm":  { "base": 3, "mod": 0, "temp": 0 },
+              "dodge":  { "base": 3, "mod": 0, "temp": 0 },
+              "fight":  { "base": 3, "mod": 0, "temp": 0 },
+              "impress":{ "base": 3, "mod": 0, "temp": 0 },
+              "melee":  { "base": 3, "mod": 0, "temp": 0 },
+              "observe":{ "base": 3, "mod": 0, "temp": 0 },
+              "shoot":  { "base": 3, "mod": 0, "temp": 0 },
+              "sneak":  { "base": 3, "mod": 0, "temp": 0 },
+              "vigor":  { "base": 3, "mod": 0, "temp": 0 }
+            },
+            "learned": {
+              "academia": { "base": 0, "mod": 0, "temp": 0 },
+
+              "artisan": [],
+              "drive": [],
+              "lore": [],
+              "science": [],
+              "social": [],
+              "warfare": [],
+              "techRedemption": [],
+
+              "empathy":       { "base": 0, "mod": 0, "temp": 0 },
+              "etiquette":     { "base": 0, "mod": 0, "temp": 0 },
+              "inquiry":       { "base": 0, "mod": 0, "temp": 0 },
+              "lockpicking":   { "base": 0, "mod": 0, "temp": 0 },
+              "physick":       { "base": 0, "mod": 0, "temp": 0 },
+              "ride":          { "base": 0, "mod": 0, "temp": 0 },
+              "sleightOfHand": { "base": 0, "mod": 0, "temp": 0 },
+              "spacesuit":     { "base": 0, "mod": 0, "temp": 0 },
+              "stoicBody":     { "base": 0, "mod": 0, "temp": 0 },
+              "stoicMind":     { "base": 0, "mod": 0, "temp": 0 },
+              "streetwise":    { "base": 0, "mod": 0, "temp": 0 },
+              "survival":      { "base": 0, "mod": 0, "temp": 0 },
+              "thinkMachine":  { "base": 0, "mod": 0, "temp": 0 },
+              "throwing":      { "base": 0, "mod": 0, "temp": 0 },
+              "torture":       { "base": 0, "mod": 0, "temp": 0 },
+              "xenoEmpathy":   { "base": 0, "mod": 0, "temp": 0 }
+            }
+          }
+        }
+      }
+    },
+    "character": { "templates": ["common"] },
+    "npc":       { "templates": ["common"] }
+  },
+  "Item": {
+    "types": [
+      "armor",
+      "beneficeAffliction",
+      "blessingCurse",
+      "equipment",
+      "faction",
+      "history",
+      "maneuver",
+      "planet",
+      "species",
+      "weapon"
+    ],
+    "templates": {
+      "itemDescription": {
+        "description": { "value": "" }
+      },
+      "physicalItem": {
+        "quantity": 1
+      }
+    },
+    "typeTemplates": {
+      "armor": ["itemDescription", "physicalItem"],
+      "beneficeAffliction": ["itemDescription"],
+      "blessingCurse": ["itemDescription"],
+      "equipment": ["itemDescription", "physicalItem"],
+      "faction": ["itemDescription"],
+      "history": ["itemDescription"],
+      "maneuver": ["itemDescription"],
+      "planet": ["itemDescription"],
+      "species": ["itemDescription"],
+      "weapon": ["itemDescription", "physicalItem"]
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "fs2e",
+  "title": "Fading Suns 2e",
+  "description": "Work-in-progress game system for Foundry VTT. Unofficial, for personal use.",
+  "version": "0.0.1",
+
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+
+  "authors": [
+    { "name": "Alex" }
+  ],
+
+  "esmodules": ["module/fs2e.mjs"],
+  "styles": ["styles/fs2e.css"],
+
+  "packs": [],
+  "relationships": {
+    "requires": []
+  },
+
+  "url": "https://example.com/fs2e",
+  "readme": "README.md",
+  "changelog": "CHANGELOG.md",
+  "license": "LICENSE.txt"
+}

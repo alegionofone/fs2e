@@ -1,0 +1,20 @@
+{
+  "name": "fs2e",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Fading Suns 2e system for Foundry VTT (dev tooling for LESS compile).",
+  "scripts": {
+    "build": "gulp styles",
+    "watch": "gulp watch"
+  },
+  "devDependencies": {
+    "gulp": "^5.0.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-less": "^5.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "less": "^4.2.0"
+  }
+}

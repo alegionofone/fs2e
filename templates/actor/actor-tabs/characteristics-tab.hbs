@@ -1,0 +1,69 @@
+{{!-- systems/fs2e/templates/actor/actor-tabs/characteristics-tab.hbs --}}
+<section class="characteristics">
+
+  {{!-- Body --}}
+  <div class="attribute-group">
+    <h3>Body</h3>
+    <div class="attribute-grid attribute-grid__body">
+      {{#each view.characteristics.body}}
+        <label class="stat" data-stat="{{this.key}}">
+          <span class="name">{{this.label}}</span>
+          <span class="value"
+                data-tooltip="{{this.tooltip}}"
+                data-tooltip-class="fs2e-multiline">
+            {{this.total}}
+          </span>
+        </label>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- Mind --}}
+  <div class="attribute-group">
+    <h3>Mind</h3>
+    <div class="attribute-grid attribute-grid__mind">
+      {{#each view.characteristics.mind}}
+        <label class="stat" data-stat="{{this.key}}">
+          <span class="name">{{this.label}}</span>
+          <span class="value"
+                data-tooltip="{{this.tooltip}}"
+                data-tooltip-class="fs2e-multiline">
+            {{this.total}}
+          </span>
+        </label>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- Spirit (mirrored layout: name|value … value|name) --}}
+  <div class="attribute-group">
+    <h3>Spirit</h3>
+
+    <div class="attribute-grid attribute-grid__spirit-left">
+      {{#each view.characteristics.spirit.left}}
+        <label class="stat" data-stat="{{this.leftKey}}">
+          <span class="name">{{this.leftLabel}}</span>
+          <span class="value"
+                data-tooltip="{{this.tooltip}}"
+                data-tooltip-class="fs2e-multiline">
+            {{this.total}}
+          </span>
+        </label>
+      {{/each}}
+    </div>
+
+    <div class="attribute-grid attribute-grid__spirit-right">
+      {{#each view.characteristics.spirit.right}}
+        <label class="stat" data-stat="{{this.rightKey}}">
+          <span class="value"
+                data-tooltip="{{this.tooltip}}"
+                data-tooltip-class="fs2e-multiline">
+            {{this.total}}
+          </span>
+          <span class="name">{{this.rightLabel}}</span>
+        </label>
+      {{/each}}
+    </div>
+  </div>
+
+</section>

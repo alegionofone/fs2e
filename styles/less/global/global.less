@@ -1,0 +1,103 @@
+/* Window Header */
+
+@sheet-offset: 30px;
+@bg-path: "assets/space.png";
+
+.fs2e.sheet  {
+
+  .window-content {
+    background: url(@bg-path) repeat !important;
+  }
+
+  .window-header {
+    background-position: center -30px !important;
+    background-attachment: scroll;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .window-header .window-header {
+    position: absolute;
+    top: 8px; left: 6px; right: 16px;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 3;
+  }
+
+  .window-header {
+    padding-top: 3px;
+    border-bottom: 0 !important;
+  }
+
+  .window-header .window-title,
+  .window-header .header-button {
+    font-size: 0 !important;
+  }
+
+  .window-header .window-title > *,
+  .window-header .header-button > * {
+    font-size: 12px !important;
+    line-height: 1;
+  }
+
+  .window-header .window-content {
+    background: transparent;
+    padding-top: @sheet-offset;
+    overflow: auto;
+    position: relative;
+    box-sizing: border-box;
+  }
+}
+
+/* Clean sheet names */
+.sheetname {
+  input { margin: 0; width: 100%; border: 0; }
+  input[type="text"] { background: none; box-shadow: none }
+}
+
+/* Tooltip formatting */
+#tooltip.fs2e-multiline { white-space: pre-line; }
+
+/* Base grid utility */
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols, 1fr); /* fallback single column */
+  grid-auto-rows: var(--grid-row, auto);
+  gap: var(--grid-gap, 8px);
+}
+
+/* Gap presets (optional) */
+.gap-0 { --grid-gap: 0; }
+.gap-xs { --grid-gap: 4px; }
+.gap-sm { --grid-gap: 8px; }
+.gap-md { --grid-gap: 12px; }
+.gap-lg { --grid-gap: 16px; }
+
+/* Common column presets (set the custom property only) */
+.cols-1        { --grid-cols: 1fr; }
+.cols-2        { --grid-cols: repeat(2, 1fr); }
+.cols-3        { --grid-cols: repeat(3, 1fr); }
+.cols-4        { --grid-cols: repeat(4, 1fr); }
+
+/* Sidebar + content presets */
+.cols-sidebar-sm  { --grid-cols: 160px 1fr; }
+.cols-sidebar-md  { --grid-cols: 200px 1fr; }
+.cols-sidebar-lg  { --grid-cols: 260px 1fr; }
+
+/* Form-friendly presets */
+.cols-label-input { --grid-cols: max-content 1fr; }   /* label then fluid input */
+.cols-auto-1fr    { --grid-cols: auto 1fr; }          /* auto width then fluid */
+.cols-1fr-auto    { --grid-cols: 1fr auto; }          /* fluid then tight */
+
+/* “Three parts” mixes */
+.cols-max-1fr-max { --grid-cols: max-content 1fr max-content; } /* label | main | actions */
+.cols-2fr-1fr     { --grid-cols: 2fr 1fr; }                      /* weighted split */
+
+/* Keep columns from growing beyond content (useful for compact info cells) */
+.nowrap { white-space: nowrap; }
