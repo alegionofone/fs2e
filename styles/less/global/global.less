@@ -1,54 +1,36 @@
 /* Window Header */
 
-@sheet-offset: 30px;
-@bg-path: "assets/space.png";
+.app.window-app.sheet.actor { background: var(--background-space) repeat; }
 
-.fs2e.sheet  {
-
-  .window-content {
-    background: url(@bg-path) repeat !important;
-  }
+.app.window-app.sheet {
+  background-position: center -30px;
+  background-attachment: scroll;
+  box-shadow: none;
 
   .window-header {
-    background-position: center -30px !important;
-    background-attachment: scroll;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .window-header .window-header {
-    position: absolute;
     top: 8px; left: 6px; right: 16px;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    padding: 0;
+    padding: 0px 6px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     z-index: 3;
-  }
+    font-size: 0;
+    
+    .fa-solid::before {
+      font-size: var(--font-size-12);
+      color: var(--color-grey-lt);
+    }
 
-  .window-header {
-    padding-top: 3px;
-    border-bottom: 0 !important;
+    .fa-xmark::before {
+      font-size: var(--font-size-16);
+    }
   }
-
-  .window-header .window-title,
-  .window-header .header-button {
-    font-size: 0 !important;
-  }
-
-  .window-header .window-title > *,
-  .window-header .header-button > * {
-    font-size: 12px !important;
-    line-height: 1;
-  }
-
-  .window-header .window-content {
+  
+  .window-content {
     background: transparent;
-    padding-top: @sheet-offset;
     overflow: auto;
     position: relative;
     box-sizing: border-box;

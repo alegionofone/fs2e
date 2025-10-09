@@ -1,1 +1,196 @@
-.fs2e.sheet .window-content{background:url(assets/space.png) repeat!important}.fs2e.sheet .window-header{background-position:center -30px!important;background-attachment:scroll;border:0!important;border-radius:0!important;box-shadow:none!important}.fs2e.sheet .window-header .window-header{position:absolute;top:8px;left:6px;right:16px;background:0 0!important;border:0!important;box-shadow:none!important;padding:0;display:flex;justify-content:flex-end;align-items:center;z-index:3}.fs2e.sheet .window-header{padding-top:3px;border-bottom:0!important}.fs2e.sheet .window-header .header-button,.fs2e.sheet .window-header .window-title{font-size:0!important}.fs2e.sheet .window-header .header-button>*,.fs2e.sheet .window-header .window-title>*{font-size:12px!important;line-height:1}.fs2e.sheet .window-header .window-content{background:0 0;padding-top:30px;overflow:auto;position:relative;box-sizing:border-box}.sheetname input{margin:0;width:100%;border:0}.sheetname input[type=text]{background:0 0;box-shadow:none}#tooltip.fs2e-multiline{white-space:pre-line}.grid{display:grid;grid-template-columns:var(--grid-cols,1fr);grid-auto-rows:var(--grid-row,auto);gap:var(--grid-gap,8px)}.gap-0{--grid-gap:0}.gap-xs{--grid-gap:4px}.gap-sm{--grid-gap:8px}.gap-md{--grid-gap:12px}.gap-lg{--grid-gap:16px}.cols-1{--grid-cols:1fr}.cols-2{--grid-cols:repeat(2, 1fr)}.cols-3{--grid-cols:repeat(3, 1fr)}.cols-4{--grid-cols:repeat(4, 1fr)}.cols-sidebar-sm{--grid-cols:160px 1fr}.cols-sidebar-md{--grid-cols:200px 1fr}.cols-sidebar-lg{--grid-cols:260px 1fr}.cols-label-input{--grid-cols:max-content 1fr}.cols-auto-1fr{--grid-cols:auto 1fr}.cols-1fr-auto{--grid-cols:1fr auto}.cols-max-1fr-max{--grid-cols:max-content 1fr max-content}.cols-2fr-1fr{--grid-cols:2fr 1fr}.nowrap{white-space:nowrap}.fs2e.sheet.actor.character img{width:100%;height:100%}.fs2e.sheet.actor.character .sheetname input{margin:0;width:100%;border:0}.fs2e.sheet.actor.character .sheetname input[type=text]{background:0 0;box-shadow:none}
+/* Global */
+@font-face {
+  font-family: 'Foundation One';
+  src: url('fonts/foundation-one.woff2');
+  font-weight: normal;
+}
+:root {
+  --font-size-8: 0.5rem;
+  --font-size-9: 0.5625rem;
+  --font-size-10: 0.625rem;
+  --font-size-11: 0.6875rem;
+  --font-size-12: 0.75rem;
+  --font-size-13: 0.8125rem;
+  --font-size-14: 0.875rem;
+  --font-size-15: 0.9375rem;
+  --font-size-16: 1rem;
+  --font-size-17: 1.0625rem;
+  --font-size-18: 1.125rem;
+  --font-size-19: 1.1875rem;
+  --font-size-20: 1.25rem;
+  --font-size-21: 1.3125rem;
+  --font-size-22: 1.375rem;
+  --font-size-23: 1.4375rem;
+  --font-size-24: 1.5rem;
+  --font-size-25: 1.5625rem;
+  --font-size-26: 1.625rem;
+  --font-size-27: 1.6875rem;
+  --font-size-28: 1.75rem;
+  --font-size-29: 1.8125rem;
+  --font-size-30: 1.875rem;
+  --font-size-31: 1.9375rem;
+  --font-size-32: 2rem;
+  --font-size-33: 2.0625rem;
+  --font-size-34: 2.125rem;
+  --font-size-35: 2.1875rem;
+  --font-size-36: 2.25rem;
+  --font-size-37: 2.3125rem;
+  --font-size-38: 2.375rem;
+  --font-size-39: 2.4375rem;
+  --font-size-40: 2.5rem;
+  --font-size-41: 2.5625rem;
+  --font-size-42: 2.625rem;
+  --font-size-43: 2.6875rem;
+  --font-size-44: 2.75rem;
+  --font-size-45: 2.8125rem;
+  --font-size-46: 2.875rem;
+  --font-size-47: 2.9375rem;
+  --font-size-48: 3rem;
+  --font-size-49: 3.0625rem;
+  --font-size-50: 3.125rem;
+  --font-foundation: "Foundation One", sans-serif;
+  --color-gold-lt: #e5c6a3;
+  --color-gold-lt-mid: #c5a684;
+  --color-gold-mid: #9f8568;
+  --color-gold-dk-mid: #74604b;
+  --color-gold-dk: #493b2e;
+  --color-grey-lt: #a7a7a7;
+  --color-grey-lt-mid: #5e5c5c;
+  --color-grey-mid: #323437;
+  --color-grey-dk-mid: #1c1f22;
+  --color-grey-dk: #0f1012;
+  --background-space: url("assets/space.png");
+}
+/* Window Header */
+.app.window-app.sheet.actor {
+  background: var(--background-space) repeat;
+}
+.app.window-app.sheet {
+  background-position: center -30px;
+  background-attachment: scroll;
+  box-shadow: none;
+}
+.app.window-app.sheet .window-header {
+  top: 8px;
+  left: 6px;
+  right: 16px;
+  padding: 0px 6px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 3;
+  font-size: 0;
+}
+.app.window-app.sheet .window-header .fa-solid::before {
+  font-size: var(--font-size-12);
+  color: var(--color-grey-lt);
+}
+.app.window-app.sheet .window-header .fa-xmark::before {
+  font-size: var(--font-size-16);
+}
+.app.window-app.sheet .window-content {
+  background: transparent;
+  overflow: auto;
+  position: relative;
+  box-sizing: border-box;
+}
+/* Clean sheet names */
+.sheetname input {
+  margin: 0;
+  width: 100%;
+  border: 0;
+}
+.sheetname input[type="text"] {
+  background: none;
+  box-shadow: none;
+}
+/* Tooltip formatting */
+#tooltip.fs2e-multiline {
+  white-space: pre-line;
+}
+/* Base grid utility */
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols, 1fr);
+  /* fallback single column */
+  grid-auto-rows: var(--grid-row, auto);
+  gap: var(--grid-gap, 8px);
+}
+/* Gap presets (optional) */
+.gap-0 {
+  --grid-gap: 0;
+}
+.gap-xs {
+  --grid-gap: 4px;
+}
+.gap-sm {
+  --grid-gap: 8px;
+}
+.gap-md {
+  --grid-gap: 12px;
+}
+.gap-lg {
+  --grid-gap: 16px;
+}
+/* Common column presets (set the custom property only) */
+.cols-1 {
+  --grid-cols: 1fr;
+}
+.cols-2 {
+  --grid-cols: repeat(2, 1fr);
+}
+.cols-3 {
+  --grid-cols: repeat(3, 1fr);
+}
+.cols-4 {
+  --grid-cols: repeat(4, 1fr);
+}
+/* Sidebar + content presets */
+.cols-sidebar-sm {
+  --grid-cols: 160px 1fr;
+}
+.cols-sidebar-md {
+  --grid-cols: 200px 1fr;
+}
+.cols-sidebar-lg {
+  --grid-cols: 260px 1fr;
+}
+/* Form-friendly presets */
+.cols-label-input {
+  --grid-cols: max-content 1fr;
+}
+/* label then fluid input */
+.cols-auto-1fr {
+  --grid-cols: auto 1fr;
+}
+/* auto width then fluid */
+.cols-1fr-auto {
+  --grid-cols: 1fr auto;
+}
+/* fluid then tight */
+/* “Three parts” mixes */
+.cols-max-1fr-max {
+  --grid-cols: max-content 1fr max-content;
+}
+/* label | main | actions */
+.cols-2fr-1fr {
+  --grid-cols: 2fr 1fr;
+}
+/* weighted split */
+/* Keep columns from growing beyond content (useful for compact info cells) */
+.nowrap {
+  white-space: nowrap;
+}
+/* Actors */
+.fs2e.sheet.actor.character img {
+  width: 100%;
+  height: 100%;
+}
+.fs2e.sheet.actor.character .sheetname input[type="text"] {
+  font-size: var(--font-size-40);
+}
+
+/*# sourceMappingURL=fs2e.css.map */
