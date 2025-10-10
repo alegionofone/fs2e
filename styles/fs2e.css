@@ -60,13 +60,13 @@
   --color-grey-lt-mid: #5e5c5c;
   --color-grey-mid: #323437;
   --color-grey-dk-mid: #1c1f22;
-  --color-grey-dk-mid-60: rgba(28, 31, 34, 0.6);
+  --color-grey-dk-mid-80: rgba(28, 31, 34, 0.8);
   --color-grey-dk: #0f1012;
   --background-space: url("assets/space.png");
 }
 .shading {
-  background-color: var(--color-grey-dk-mid-60);
-  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-60);
+  background-color: var(--color-grey-dk-mid-80);
+  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-80);
 }
 /* Window Header */
 .app.window-app.sheet.actor {
@@ -196,6 +196,27 @@
 .nowrap {
   white-space: nowrap;
 }
+/* Column spans */
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+.col-span-3 {
+  grid-column: span 3 / span 3;
+}
+.col-span-4 {
+  grid-column: span 4 / span 4;
+}
+.col-span-full {
+  grid-column: 1 / -1;
+}
+/* take all columns */
+/* (Optional) Row spans */
+.row-span-2 {
+  grid-row: span 2 / span 2;
+}
+.row-span-3 {
+  grid-row: span 3 / span 3;
+}
 /* Fields */
 .underline {
   border-bottom: 1px solid var(--color-gold-mid);
@@ -204,14 +225,33 @@
   border: 0;
   padding: 0;
 }
+/* Navigation */
+nav.sheet-tabs {
+  font-family: 'p22', Georgia, sans-serif;
+  font-size: var(--font-size-16);
+  font-weight: bold;
+  border: 0;
+}
+nav.sheet-tabs [data-tab] {
+  padding: 3px 3px 5px 3px;
+}
+nav.sheet-tabs.actor {
+  background-color: var(--color-gold-dk-mid);
+}
+nav.sheet-tabs.actor [data-tab] {
+  color: var(--color-gold-lt);
+}
+.tabs.sheet-tabs {
+  margin: 10px 0;
+}
 /* Actors */
 .fs2e.sheet.actor {
   /* Text */
   /* Header */
 }
 .fs2e.sheet.actor img {
-  background-color: var(--color-grey-dk-mid-60);
-  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-60);
+  background-color: var(--color-grey-dk-mid-80);
+  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-80);
   width: 100%;
   height: 100%;
   border: 1px solid var(--color-gold-dk-mid) !important;
@@ -242,9 +282,10 @@
   padding-top: 5px;
 }
 .fs2e.sheet.actor .container {
-  background-color: var(--color-grey-dk-mid-60);
-  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-60);
+  background-color: var(--color-grey-dk-mid-80);
+  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-80);
   padding: 10px;
+  color: var(--color-gold-lt);
 }
 
 /*# sourceMappingURL=fs2e.css.map */

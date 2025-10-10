@@ -77,7 +77,42 @@
               <span class="label">Rank</span>
               <input type="text" name="system.data.rank.value" value="{{system.data.rank.value}}" />
             </label>
-
-        </div>
-      
+        </div>  
       </div>
+    </header>
+
+     <nav class="sheet-tabs tabs actor" data-group="primary">
+      <a class="item" data-tab="characteristics">Characteristics</a>
+      <a class="item" data-tab="skills">Skills</a>
+      <a class="item" data-tab="equipment">Equipment</a>
+      <a class="item" data-tab="traits">Traits</a>
+      <a class="item" data-tab="actions">Actions</a>
+      <a class="item" data-tab="effects">Effects</a>
+    </nav>
+
+    <section class="sheet-body">
+      <div class="tab characteristics" data-group="primary" data-tab="characteristics">
+        {{> "systems/fs2e/templates/actor/actor-tabs/characteristics-tab.hbs"}}
+      </div>
+
+      <div class="tab skills" data-group="primary" data-tab="skills">
+        <p>test</p>
+      </div>
+
+      <div class="tab equipment" data-group="primary" data-tab="equipment">
+        <p>test</p>
+      </div>
+
+      <div class="tab traits" data-group="primary" data-tab="traits">
+        <p>test</p>
+      </div>
+
+      <div class="tab actions" data-group="primary" data-tab="actions">
+        <p>test</p>
+      </div>
+
+      <div class="tab effects" data-group="primary" data-tab="effects">
+        <p>test</p>
+      </div>
+    </section>
+</form>

@@ -6,8 +6,8 @@ export class FS2ECharacterSheet extends ActorSheet {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["fs2e", "sheet", "actor", "character"],
       template: "systems/fs2e/templates/actor/character-sheet.hbs",
-      width: 800,
-      height: 680,
+      width: 620,
+      height: 700,
       submitOnChange: true // update as you type
     });
   }
