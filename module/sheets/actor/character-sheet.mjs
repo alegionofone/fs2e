@@ -205,6 +205,34 @@ export class FS2ECharacterSheet extends ActorSheet {
       });
     }
 
+    // ----- Planet: drop to set, click to open, × to clear
+    const planetField = root.querySelector('[data-drop-planet]');
+    if (planetField) {
+      // Allow dropping
+      planetField.addEventListener('dragover', ev => ev.preventDefault());
+      planetField.addEventListener('drop', this.#onDropPlanet.bind(this));
+
+      // Open linked planet item
+      root.querySelectorAll('.open-planet').forEach(el => {
+        el.addEventListener('click', async ev => {
+          ev.preventDefault();
+          const uuid = ev.currentTarget.dataset.uuid;
+          if (!uuid) return;
+          const doc = await fromUuid(uuid);
+          if (doc?.sheet) return doc.sheet.render(true);
+          ui.notifications?.warn("Could not open Planet item.");
+        });
+      });
+
+      // Clear link
+      root.querySelectorAll('.clear-planet').forEach(el => {
+        el.addEventListener('click', async ev => {
+          ev.preventDefault();
+          await this.actor.update({ "system.data.planet": { uuid: "", name: "" } });
+        });
+      });
+    }
+
     // Core tooltips
     if (ui?.tooltip?.activate) ui.tooltip.activate(root);
   }
@@ -230,6 +258,30 @@ export class FS2ECharacterSheet extends ActorSheet {
     } catch (err) {
       console.error("fs2e | Species drop failed", err);
       ui.notifications?.error("Failed to set Species from drop.");
+    }
+  }
+
+  // ----- Handle dropping an Item on the Planet field
+  async #onDropPlanet(event) {
+    event.preventDefault();
+    try {
+      const data = TextEditor.getDragEventData(event);
+      // Expecting an Item drag with a UUID
+      if (!data?.uuid) return ui.notifications?.warn("Drop a Planet item here.");
+      const doc = await fromUuid(data.uuid);
+      if (!(doc && doc.documentName === "Item")) {
+        return ui.notifications?.warn("Only Items can be dropped here.");
+      }
+      if (doc.type !== "planet") {
+        return ui.notifications?.warn("Only Planet items are allowed.");
+      }
+      // Store a lightweight reference
+      await this.actor.update({
+        "system.data.planet": { uuid: doc.uuid, name: doc.name }
+      });
+    } catch (err) {
+      console.error("fs2e | Planet drop failed", err);
+      ui.notifications?.error("Failed to set Planet from drop.");
     }
   }
 }

@@ -28,7 +28,7 @@
                   </a>
                   <a class="clear-species" title="Clear">×</a>
                 {{else}}
-                  <span class="placeholder">Drop a Species item here</span>
+                  <span class="placeholder">Drop species item here</span>
                 {{/if}}
               </div>
             </label>
@@ -45,14 +45,32 @@
               </label>
             </div>
 
-            <label class="field underline">
+            <label class="field underline planet-field" data-drop-planet>
               <span class="label">Planet</span>
-              <input type="text" name="system.data.planet.value" value="{{system.data.planet.value}}" />
+              <div class="data-pill">
+                {{#if system.data.planet.uuid}}
+                  <a class="open-planet" data-uuid="{{system.data.planet.uuid}}">
+                    {{system.data.planet.name}}
+                  </a>
+                  <a class="clear-planet" title="Clear">×</a>
+                {{else}}
+                  <span class="placeholder">Drop planet item here</span>
+                {{/if}}
+              </div>
             </label>
 
-            <label class="field underline">
+            <label class="field underline aliance-field" data-drop-alliance>
               <span class="label">Alliance</span>
-              <input type="text" name="system.data.alliance.value" value="{{system.data.alliance.value}}" />
+              <div class="data-pill">
+                {{#if system.data.alliance.uuid}}
+                  <a class="open-alliance" data-uuid="{{system.data.alliance.uuid}}">
+                    {{system.data.alliance.name}}
+                  </a>
+                  <a class="clear-alliance" title="Clear">×</a>
+                {{else}}
+                  <span class="placeholder">Drop alliance item here</span>
+                {{/if}}
+              </div>
             </label>
 
             <label class="field underline">

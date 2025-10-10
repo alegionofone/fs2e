@@ -233,6 +233,11 @@
   font-family: 'p22', Georgia, sans-serif;
   color: var(--color-gold-mid);
 }
+.fs2e.sheet.actor .field .placeholder,
+.fs2e.sheet.actor input[type="text"] .placeholder {
+  font-size: var(--font-size-12);
+  color: var(--color-gold-dk-mid);
+}
 .fs2e.sheet.actor .data-pill {
   padding-top: 5px;
 }
