@@ -1,19 +1,53 @@
-.fs2e.sheet.actor.character{
+.fs2e.sheet.actor {
 
-  img {
-    width: 100%;
-    height: 100%
-  }
-
-  .sheetname {
-    input[type="text"] {
-      font-size: var(--font-size-40);
-    }
-  }
+  /* Text */
 
   h1, h2, h3 {
 
   }
 
+
+  /* Header */
+
+  img {
+    .shading();
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--color-gold-dk-mid) !important;
+  }
+
+  .sheetname {
+    padding-bottom: 5px;
+    color: var(--color-gold-lt);
+
+    input[type="text"] {
+      font-size: var(--font-size-40);
+      color: var(--color-gold-lt);
+    }
+  }
+
+
+
+  
+  .field,
+  input[type="text"] {
+    color: var(--color-gold-lt);
+
+    .label {
+      .p22();
+      color: var(--color-gold-mid);
+    }
+  }
+
+  .ref-pill {
+    padding-top: 4px;
+  }
+
+
+  .container {
+    .shading();
+    padding: 10px;
+
+  }
 
 }

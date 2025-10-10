@@ -1,11 +1,17 @@
 /* Window Header */
 
-.app.window-app.sheet.actor { background: var(--background-space) repeat; }
+.app.window-app.sheet.actor {
+  background: var(--background-space);
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: auto 100%;
+}
 
 .app.window-app.sheet {
   background-position: center -30px;
   background-attachment: scroll;
   box-shadow: none;
+  background-size: 100% auto;
 
   .window-header {
     top: 8px; left: 6px; right: 16px;
@@ -39,8 +45,8 @@
 
 /* Clean sheet names */
 .sheetname {
-  input { margin: 0; width: 100%; border: 0; }
-  input[type="text"] { background: none; box-shadow: none }
+  input { .p22(); margin: 0; width: 100%; border: 0; }
+  input[type="text"] { background: none; box-shadow: none; }
 }
 
 /* Tooltip formatting */
@@ -83,3 +89,14 @@
 
 /* Keep columns from growing beyond content (useful for compact info cells) */
 .nowrap { white-space: nowrap; }
+
+/* Fields */
+
+  .underline {    
+    border-bottom: 1px solid var(--color-gold-mid);
+
+    input[type="text"] {
+      border: 0;
+    }
+  }
+
