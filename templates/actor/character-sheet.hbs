@@ -1,6 +1,6 @@
 {{!-- systems/fs2e/templates/actor/character-sheet.hbs --}}
 <form class="fs2e sheet actor character" autocomplete="off">
-  <header class="sheet-header grid cols-sidebar-sm gap-sm">
+  <header class="sheet-header grid cols-sidebar-sm gap-md">
 
     <img class="profile" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
 
@@ -12,7 +12,7 @@
 
       <div class="header container">
 
-        <div class="grid cols-3 gap-md">
+        <div class="grid cols-3 gap-sm">
 
             <label class="field underline">
               <span class="label">Player</span>
@@ -21,7 +21,7 @@
 
             <label class="field underline species-field" data-drop-species>
               <span class="label">Species</span>
-              <div class="ref-pill">
+              <div class="data-pill">
                 {{#if system.data.species.uuid}}
                   <a class="open-species" data-uuid="{{system.data.species.uuid}}">
                     {{system.data.species.name}}
