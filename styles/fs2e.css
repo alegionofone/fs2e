@@ -66,7 +66,7 @@
 }
 .shading {
   background-color: var(--color-grey-dk-mid-60);
-  box-shadow: 0px 0px 0px 5px var(--color-grey-dk-mid-60);
+  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-60);
 }
 /* Window Header */
 .app.window-app.sheet.actor {
@@ -210,7 +210,7 @@
 }
 .fs2e.sheet.actor img {
   background-color: var(--color-grey-dk-mid-60);
-  box-shadow: 0px 0px 0px 5px var(--color-grey-dk-mid-60);
+  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-60);
   width: 100%;
   height: 100%;
   border: 1px solid var(--color-gold-dk-mid) !important;
@@ -237,7 +237,7 @@
 }
 .fs2e.sheet.actor .container {
   background-color: var(--color-grey-dk-mid-60);
-  box-shadow: 0px 0px 0px 5px var(--color-grey-dk-mid-60);
+  box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-60);
   padding: 10px;
 }
 
