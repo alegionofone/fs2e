@@ -1,43 +1,42 @@
-{{!-- Skills Tab (keeps your existing Natural + Learned grid)
-     + adds grouped Learned specializations with subheadings. --}}
-<section class="skills">
+{{!-- systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs --}}
+<section class="skills container shade">
 
-  {{!-- Natural Skills (unchanged) --}}
-  <div class="attribute-group">
-    <h3>Natural Skills</h3>
-    <div class="skills-grid columns-3">
+  {{!-- Natural Skills --}}
+  <h3>Natural Skills</h3>
+    <div class="grid cols-3 gap-x-lg gap-y-sm">
       {{#each view.skills.natural}}
         <label class="stat" data-skill="{{this.key}}">
           <span class="name">{{this.label}}</span>
-          <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">
+          <span class="value"
+                data-tooltip="{{this.tooltip}}"
+                data-tooltip-class="fs2e-multiline">
             {{this.total}}
           </span>
         </label>
       {{/each}}
     </div>
-  </div>
 
-  {{!-- Learned Skills (your current scalar list stays as-is) --}}
-  <div class="attribute-group" style="margin-top:12px;">
+  {{!-- Learned Skills --}}
+  <div class="container learned-skills">
     <h3>Learned Skills</h3>
 
-    <div class="skills-grid columns-3">
+    <div class="grid cols-3 gap-x-lg gap-y-sm">
       {{#each view.skills.learned}}
         <label class="stat" data-skill="{{this.key}}">
           <span class="name">{{this.label}}</span>
-          <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">
+          <span class="value"
+                data-tooltip="{{this.tooltip}}"
+                data-tooltip-class="fs2e-multiline">
             {{this.total}}
           </span>
         </label>
       {{/each}}
     </div>
 
-    {{!-- ===== Grouped learned specializations with sub-headings ===== --}}
-    {{!-- Each block only renders if there are items --}}
-
+    {{!-- Grouped specialisations (each renders only if it has items) --}}
     {{#if system.skills.learned.artisan.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Artisan</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Artisan</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.artisan}}
           <label class="stat" data-skill="artisan:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -52,8 +51,8 @@
     {{/if}}
 
     {{#if system.skills.learned.drive.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Drive</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Drive</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.drive}}
           <label class="stat" data-skill="drive:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -68,8 +67,8 @@
     {{/if}}
 
     {{#if system.skills.learned.lore.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Lore</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Lore</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.lore}}
           <label class="stat" data-skill="lore:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -84,8 +83,8 @@
     {{/if}}
 
     {{#if system.skills.learned.science.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Science</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Science</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.science}}
           <label class="stat" data-skill="science:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -100,8 +99,8 @@
     {{/if}}
 
     {{#if system.skills.learned.social.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Social</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Social</h4>
+      <div class="grid cols-3 gap-sm">
         {{#each system.skills.learned.social}}
           <label class="stat" data-skill="social:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -115,10 +114,10 @@
       </div>
     {{/if}}
 
-    {{!-- Tech Redemption (support both correct and typo keys) --}}
+    {{!-- Tech Redemption (support correct + typo keys) --}}
     {{#if system.skills.learned.techRedemption.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Tech Redemption</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Tech Redemption</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.techRedemption}}
           <label class="stat" data-skill="techRedemption:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -133,8 +132,8 @@
     {{/if}}
 
     {{#if system.skills.learned.techRedemptiopn.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Tech Redemption</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Tech Redemption</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.techRedemptiopn}}
           <label class="stat" data-skill="techRedemption:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -149,8 +148,8 @@
     {{/if}}
 
     {{#if system.skills.learned.warfare.length}}
-      <h4 class="skills-subhead" style="margin:10px 0 6px 0;">Warfare</h4>
-      <div class="skills-grid columns-3">
+      <h4 class="skills-subhead">Warfare</h4>
+      <div class="grid cols-3 gap-x-lg gap-y-sm">
         {{#each system.skills.learned.warfare}}
           <label class="stat" data-skill="warfare:{{this.name}}">
             <span class="name">{{this.name}}</span>
@@ -165,6 +164,4 @@
     {{/if}}
 
   </div>
-
 </section>
-

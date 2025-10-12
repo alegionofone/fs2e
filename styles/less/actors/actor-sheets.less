@@ -3,7 +3,9 @@
   /* Text */
 
   h1, h2, h3 {
-
+    .p22();
+    border: none;
+    align-self: center;
   }
 
 
@@ -47,10 +49,57 @@
 
 
   .container {
-    .shading();
-    padding: 10px;
+    padding: 6px;
     color: var(--color-gold-lt);
+
+    &.shade {
+       .shading();
+    }
+  }
+
+  /* Charactertistics aand Skills */
+
+  .characteristics {
+      text-align: center;
+
+    h3 {
+      background-color: var(--color-gold-dk);
+    }
+
+    .grid {
+      padding-top: 3px;
+    }
+
+    .stat { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      text-align: left;
+
+      .spirit-right .stat .value {
+        margin-right: auto;
+        text-align: left;
+      }
+
+      .spirit-left .stat .value {
+        text-align: right;
+      }
+    }
+
+    .spirit .stat.sep { 
+      display: flex; 
+      justify-content: center; 
+    }
+    .spirit .stat.sep .sep { 
+      display: inline-block; 
+      width: 1ch;
+      text-align: center; 
+      min-width: 0;
+}
 
   }
 
+  .container .learned-skills {
+      padding: 10px 0 0 0;
+  }
 }

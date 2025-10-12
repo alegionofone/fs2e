@@ -7,7 +7,7 @@ export class FS2ECharacterSheet extends ActorSheet {
       classes: ["fs2e", "sheet", "actor", "character"],
       template: "systems/fs2e/templates/actor/character-sheet.hbs",
       width: 620,
-      height: 700,
+      height: 720,
       submitOnChange: true // update as you type
     });
   }

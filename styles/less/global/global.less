@@ -60,12 +60,33 @@
   gap: var(--grid-gap, 8px);
 }
 
-/* Gap presets (optional) */
-.gap-0 { --grid-gap: 0; }
+/* Base grid */
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols, 1fr);
+  row-gap: var(--gap-y, var(--grid-gap, 8px));
+  column-gap: var(--gap-x, var(--grid-gap, 8px));
+}
+
+/* Keep your existing “both axes” presets */
+.gap-0  { --grid-gap: 0; }
 .gap-xs { --grid-gap: 4px; }
 .gap-sm { --grid-gap: 8px; }
 .gap-md { --grid-gap: 12px; }
 .gap-lg { --grid-gap: 16px; }
+
+/* New axis-specific presets */
+.gap-x-0  { --gap-x: 0; }
+.gap-x-xs { --gap-x: 4px; }
+.gap-x-sm { --gap-x: 8px; }
+.gap-x-md { --gap-x: 12px; }
+.gap-x-lg { --gap-x: 16px; }
+
+.gap-y-0  { --gap-y: 0; }
+.gap-y-xs { --gap-y: 4px; }
+.gap-y-sm { --gap-y: 8px; }
+.gap-y-md { --gap-y: 12px; }
+.gap-y-lg { --gap-y: 16px; }
 
 /* Common column presets (set the custom property only) */
 .cols-1        { --grid-cols: 1fr; }
@@ -99,7 +120,6 @@
 /* (Optional) Row spans */
 .row-span-2 { grid-row: span 2 / span 2; }
 .row-span-3 { grid-row: span 3 / span 3; }
-
 
 /* Fields */
 

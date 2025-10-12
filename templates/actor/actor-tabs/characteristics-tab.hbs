@@ -2,9 +2,9 @@
 <section class="characteristics grid cols-4 gap-md">
 
   {{!-- Body --}}
-  <div class="container">
+  <div class="container shade body">
     <h3>Body</h3>
-    <div class="grid cols-1">
+    <div class="grid cols-1 gap-sm">
       {{#each view.characteristics.body}}
         <label class="stat" data-stat="{{this.key}}">
           <span class="name">{{this.label}}</span>
@@ -19,9 +19,9 @@
   </div>
 
   {{!-- Mind --}}
-  <div class="container">
+  <div class="container shade mind">
     <h3>Mind</h3>
-    <div class="grid cols-1">
+    <div class="grid cols-1 gap-sm">
       {{#each view.characteristics.mind}}
         <label class="stat" data-stat="{{this.key}}">
           <span class="name">{{this.label}}</span>
@@ -35,27 +35,37 @@
     </div>
   </div>
 
-  <div class="container col-span-2 spirit">
-    <h3>Spirit</h3>
+  <div class="container shade col-span-2 spirit">
+  <h3>Spirit</h3>
 
-    <div class="grid cols-2 gap-md">
-      <div class="grid cols-1 gap-md">
-        {{#each view.characteristics.spirit.left}}
-          <label class="stat" data-stat="{{this.leftKey}}">
-            <span class="name">{{this.leftLabel}}</span>
-            <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">{{this.total}}</span>
-          </label>
-        {{/each}}
-      </div>
+  {{!-- three inner columns: left / slash / right --}}
+  <div class="grid cols-3 gap-md">
+    {{!-- LEFT lane --}}
+    <div class="grid cols-1 gap-sm spirit-left">
+      {{#each view.characteristics.spirit.left}}
+        <label class="stat" data-stat="{{this.leftKey}}">
+          <span class="name">{{this.leftLabel}}</span>
+          <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">{{this.total}}</span>
+        </label>
+      {{/each}}
+    </div>
 
-      <div class="grid cols-1 gap-md">
-        {{#each view.characteristics.spirit.right}}
-          <label class="stat" data-stat="{{this.rightKey}}">
-            <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">{{this.total}}</span>
-            <span class="name">{{this.rightLabel}}</span>
-          </label>
-        {{/each}}
-      </div>
+    {{!-- SLASH lane (one row per pair) --}}
+    <div class="grid cols-1 gap-sm spirit-mid" aria-hidden="true">
+      {{#each view.characteristics.spirit.left}}
+        <label class="stat sep"><span class="sep">/</span></label>
+      {{/each}}
+    </div>
+
+    {{!-- RIGHT lane --}}
+    <div class="grid cols-1 gap-sm spirit-right">
+      {{#each view.characteristics.spirit.right}}
+        <label class="stat" data-stat="{{this.rightKey}}">
+          <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">{{this.total}}</span>
+          <span class="name">{{this.rightLabel}}</span>
+        </label>
+      {{/each}}
     </div>
   </div>
+</div>
 </section>

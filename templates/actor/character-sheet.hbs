@@ -10,7 +10,7 @@
         <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
       </h1>
 
-      <div class="header container">
+      <div class="header container shade">
 
         <div class="grid cols-3 gap-sm">
 
@@ -93,6 +93,8 @@
     <section class="sheet-body">
       <div class="tab characteristics" data-group="primary" data-tab="characteristics">
         {{> "systems/fs2e/templates/actor/actor-tabs/characteristics-tab.hbs"}}
+        </br>
+        {{> "systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs"}}
       </div>
 
       <div class="tab skills" data-group="primary" data-tab="skills">

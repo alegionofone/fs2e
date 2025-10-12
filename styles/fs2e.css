@@ -131,7 +131,14 @@
   grid-auto-rows: var(--grid-row, auto);
   gap: var(--grid-gap, 8px);
 }
-/* Gap presets (optional) */
+/* Base grid */
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols, 1fr);
+  row-gap: var(--gap-y, var(--grid-gap, 8px));
+  column-gap: var(--gap-x, var(--grid-gap, 8px));
+}
+/* Keep your existing “both axes” presets */
 .gap-0 {
   --grid-gap: 0;
 }
@@ -146,6 +153,37 @@
 }
 .gap-lg {
   --grid-gap: 16px;
+}
+/* New axis-specific presets */
+.gap-x-0 {
+  --gap-x: 0;
+}
+.gap-x-xs {
+  --gap-x: 4px;
+}
+.gap-x-sm {
+  --gap-x: 8px;
+}
+.gap-x-md {
+  --gap-x: 12px;
+}
+.gap-x-lg {
+  --gap-x: 16px;
+}
+.gap-y-0 {
+  --gap-y: 0;
+}
+.gap-y-xs {
+  --gap-y: 4px;
+}
+.gap-y-sm {
+  --gap-y: 8px;
+}
+.gap-y-md {
+  --gap-y: 12px;
+}
+.gap-y-lg {
+  --gap-y: 16px;
 }
 /* Common column presets (set the custom property only) */
 .cols-1 {
@@ -248,6 +286,14 @@ nav.sheet-tabs.actor [data-tab] {
 .fs2e.sheet.actor {
   /* Text */
   /* Header */
+  /* Charactertistics aand Skills */
+}
+.fs2e.sheet.actor h1,
+.fs2e.sheet.actor h2,
+.fs2e.sheet.actor h3 {
+  font-family: 'p22', Georgia, sans-serif;
+  border: none;
+  align-self: center;
 }
 .fs2e.sheet.actor img {
   background-color: var(--color-grey-dk-mid-80);
@@ -282,10 +328,47 @@ nav.sheet-tabs.actor [data-tab] {
   padding-top: 5px;
 }
 .fs2e.sheet.actor .container {
+  padding: 6px;
+  color: var(--color-gold-lt);
+}
+.fs2e.sheet.actor .container.shade {
   background-color: var(--color-grey-dk-mid-80);
   box-shadow: 0px 0px 5px 5px var(--color-grey-dk-mid-80);
-  padding: 10px;
-  color: var(--color-gold-lt);
+}
+.fs2e.sheet.actor .characteristics {
+  text-align: center;
+}
+.fs2e.sheet.actor .characteristics h3 {
+  background-color: var(--color-gold-dk);
+}
+.fs2e.sheet.actor .characteristics .grid {
+  padding-top: 3px;
+}
+.fs2e.sheet.actor .characteristics .stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+.fs2e.sheet.actor .characteristics .stat .spirit-right .stat .value {
+  margin-right: auto;
+  text-align: left;
+}
+.fs2e.sheet.actor .characteristics .stat .spirit-left .stat .value {
+  text-align: right;
+}
+.fs2e.sheet.actor .characteristics .spirit .stat.sep {
+  display: flex;
+  justify-content: center;
+}
+.fs2e.sheet.actor .characteristics .spirit .stat.sep .sep {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+  min-width: 0;
+}
+.fs2e.sheet.actor .container .learned-skills {
+  padding: 10px 0 0 0;
 }
 
 /*# sourceMappingURL=fs2e.css.map */
