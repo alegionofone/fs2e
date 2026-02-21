@@ -7,7 +7,8 @@
   background-size: auto 100%;
 }
 
-.app.window-app.sheet {
+.app.window-app.sheet,
+.app.window-app.dialog.fs2e {
   background-position: center -30px;
   background-attachment: scroll;
   box-shadow: none;
@@ -51,6 +52,11 @@
 
 /* Tooltip formatting */
 #tooltip.fs2e-multiline { white-space: pre-line; }
+#tooltip.fs2e-multiline .fs2e-tooltip-comp { margin-top: 10px; }
+#tooltip.fs2e-multiline .fs2e-tooltip-comp-label {
+  font-weight: bold;
+  font-style: italic;
+}
 
 /* Base grid utility */
 .grid {

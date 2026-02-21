@@ -1,6 +1,9 @@
 {
   "Actor": {
-    "types": ["character", "npc"],
+    "types": [
+      "character",
+      "npc"
+    ],
     "templates": {
       "common": {
         "system": {
@@ -15,79 +18,702 @@
           "languages": [],
           "characteristics": {
             "body": {
-              "strength": { "abbrev": "STR", "base": 3, "mod": 0, "temp": 0, "max": 0 },
-              "dexterity": { "abbrev": "DEX", "base": 3, "mod": 0, "temp": 0, "max": 0 },
-              "endurance": { "abbrev": "END", "base": 3, "mod": 0, "temp": 0, "max": 0 }
+              "strength": {
+                "abbrev": "STR",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "dexterity": {
+                "abbrev": "DEX",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "endurance": {
+                "abbrev": "END",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              }
             },
             "mind": {
-              "wits": { "abbrev": "WIT", "base": 3, "mod": 0, "temp": 0, "max": 0 },
-              "perception": { "abbrev": "PER", "base": 3, "mod": 0, "temp": 0, "max": 0 },
-              "tech": { "abbrev": "TEC", "base": 3, "mod": 0, "temp": 0, "max": 0 }
+              "wits": {
+                "abbrev": "WIT",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "perception": {
+                "abbrev": "PER",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "tech": {
+                "abbrev": "TEC",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              }
             },
             "spirit": {
-              "extrovert": { "abbrev": "EXT", "base": 0, "mod": 0, "temp": 0, "max": 0 },
-              "introvert": { "abbrev": "INT", "base": 0, "mod": 0, "temp": 0, "max": 0 },
-              "passion":   { "abbrev": "PAS", "base": 0, "mod": 0, "temp": 0, "max": 0 },
-              "calm":      { "abbrev": "CAL", "base": 0, "mod": 0, "temp": 0, "max": 0 },
-              "faith":     { "abbrev": "FTH", "base": 0, "mod": 0, "temp": 0, "max": 0 },
-              "ego":       { "abbrev": "EGO", "base": 0, "mod": 0, "temp": 0, "max": 0 }
+              "extrovert": {
+                "abbrev": "EXT",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "introvert": {
+                "abbrev": "INT",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "passion": {
+                "abbrev": "PAS",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "calm": {
+                "abbrev": "CAL",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "faith": {
+                "abbrev": "FTH",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "ego": {
+                "abbrev": "EGO",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              }
             },
             "occult": {
-              "psi":     { "abbrev": "PSI", "base": 0, "mod": 0, "temp": 0, "max": 0 },
-              "theurgy": { "abbrev": "THE", "base": 0, "mod": 0, "temp": 0, "max": 0 }
+              "psi": {
+                "abbrev": "PSI",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              },
+              "theurgy": {
+                "abbrev": "THE",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0
+              }
             }
           },
           "pools": {
-            "vitality": { "value": 10, "max": 10, "temp": 0 },
-            "shock":    { "value": 0,  "max": 10 },
-            "occult":   { "value": 0,  "max": 0,  "temp": 0 }
+            "vitality": {
+              "value": 10,
+              "max": 10,
+              "temp": 0
+            },
+            "shock": {
+              "value": 0,
+              "max": 10
+            },
+            "occult": {
+              "value": 0,
+              "max": 0,
+              "temp": 0
+            }
+          },
+          "vitality": {
+            "nonVital": 3,
+            "vital": 5
+          },
+          "wyrd": {
+            "value": 0,
+            "max": 20
           },
           "skills": {
             "natural": {
-              "charm":  { "base": 3, "mod": 0, "temp": 0 },
-              "dodge":  { "base": 3, "mod": 0, "temp": 0 },
-              "fight":  { "base": 3, "mod": 0, "temp": 0 },
-              "impress":{ "base": 3, "mod": 0, "temp": 0 },
-              "melee":  { "base": 3, "mod": 0, "temp": 0 },
-              "observe":{ "base": 3, "mod": 0, "temp": 0 },
-              "shoot":  { "base": 3, "mod": 0, "temp": 0 },
-              "sneak":  { "base": 3, "mod": 0, "temp": 0 },
-              "vigor":  { "base": 3, "mod": 0, "temp": 0 }
+              "charm": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "dodge": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "fight": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "impress": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "melee": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "observe": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "shoot": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "sneak": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "vigor": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              }
             },
             "learned": {
-              "academia": { "base": 0, "mod": 0, "temp": 0 },
-
+              "academia": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "acrobatics": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "alchemy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "beastLore": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "bureaucracy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "empathy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "etiquette": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "focus": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "gambling": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "inquiry": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "knavery": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "lockpicking": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "performance": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "physick": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "remedy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "ride": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "search": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "sleightOfHand": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "spacesuit": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "stoicBody": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "stoicMind": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "streetwise": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "survival": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "thinkMachine": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "throwing": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "torture": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "tracking": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
+              "xenoEmpathy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0
+              },
               "artisan": [],
-              "drive": [],
+              "arts": [],
+              "drive": [
+                {
+                  "name": "aircraft",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "beastcraft",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "landcraft",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "spacecraft",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "watercraft",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                }
+              ],
               "lore": [],
-              "science": [],
-              "social": [],
-              "warfare": [],
-              "techRedemption": [],
-
-              "empathy":       { "base": 0, "mod": 0, "temp": 0 },
-              "etiquette":     { "base": 0, "mod": 0, "temp": 0 },
-              "inquiry":       { "base": 0, "mod": 0, "temp": 0 },
-              "lockpicking":   { "base": 0, "mod": 0, "temp": 0 },
-              "physick":       { "base": 0, "mod": 0, "temp": 0 },
-              "ride":          { "base": 0, "mod": 0, "temp": 0 },
-              "sleightOfHand": { "base": 0, "mod": 0, "temp": 0 },
-              "spacesuit":     { "base": 0, "mod": 0, "temp": 0 },
-              "stoicBody":     { "base": 0, "mod": 0, "temp": 0 },
-              "stoicMind":     { "base": 0, "mod": 0, "temp": 0 },
-              "streetwise":    { "base": 0, "mod": 0, "temp": 0 },
-              "survival":      { "base": 0, "mod": 0, "temp": 0 },
-              "thinkMachine":  { "base": 0, "mod": 0, "temp": 0 },
-              "throwing":      { "base": 0, "mod": 0, "temp": 0 },
-              "torture":       { "base": 0, "mod": 0, "temp": 0 },
-              "xenoEmpathy":   { "base": 0, "mod": 0, "temp": 0 }
+              "science": [
+                {
+                  "name": "anthropology",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "archaeology",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "astronomy",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "biology",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "chemistry",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "cybernetics",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "engineering",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "genetics",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "geology",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "meteorology",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "physics",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "terraforming",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "xeno-biology",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                }
+              ],
+              "social": [
+                {
+                  "name": "acting",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "debate",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "leadership",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "oratory",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                }
+              ],
+              "techRedemption": [
+                {
+                  "name": "craftRedemption",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "highTechRedemption",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "mechRedemption",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "voltRedemption",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                }
+              ],
+              "warfare": [
+                {
+                  "name": "artillery",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "demolitions",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "gunnery",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                },
+                {
+                  "name": "militaryTactics",
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8
+                }
+              ]
             }
           }
         }
       }
     },
-    "character": { "templates": ["common"] },
-    "npc":       { "templates": ["common"] }
+    "character": {
+      "templates": [
+        "common"
+      ]
+    },
+    "npc": {
+      "templates": [
+        "common"
+      ]
+    }
   },
   "Item": {
     "types": [
@@ -104,23 +730,115 @@
     ],
     "templates": {
       "itemDescription": {
-        "description": { "value": "" }
+        "description": {
+          "value": ""
+        }
       },
       "physicalItem": {
         "quantity": 1
+      },
+      "speciesDetails": {
+        "characteristics": {
+          "body": {
+            "strength": {
+              "base": 0,
+              "max": 0
+            },
+            "dexterity": {
+              "base": 0,
+              "max": 0
+            },
+            "endurance": {
+              "base": 0,
+              "max": 0
+            }
+          },
+          "mind": {
+            "wits": {
+              "base": 0,
+              "max": 0
+            },
+            "perception": {
+              "base": 0,
+              "max": 0
+            },
+            "tech": {
+              "base": 0,
+              "max": 0
+            }
+          },
+          "spirit": {
+            "extrovert": {
+              "base": 0,
+              "max": 0
+            },
+            "introvert": {
+              "base": 0,
+              "max": 0
+            },
+            "passion": {
+              "base": 0,
+              "max": 0
+            },
+            "calm": {
+              "base": 0,
+              "max": 0
+            },
+            "faith": {
+              "base": 0,
+              "max": 0
+            },
+            "ego": {
+              "base": 0,
+              "max": 0
+            }
+          },
+          "spiritPairs": {
+            "extrovertIntrovert": "extrovert",
+            "passionCalm": "passion",
+            "faithEgo": "faith"
+          }
+        },
+        "traits": {
+          "value": ""
+        }
       }
     },
     "typeTemplates": {
-      "armor": ["itemDescription", "physicalItem"],
-      "beneficeAffliction": ["itemDescription"],
-      "blessingCurse": ["itemDescription"],
-      "equipment": ["itemDescription", "physicalItem"],
-      "faction": ["itemDescription"],
-      "history": ["itemDescription"],
-      "maneuver": ["itemDescription"],
-      "planet": ["itemDescription"],
-      "species": ["itemDescription"],
-      "weapon": ["itemDescription", "physicalItem"]
+      "armor": [
+        "itemDescription",
+        "physicalItem"
+      ],
+      "beneficeAffliction": [
+        "itemDescription"
+      ],
+      "blessingCurse": [
+        "itemDescription"
+      ],
+      "equipment": [
+        "itemDescription",
+        "physicalItem"
+      ],
+      "faction": [
+        "itemDescription"
+      ],
+      "history": [
+        "itemDescription"
+      ],
+      "maneuver": [
+        "itemDescription"
+      ],
+      "planet": [
+        "itemDescription"
+      ],
+      "species": [
+        "itemDescription",
+        "speciesDetails"
+      ],
+      "weapon": [
+        "itemDescription",
+        "physicalItem"
+      ]
     }
   }
 }

@@ -1,0 +1,340 @@
+.fs2e.dialog.dice-roller {
+  height: auto !important;
+
+  .window-content {
+    background: transparent;
+    padding-top: 0;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+.fs2e-dice-roller {
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 8px 8px;
+  color: var(--color-gold-lt);
+
+  .fs2e-dialog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 0;
+
+    h2 {
+      .p22();
+      margin: 0;
+      border: 0;
+    }
+  }
+
+  .fs2e-subtitle {
+    font-size: var(--font-size-12);
+    color: var(--color-gold-mid);
+  }
+
+  .fs2e-section {
+    padding: 8px;
+    border: 1px solid var(--color-gold-dk-mid);
+    background: var(--color-grey-dk-mid-80);
+
+    h3 {
+      .p22();
+      margin: 0 0 6px 0;
+      background: var(--color-gold-dk);
+      padding: 4px 6px;
+      border: 0;
+    }
+  }
+
+
+  .fs2e-grid-roll-main,
+  .fs2e-grid-roll-comp {
+    display: grid;
+    grid-template-columns: 9fr 1fr;
+    gap: 8px 10px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: var(--font-size-12);
+    }
+
+    input,
+    select {
+      background: transparent;
+      border: 1px solid var(--color-gold-dk-mid);
+      color: var(--color-gold-lt);
+      padding: 4px 6px;
+      font-size: var(--font-size-12);
+    }
+
+    select option {
+      color: #000;
+    }
+  }
+
+  .fs2e-inline-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .fs2e-inline-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--font-size-12);
+
+    select {
+      width: var(--fs2e-select-width, 45%);
+    }
+  }
+
+  .fs2e-inline-title {
+    color: var(--color-gold-mid);
+    white-space: nowrap;
+    font-size: var(--font-size-12);
+    min-height: var(--fs2e-title-row-height, 1.05em);
+    display: flex;
+    align-items: center;
+  }
+
+  .fs2e-inline-plus {
+    color: var(--color-gold-mid);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .fs2e-inline-skill {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fs2e-diff-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .fs2e-diff-title-row,
+  .fs2e-diff-input-row {
+    display: grid;
+    grid-template-columns: var(--fs2e-select-width, 45%) 1ch var(--fs2e-select-width, 45%);
+    column-gap: 8px;
+    align-items: center;
+  }
+
+  .fs2e-diff-title-row {
+    font-size: var(--font-size-12);
+    min-height: var(--fs2e-title-row-height, 1.05em);
+  }
+
+  .fs2e-diff-title-main {
+    grid-column: 1 / 3;
+  }
+
+  .fs2e-diff-title-custom {
+    grid-column: 3 / 4;
+  }
+
+  .fs2e-diff-input-row {
+    select,
+    input {
+      width: 100%;
+    }
+  }
+
+  .fs2e-skill-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--font-size-12);
+
+    .fs2e-label {
+      color: var(--color-gold-mid);
+    }
+
+    .fs2e-value {
+      padding: 2px 4px;
+      border: 1px solid var(--color-gold-dk-mid);
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .fs2e-value-field {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+
+    input {
+      width: 25%;
+      min-width: 2.5rem;
+      text-align: center;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+  }
+
+  .fs2e-eq-field {
+    display: grid;
+    grid-template-rows: var(--fs2e-title-row-height, 1.05em) auto;
+    gap: 4px;
+  }
+
+  .fs2e-eq-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+
+    input {
+      width: 100%;
+      min-width: 2.5rem;
+      text-align: center;
+    }
+  }
+
+  .fs2e-eq-merge {
+    grid-template-rows: auto;
+    align-items: center;
+    justify-items: start;
+  }
+
+  .fs2e-comp-label {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .fs2e-eq-center .fs2e-eq-row {
+    justify-content: flex-start;
+  }
+
+  .fs2e-actions-block {
+    grid-column: 1;
+    grid-row: span 2;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .fs2e-actions-total {
+    grid-column: 2;
+    grid-row: span 2;
+    align-self: center;
+  }
+
+  .fs2e-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .fs2e-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    button {
+      border: 1px solid var(--color-gold-mid);
+      background: var(--color-grey-mid);
+      color: var(--color-gold-lt);
+      padding: 4px 8px;
+      cursor: pointer;
+      flex: 1 1 0;
+    }
+  }
+
+  .fs2e-comp-section {
+    .fs2e-actions {
+      margin-top: 9px;
+    }
+
+    &[data-enabled="0"] {
+      display: none;
+    }
+  }
+
+  .fs2e-grid-roll-actions {
+    margin-top: 9px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    button {
+      border: 1px solid var(--color-gold-mid);
+      background: var(--color-grey-mid);
+      color: var(--color-gold-lt);
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+  }
+
+  .fs2e-inline-result {
+    font-size: var(--font-size-12);
+    color: var(--color-gold-lt-mid);
+  }
+
+  .fs2e-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fs2e-radio-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--font-size-12);
+    flex-wrap: nowrap;
+    min-height: calc(var(--fs2e-title-row-height, 1.05em) + 4px + 6px);
+    align-self: center;
+    justify-content: flex-start;
+
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-direction: row;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    input[type="radio"] {
+      margin: 0;
+      align-self: center;
+      vertical-align: middle;
+      margin-top: -2px;
+    }
+
+    .fs2e-inline-title {
+      min-width: 70px;
+    }
+  }
+
+  .fs2e-radio-mod {
+    margin-left: 4px;
+    position: relative;
+    top: 2px;
+  }
+
+  .fs2e-span-full {
+    grid-column: 1 / -1;
+  }
+}

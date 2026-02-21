@@ -1,15 +1,17 @@
-{{!-- systems/fs2e/templates/actor/actor-tabs/characteristics-tab.hbs --}}
-<section class="characteristics grid cols-4 gap-md">
+<section class="characteristics fs2e-grid-chars">
 
-  {{!-- Body --}}
   <div class="container shade body">
     <h3>Body</h3>
-    <div class="grid cols-1 gap-sm">
+    <div class="fs2e-grid-chars-body">
       {{#each view.characteristics.body}}
         <label class="stat" data-stat="{{this.key}}">
-          <span class="name">{{this.label}}</span>
+          <span class="name"
+                data-tooltip="{{this.tooltipDesc}}"
+                data-tooltip-class="fs2e-multiline">
+            {{this.label}}
+          </span>
           <span class="value"
-                data-tooltip="{{this.tooltip}}"
+                data-tooltip="{{this.tooltipStats}}"
                 data-tooltip-class="fs2e-multiline">
             {{this.total}}
           </span>
@@ -18,54 +20,102 @@
     </div>
   </div>
 
-  {{!-- Mind --}}
-  <div class="container shade mind">
-    <h3>Mind</h3>
-    <div class="grid cols-1 gap-sm">
-      {{#each view.characteristics.mind}}
-        <label class="stat" data-stat="{{this.key}}">
-          <span class="name">{{this.label}}</span>
-          <span class="value"
-                data-tooltip="{{this.tooltip}}"
-                data-tooltip-class="fs2e-multiline">
-            {{this.total}}
-          </span>
-        </label>
-      {{/each}}
+    <div class="container shade mind">
+      <h3>Mind</h3>
+      <div class="fs2e-grid-chars-mind">
+        {{#each view.characteristics.mind}}
+          <label class="stat" data-stat="{{this.key}}">
+            <span class="name"
+                  data-tooltip="{{this.tooltipDesc}}"
+                  data-tooltip-class="fs2e-multiline">
+              {{this.label}}
+            </span>
+            <span class="value"
+                  data-tooltip="{{this.tooltipStats}}"
+                  data-tooltip-class="fs2e-multiline">
+              {{this.total}}
+            </span>
+          </label>
+        {{/each}}
+      </div>
     </div>
+
+    <div class="container shade col-span-2 spirit">
+    <h3>Spirit</h3>
+
+    <div class="fs2e-grid-chars-spirit">
+
+      <div class="fs2e-grid-chars-spirit-left spirit-left">
+        {{#each view.characteristics.spirit.left}}
+          <label class="stat" data-stat="{{this.leftKey}}">
+            <span class="name"
+                  data-tooltip="{{this.tooltipDesc}}"
+                  data-tooltip-class="fs2e-multiline">
+              {{this.leftLabel}}
+            </span>
+            <span class="value"
+                  data-tooltip="{{this.tooltipStats}}"
+                  data-tooltip-class="fs2e-multiline">{{this.total}}</span>
+          </label>
+        {{/each}}
+      </div>
+
+      <div class="fs2e-grid-chars-spirit-mid spirit-mid" aria-hidden="true">
+        {{#each view.characteristics.spirit.left}}
+          <label class="stat sep"><span class="sep">/</span></label>
+        {{/each}}
+      </div>
+
+      <div class="fs2e-grid-chars-spirit-right spirit-right">
+        {{#each view.characteristics.spirit.right}}
+          <label class="stat" data-stat="{{this.rightKey}}">
+            <span class="value"
+                  data-tooltip="{{this.tooltipStats}}"
+                  data-tooltip-class="fs2e-multiline">{{this.total}}</span>
+            <span class="name"
+                  data-tooltip="{{this.tooltipDesc}}"
+                  data-tooltip-class="fs2e-multiline">
+              {{this.rightLabel}}
+            </span>
+          </label>
+        {{/each}}
+      </div>
+
+    </div>
+
   </div>
 
-  <div class="container shade col-span-2 spirit">
-  <h3>Spirit</h3>
+</section>
 
-  {{!-- three inner columns: left / slash / right --}}
-  <div class="grid cols-3 gap-md">
-    {{!-- LEFT lane --}}
-    <div class="grid cols-1 gap-sm spirit-left">
-      {{#each view.characteristics.spirit.left}}
-        <label class="stat" data-stat="{{this.leftKey}}">
-          <span class="name">{{this.leftLabel}}</span>
-          <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">{{this.total}}</span>
-        </label>
+<div class="container shade fs2e-vitality-wyrd">
+  <div class="grid fs2e-vw-grid gap-sm">
+    <div class="fs2e-vw-label">Vitality</div>
+    <div class="fs2e-vw-track" aria-label="Vitality Resources" data-track="vitality">
+      {{#each view.vitality.track}}
+        <span class="fs2e-vw-dot {{#if this.filled}}is-filled{{/if}} {{#if this.active}}is-active{{else}}is-inactive{{/if}} {{#if this.type}}is-{{this.type}}{{/if}}"
+              data-track="vitality"
+              data-index="{{this.index}}"
+              data-type="{{this.type}}"></span>
       {{/each}}
     </div>
-
-    {{!-- SLASH lane (one row per pair) --}}
-    <div class="grid cols-1 gap-sm spirit-mid" aria-hidden="true">
-      {{#each view.characteristics.spirit.left}}
-        <label class="stat sep"><span class="sep">/</span></label>
-      {{/each}}
+    <div class="fs2e-vw-sub">Wound Penalties</div>
+    <div class="fs2e-vw-penalties" aria-hidden="true">
+      <span class="fs2e-vw-penalty">-10</span>
+      <span class="fs2e-vw-penalty">-8</span>
+      <span class="fs2e-vw-penalty">-6</span>
+      <span class="fs2e-vw-penalty">-4</span>
+      <span class="fs2e-vw-penalty">-2</span>
+      <span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span>
+      <span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span>
+      <span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span><span class="fs2e-vw-penalty"></span>
     </div>
-
-    {{!-- RIGHT lane --}}
-    <div class="grid cols-1 gap-sm spirit-right">
-      {{#each view.characteristics.spirit.right}}
-        <label class="stat" data-stat="{{this.rightKey}}">
-          <span class="value" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">{{this.total}}</span>
-          <span class="name">{{this.rightLabel}}</span>
-        </label>
+    <div class="fs2e-vw-label fs2e-vw-row-gap">Wyrd</div>
+    <div class="fs2e-vw-track fs2e-vw-row-gap" aria-label="Wyrd Resources" data-track="wyrd">
+      {{#each view.wyrd.track}}
+        <span class="fs2e-vw-dot {{#if this.filled}}is-filled{{/if}} {{#if this.active}}is-active{{else}}is-inactive{{/if}}"
+              data-track="wyrd"
+              data-index="{{this.index}}"></span>
       {{/each}}
     </div>
   </div>
 </div>
-</section>

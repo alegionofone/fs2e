@@ -1,0 +1,27 @@
+<section class="fs2e-chat-card">
+  <header class="fs2e-chat-card__header">
+    <h3>{{title}}</h3>
+    {{#if actorName}}<span class="fs2e-chat-card__actor">{{actorName}}</span>{{/if}}
+  </header>
+
+  <div class="fs2e-chat-card__summary">
+    <span>Roll: {{roll}}</span>
+    <span>GN: {{gn}}</span>
+    <span>{{#if success}}Success{{else}}Failure{{/if}}</span>
+  </div>
+
+  <div class="fs2e-chat-card__summary">
+    <span>Successes: {{successes}}</span>
+    <span>VP: {{vp}}</span>
+    <span>Quality: {{quality}}</span>
+  </div>
+
+  <div class="fs2e-chat-card__flags">
+    {{#if critSuccess}}<span>Critical Success</span>{{/if}}
+    {{#if critFailure}}<span>Critical Failure</span>{{/if}}
+    {{#if natural1}}<span>Natural 1</span>{{/if}}
+    {{#if natural20}}<span>Natural 20</span>{{/if}}
+  </div>
+
+  <pre class="fs2e-chat-card__trace">{{trace}}</pre>
+</section>

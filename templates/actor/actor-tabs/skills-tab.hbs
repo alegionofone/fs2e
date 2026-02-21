@@ -1,14 +1,17 @@
 {{!-- systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs --}}
 <section class="skills container shade">
 
-  {{!-- Natural Skills --}}
   <h3>Natural Skills</h3>
-    <div class="grid cols-3 gap-x-lg gap-y-sm">
+    <div class="natural-list">
       {{#each view.skills.natural}}
-        <label class="stat" data-skill="{{this.key}}">
-          <span class="name">{{this.label}}</span>
+        <label class="stat" data-skill="{{this.key}}" data-skill-type="natural" data-skill-key="{{this.key}}">
+          <span class="name"
+                data-tooltip="{{this.tooltipDesc}}"
+                data-tooltip-class="fs2e-multiline">
+            {{this.label}}
+          </span>
           <span class="value"
-                data-tooltip="{{this.tooltip}}"
+                data-tooltip="{{this.tooltipStats}}"
                 data-tooltip-class="fs2e-multiline">
             {{this.total}}
           </span>
@@ -16,152 +19,65 @@
       {{/each}}
     </div>
 
-  {{!-- Learned Skills --}}
   <div class="container learned-skills">
     <h3>Learned Skills</h3>
 
-    <div class="grid cols-3 gap-x-lg gap-y-sm">
+    <div class="fs2e-grid-skills-learned">
       {{#each view.skills.learned}}
-        <label class="stat" data-skill="{{this.key}}">
-          <span class="name">{{this.label}}</span>
-          <span class="value"
-                data-tooltip="{{this.tooltip}}"
-                data-tooltip-class="fs2e-multiline">
-            {{this.total}}
-          </span>
-        </label>
+        {{#if this.isGroup}}
+          <div class="skills-group-block">
+            <div class="stat skills-group" data-skill="{{this.key}}">
+              <span class="skills-name-actions">
+                <span class="name"
+                      data-tooltip="{{this.tooltipDesc}}"
+                      data-tooltip-class="fs2e-multiline">{{this.label}}</span>
+                <button type="button" class="skills-add" data-action="add-skill" data-skill-group="{{this.key}}">+</button>
+              </span>
+            </div>
+            {{#each this.items}}
+              <div class="stat skills-subskill"
+                   data-skill="{{this.key}}:{{this.idx}}"
+                   data-skill-type="group"
+                   data-skill-group="{{this.key}}"
+                   data-skill-key="{{this.entryKey}}">
+                <span class="skills-name-actions">
+                  <button type="button"
+                          class="skills-remove skills-remove-prefix"
+                          data-action="remove-skill"
+                          data-skill-group="{{this.key}}"
+                          data-skill-key="{{this.entryKey}}">-</button>
+                  <span class="name"
+                        data-tooltip="{{this.tooltipDesc}}"
+                        data-tooltip-class="fs2e-multiline">
+                    {{this.displayKey}}
+                  </span>
+                </span>
+                <span class="value"
+                      data-tooltip="{{this.tooltipStats}}"
+                      data-tooltip-class="fs2e-multiline">
+                  {{this.total}}
+                </span>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="skills-item">
+            <label class="stat" data-skill="{{this.key}}" data-skill-type="learned" data-skill-key="{{this.key}}">
+              <span class="name"
+                    data-tooltip="{{this.tooltipDesc}}"
+                    data-tooltip-class="fs2e-multiline">
+                {{this.label}}
+              </span>
+              <span class="value"
+                    data-tooltip="{{this.tooltipStats}}"
+                    data-tooltip-class="fs2e-multiline">
+                {{this.total}}
+              </span>
+            </label>
+          </div>
+        {{/if}}
       {{/each}}
     </div>
-
-    {{!-- Grouped specialisations (each renders only if it has items) --}}
-    {{#if system.skills.learned.artisan.length}}
-      <h4 class="skills-subhead">Artisan</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.artisan}}
-          <label class="stat" data-skill="artisan:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{#if system.skills.learned.drive.length}}
-      <h4 class="skills-subhead">Drive</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.drive}}
-          <label class="stat" data-skill="drive:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{#if system.skills.learned.lore.length}}
-      <h4 class="skills-subhead">Lore</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.lore}}
-          <label class="stat" data-skill="lore:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{#if system.skills.learned.science.length}}
-      <h4 class="skills-subhead">Science</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.science}}
-          <label class="stat" data-skill="science:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{#if system.skills.learned.social.length}}
-      <h4 class="skills-subhead">Social</h4>
-      <div class="grid cols-3 gap-sm">
-        {{#each system.skills.learned.social}}
-          <label class="stat" data-skill="social:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{!-- Tech Redemption (support correct + typo keys) --}}
-    {{#if system.skills.learned.techRedemption.length}}
-      <h4 class="skills-subhead">Tech Redemption</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.techRedemption}}
-          <label class="stat" data-skill="techRedemption:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{#if system.skills.learned.techRedemptiopn.length}}
-      <h4 class="skills-subhead">Tech Redemption</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.techRedemptiopn}}
-          <label class="stat" data-skill="techRedemption:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
-
-    {{#if system.skills.learned.warfare.length}}
-      <h4 class="skills-subhead">Warfare</h4>
-      <div class="grid cols-3 gap-x-lg gap-y-sm">
-        {{#each system.skills.learned.warfare}}
-          <label class="stat" data-skill="warfare:{{this.name}}">
-            <span class="name">{{this.name}}</span>
-            <span class="value"
-                  data-tooltip="Base: {{this.base}}\nTemp: {{this.temp}}\nMod: {{this.mod}}\n—\nTotal: {{this.total}}"
-                  data-tooltip-class="fs2e-multiline">
-              {{this.total}}
-            </span>
-          </label>
-        {{/each}}
-      </div>
-    {{/if}}
 
   </div>
 </section>

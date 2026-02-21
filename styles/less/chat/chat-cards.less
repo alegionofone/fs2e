@@ -1,0 +1,46 @@
+.fs2e-chat-card {
+  border: 1px solid var(--color-gold-dk-mid);
+  background: var(--color-grey-dk-mid-80);
+  padding: 6px;
+  color: var(--color-gold-lt);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+
+    h3 {
+      .p22();
+      margin: 0;
+      font-size: var(--font-size-14);
+    }
+  }
+
+  &__actor {
+    font-size: var(--font-size-12);
+    color: var(--color-gold-mid);
+  }
+
+  &__summary {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: var(--font-size-12);
+  }
+
+  &__flags {
+    margin-top: 4px;
+    display: flex;
+    gap: 6px;
+    font-size: var(--font-size-12);
+    color: var(--color-gold-lt-mid);
+  }
+
+  &__trace {
+    margin: 6px 0 0 0;
+    white-space: pre-line;
+    font-size: var(--font-size-12);
+    color: var(--color-gold-lt-mid);
+  }
+}

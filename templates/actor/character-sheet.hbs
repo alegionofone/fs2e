@@ -1,6 +1,6 @@
 {{!-- systems/fs2e/templates/actor/character-sheet.hbs --}}
 <form class="fs2e sheet actor character" autocomplete="off">
-  <header class="sheet-header grid cols-sidebar-sm gap-md">
+  <header class="sheet-header fs2e-grid-sheet-header">
 
     <img class="profile" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
 
@@ -12,7 +12,7 @@
 
       <div class="header container shade">
 
-        <div class="grid cols-3 gap-sm">
+        <div class="fs2e-grid-sheet-fields">
 
             <label class="field underline">
               <span class="label">Player</span>
@@ -33,7 +33,7 @@
               </div>
             </label>
 
-            <div class="grid cols-2 gap-md">
+            <div class="fs2e-grid-sheet-age">
               <label class="field underline">
                 <span class="label">Age</span>
                 <input type="text" name="system.data.age.value" value="{{system.data.age.value}}" />
@@ -93,12 +93,10 @@
     <section class="sheet-body">
       <div class="tab characteristics" data-group="primary" data-tab="characteristics">
         {{> "systems/fs2e/templates/actor/actor-tabs/characteristics-tab.hbs"}}
-        </br>
-        {{> "systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs"}}
       </div>
 
       <div class="tab skills" data-group="primary" data-tab="skills">
-        <p>test</p>
+        {{> "systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs"}}
       </div>
 
       <div class="tab equipment" data-group="primary" data-tab="equipment">

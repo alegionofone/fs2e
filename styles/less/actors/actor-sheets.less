@@ -66,8 +66,8 @@
       background-color: var(--color-gold-dk);
     }
 
-    .grid {
-      padding-top: 3px;
+    .fs2e-grid-chars-spirit {
+      grid-template-columns: 1fr auto 1fr;
     }
 
     .stat { 
@@ -95,11 +95,265 @@
       width: 1ch;
       text-align: center; 
       min-width: 0;
-}
+    }
+
+
 
   }
 
-  .container .learned-skills {
+  .fs2e-vitality-wyrd {
+    margin-top: 10px;
+  }
+
+  .fs2e-vw-grid {
+    grid-template-columns: 1fr 4fr;
+    align-items: center;
+    row-gap: 4px;
+  }
+
+  .fs2e-vw-label {
+    color: var(--color-gold-lt);
+    font-family: p22, Georgia, sans-serif;
+    text-align: left;
+    justify-self: start;
+  }
+
+  .fs2e-vw-sub {
+    font-family: var(--font-foundation);
+    font-size: var(--font-size-11);
+    color: var(--color-gold-mid);
+    line-height: 1;
+    margin-top: 2px;
+    text-align: left;
+    justify-self: start;
+  }
+
+  .fs2e-vw-row-gap {
+    margin-top: 8px;
+  }
+
+  .fs2e-vw-track {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    align-items: center;
+    justify-items: center;
+    gap: 4px;
+  }
+
+  .fs2e-vw-dot {
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--color-gold-mid);
+    border-radius: 999px;
+    background: transparent;
+    display: inline-block;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+
+  .fs2e-vw-dot.is-filled {
+    background: var(--color-gold-lt);
+  }
+
+  .fs2e-vw-dot.is-inactive {
+    opacity: 0.25;
+    cursor: default;
+  }
+
+  .fs2e-vw-penalties {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    align-items: center;
+    justify-items: center;
+    gap: 4px;
+  }
+
+  .fs2e-vw-penalty {
+    font-size: var(--font-size-11);
+    color: var(--color-gold-mid);
+    text-align: center;
+  }
+
+  /* Sheet-specific grids */
+
+  .fs2e-grid-sheet-header {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+  }
+
+  .fs2e-grid-sheet-fields {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .fs2e-grid-sheet-age {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .fs2e-grid-chars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .fs2e-grid-chars-body,
+  .fs2e-grid-chars-mind,
+  .fs2e-grid-chars-spirit-left,
+  .fs2e-grid-chars-spirit-mid,
+  .fs2e-grid-chars-spirit-right {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .fs2e-grid-chars-spirit {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+  }
+
+  .skills {
+    h3 {
+      background-color: var(--color-gold-dk);
+      text-align: center;
+    }
+
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+
+      &:hover {
+        color: var(--color-grey-lt);
+        cursor: pointer;
+      }
+
+      .value {
+        margin-left: auto;
+        min-width: 2ch;
+        text-align: right;
+      }
+    }
+
+    .skills-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .skills-name-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .skills-subskill {
+      padding-left: 0;
+      margin-top: var(--gap-y, var(--grid-gap, 8px));
+
+      &:hover {
+        color: var(--color-grey-lt);
+        cursor: pointer;
+
+        .name,
+        .value,
+        span[data-tooltip],
+        input.name {
+          color: var(--color-grey-lt);
+        }
+      }
+
+      .skills-name-actions {
+        gap: 0;
+      }
+
+      .name {
+        width: 100%;
+        background: transparent;
+        border: 0;
+        color: var(--color-gold-lt);
+        font: inherit;
+        line-height: 1em;
+        height: 1em;
+        padding: 0;
+        margin: 0;
+      }
+
+      input.name:hover,
+      input.name:focus {
+        color: var(--color-grey-lt);
+      }
+    }
+  }
+
+  .skills-add {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1em;
+    line-height: 1em;
+    width: 1ch;
+    height: 1em;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .skills-remove {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1em;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .skills-group-block,
+  .skills-item {
+    break-inside: avoid;
+    margin-bottom: var(--gap-y, var(--grid-gap, 8px));
+  }
+
+  .skills-remove-prefix {
+    display: inline-block;
+    width: 2ch;
+    text-align: left;
+    margin-right: 0.5ch;
+  }
+
+
+
+  .fs2e-grid-skills-learned {
+    display: block;
+    column-count: 3;
+    column-gap: var(--gap-x, var(--grid-gap, 8px));
+  }
+
+  .natural-list {
+    display: block;
+    column-count: 3;
+    column-gap: 16px;
+  }
+
+  .natural-list .stat {
+    break-inside: avoid;
+    margin-bottom: 8px;
+  }
+
+  .learned-skills {
       padding: 10px 0 0 0;
   }
+
+}
+
+.app.window-app.sheet.actor .window-header {
 }

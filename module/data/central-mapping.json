@@ -1,0 +1,418 @@
+{
+  "characteristics": {
+    "strength": {
+      "desc": "Muscle power. Strength determines how much weight a character can lift, and helps in athletic tasks like jumping and climbing (see the Vigor skill) or wrestling. Generally, the higher a character\u2019s Strength, the bulkier and more muscular she is, but there are exceptions.\n\nA character can lift a certain amount in kilograms over his head per Strength level without needing to make a roll. To lift more than that, he must make a Str + Vigor roll, with a \u20131 penalty per Str level required above his own, up to a maximum of that allowed for his Str +3 (a Str 4 person can lift 120 kg max). Others can join together to lift items; simply add all allowances together: three Str 3 people can lift 120 kg without needing to roll."
+    },
+    "dexterity": {
+      "desc": "Agility and motor control. Dexterity determines how nimble a character is, and helps in combat actions or athletic tasks like running (see the Vigor skill). Generally, the higher a character\u2019s Dexterity, the slimmer she is, but there are exceptions."
+    },
+    "endurance": {
+      "desc": "Stamina and robust health. Endurance determines a character\u2019s staying power and ability to stave off disease. Generally, the higher a character\u2019s Endurance, the larger she is, although this is not always true. Besides physical health, Endurance also represents a strong will to live or endure beyond the breaking point. Endurance helps determine a character\u2019s base Vitality (Endurance +5)."
+    },
+    "wits": {
+      "desc": "Intelligence and quick-thinking. Wits determines how well a character remembers and understands things, and helps in any task involving learning. The higher a character\u2019s Wits, the quicker she is at figuring things out and reacting to events."
+    },
+    "perception": {
+      "desc": "Awareness and alertness. Perception determines how aware a character is of the world around her and how well she notices hidden things. The higher a character\u2019s Perception, the more observant she is of things other people only notice unconsciously."
+    },
+    "tech": {
+      "desc": "On the Known Worlds, the scientific method is by no means common, even among the learned. Those who have the knack or training to comprehend and utilize \u2014 let alone invent \u2014 technology are rare and often find their way into positions of power in a guild. The Tech characteristic represents a character\u2019s knack at understanding technology; its levels match those given on the Tech Level Chart (see Chapter 7: Technology). Tech aids in repairing broken equipment and in comprehending high-tech devices and sciences."
+    },
+    "extrovert": {
+      "desc": "Extrovert and its opposing characteristic, Introvert, represent two extremes of interpersonal relationships. Each person tends towards one or the other, although it is possible for these two characteristics to be in balance. Extroverts reach out for others, preferring social situations to sitting alone in a room. Introverts are more comfortable by themselves than with others, and tend to avoid social situations they cannot control. Neither characteristic implies social ability: An Extrovert may be a nebbish nobody likes but who keeps on butting into conversations, while an Introvert may be the quiet author everybody tries to flock around but who avoids parties. Interpersonal activities (partying, acting) are resolved using Extrovert; \u201cinner\u201d activities (writing poetry, trying to remember a long-forgotten fact or repressed memory) are resolved using Introvert."
+    },
+    "introvert": {
+      "desc": "Extrovert and its opposing characteristic, Introvert, represent two extremes of interpersonal relationships. Each person tends towards one or the other, although it is possible for these two characteristics to be in balance. Extroverts reach out for others, preferring social situations to sitting alone in a room. Introverts are more comfortable by themselves than with others, and tend to avoid social situations they cannot control. Neither characteristic implies social ability: An Extrovert may be a nebbish nobody likes but who keeps on butting into conversations, while an Introvert may be the quiet author everybody tries to flock around but who avoids parties. Interpersonal activities (partying, acting) are resolved using Extrovert; \u201cinner\u201d activities (writing poetry, trying to remember a long-forgotten fact or repressed memory) are resolved using Introvert."
+    },
+    "passion": {
+      "desc": "Passion and its opposing characteristic, Calm, represent two emotional extremes. As with most emotions, they have a tendency to govern a character as much as she governs them. Some people are hotheads (Passion) and find it hard to control their outbursts. Others are laid back (Calm) and may actually find it hard to get very excited about something."
+    },
+    "calm": {
+      "desc": "Passion and its opposing characteristic, Calm, represent two emotional extremes. As with most emotions, they have a tendency to govern a character as much as she governs them. Some people are hotheads (Passion) and find it hard to control their outbursts. Others are laid back (Calm) and may actually find it hard to get very excited about something."
+    },
+    "faith": {
+      "desc": "Faith and its opposing characteristic, Ego, represent two extremes of the soul determining identity. Faith is collective, centered outside the self, looking out or upwards to a spiritual deity for inspiration and meaning. Ego is individualistic, centered in the character\u2019s own sense of self (the core of the personal pronoun \u201cI\u201d), gaining inspiration and meaning mainly from itself (although this does not prevent the character from believing in a deity). Both faithful and egotistical characters can be stubborn and divisive but strong and enduring at the same time.\n\nFaith and Ego are rarely rolled. They are mainly applied when using occult powers or weird Ur artifacts. Most people go through life without ever having their Faith or Ego tested, but entry into the occult dimension often puts one\u2019s identity to task."
+    },
+    "ego": {
+      "desc": "Faith and its opposing characteristic, Ego, represent two extremes of the soul determining identity. Faith is collective, centered outside the self, looking out or upwards to a spiritual deity for inspiration and meaning. Ego is individualistic, centered in the character\u2019s own sense of self (the core of the personal pronoun \u201cI\u201d), gaining inspiration and meaning mainly from itself (although this does not prevent the character from believing in a deity). Both faithful and egotistical characters can be stubborn and divisive but strong and enduring at the same time.\n\nFaith and Ego are rarely rolled. They are mainly applied when using occult powers or weird Ur artifacts. Most people go through life without ever having their Faith or Ego tested, but entry into the occult dimension often puts one\u2019s identity to task."
+    },
+    "psi": {
+      "desc": ""
+    },
+    "theurgy": {
+      "desc": ""
+    },
+    "vitality": {
+      "desc": ""
+    },
+    "wyrd": {
+      "desc": ""
+    }
+  },
+  "natural": {
+    "charm": {
+      "desc": "This is the ability to get people to like you. It can be used to ingratiate yourself to someone, reduce their hostility to you, enable you to con them or even make them fall in love with you. Characters should use this skill whenever they hope to leave someone else with a better view of them than they started with. This skill usually only works on individuals and small groups; swaying larger groups requires Oratory or Leadership.",
+      "comp": ""
+    },
+    "dodge": {
+      "desc": "This encompasses all kinds of different ways of avoiding an attack \u00e2\u20ac\u201d bobbing and weaving, ducking, leaping over a kick or diving for cover. A successful dodge usually leaves a character about where he was when he made the roll, but players can also specify that their characters end up as far as they like."
+    },
+    "fight": {
+      "desc": "Fight represents a character\u00e2\u20ac\u2122s ability in unarmed hand-to-hand combat. Low levels generally mean a character rarely gets into fights and, when he does, is little more than a brawler. Higher levels imply that a character has fought a lot, had advanced training in the subject, or both. Extensive training in hand-to-hand combat can also mean having the character learn some martial arts (see Combat Actions, under Learned Skills). More detailed rules on Fight are in Chapter Six: Combat."
+    },
+    "impress": {
+      "desc": "While Charm helps a character make other people like her, Impress can have any number of effects on its target. A character might want to scare someone, gain her respect, browbeat her into submission or just make sure she remembers something. This can be a useful skill for getting information out of people, though that sometimes requires torture."
+    },
+    "melee": {
+      "desc": "While Fight deals with unarmed combat, Melee takes into account all the hand-to-hand weapons, be they clubs, energy swords, rapiers or poisoned daggers. The most talented characters generally also learn various fencing actions (see Combat Actions, under Learned Skills). The uses of Melee are more fully explored in Chapter Six: Combat."
+    },
+    "observe": {
+      "desc": "Some people stay constantly aware of the world around them, and others have to work at it \u00e2\u20ac\u201d and still remain oblivious to everything else. The Observe skill generally reflects a person\u00e2\u20ac\u2122s innate sensitivity to the world around him. When she actually tries to see what\u00e2\u20ac\u2122s going on she should use Inquiry or Search. Thus a sentry would generally need Observe while someone frisking an infiltrator would need Search."
+    },
+    "shoot": {
+      "desc": "Shoot covers any portable missile weapon that doesn\u00e2\u20ac\u2122t rely on muscle power. This means muskets, lasers, blasters, assault rifles, flamers, stunners and all sorts of weird alien guns. It does not cover such areas as artillery and most ship or vehicle-mounted guns. For more information on using Shoot, see Chapter Six: Combat."
+    },
+    "sneak": {
+      "desc": "Characters do a lot of things that they don\u00e2\u20ac\u2122t want other people to notice. Sneak takes that into account, and applies to actions like moving quietly, hiding, using camouflage or slipping past sentries. It almost always applies to physical actions, and attempts to sneak into a computer database require science skills, not Sneak."
+    },
+    "vigor": {
+      "desc": "This skill takes into account many of the physical activities in which people engage. Running, jumping, swimming, climbing, and more all fall into this category. Almost everyone has at least some familiarity with these activities, but most people have not had any real training in them. Characters with more extensive training, and who want to make neat rolls and flips, should buy the Acrobatics learned skill.\n\nSome of the rolls listed here give specific details on how far a character can run, jump or swim, but gamemasters should not feel tied to these. For the most part, Vigor rolls are all or nothing affairs. Either the character leapt from the grav car to the galloping horse or else he fell on his face. The distance guidelines are only there for special circumstances."
+    }
+  },
+  "learned": {
+    "academia": {
+      "desc": "This skill allows the character to locate information on a particular topic. This includes knowledge of church libraries, guild records and Second Republic lost libraries (although it is harder to use these). Academia is especially useful for those looking for information on lost tech. Academic research of this sort can often take a great deal of time \u00e2\u20ac\u201d there is no Dewey decimal system to make all this easy. This skill is much easier for those who can read Latin (especially when using a Church library), Urthish or even Urteeth. To obtain information from people, Inquiry \u00e2\u20ac\u201d not Academia \u00e2\u20ac\u201d is the relevant skill.",
+      "comp": "Lore, Read, Sciences",
+      "default": "wits"
+    },
+    "acrobatics": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "alchemy": {
+      "desc": "",
+      "comp": "",
+      "default": "faith"
+    },
+    "archery": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "arts": {
+      "desc": "",
+      "comp": "",
+      "default": "introvert"
+    },
+    "beastLore": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "bureaucracy": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "crossbow": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "disguise": {
+      "desc": "",
+      "comp": "",
+      "default": "perception"
+    },
+    "empathy": {
+      "desc": "",
+      "comp": "",
+      "default": "perception"
+    },
+    "focus": {
+      "desc": "",
+      "comp": "",
+      "default": "introvert"
+    },
+    "gambling": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "inquiry": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "knavery": {
+      "desc": "",
+      "comp": "",
+      "default": "extrovert"
+    },
+    "lockpicking": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "performance": {
+      "desc": "",
+      "comp": "",
+      "default": "extrovert"
+    },
+    "physick": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "remedy": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "ride": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "search": {
+      "desc": "",
+      "comp": "",
+      "default": "perception"
+    },
+    "sleightOfHand": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "stoicBody": {
+      "desc": "",
+      "comp": "",
+      "default": "calm"
+    },
+    "stoicMind": {
+      "desc": "",
+      "comp": "",
+      "default": "calm"
+    },
+    "streetwise": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "survival": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "thinkMachine": {
+      "desc": "",
+      "comp": "",
+      "default": "tech"
+    },
+    "throwing": {
+      "desc": "",
+      "comp": "",
+      "default": "dexterity"
+    },
+    "torture": {
+      "desc": "",
+      "comp": "",
+      "default": "wits"
+    },
+    "tracking": {
+      "desc": "",
+      "comp": "",
+      "default": "perception"
+    },
+    "xeno-empathy": {
+      "desc": "",
+      "comp": "",
+      "default": "perception"
+    }
+  },
+  "groups": {
+    "artisan": {
+      "desc": "",
+      "options": ""
+    },
+    "arts": {
+      "desc": "",
+      "options": ""
+    },
+    "drive": {
+      "desc": "",
+      "options": "Aircraft, Beastcraft, Landcraft, Spacecraft, Watercraft",
+      "aircraft": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "beastcraft": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "landcraft": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "spacecraft": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "watercraft": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      }
+    },
+    "lore": {
+      "desc": "",
+      "options": ""
+    },
+    "science": {
+      "desc": "",
+      "options": "Anthropology, Archaeology, Astronomy, Biology, Chemistry, Cybernetics, Engineering, Genetics, Geology, Meteorology, Physics, Terraforming, Xeno Biology",
+      "anthropology": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "archaeology": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "astronomy": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "biology": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "chemistry": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "cybernetics": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "engineering": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "genetics": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "geology": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "meteorology": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "physics": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "terraforming": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "xenoBiology": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      }
+    },
+    "social": {
+      "desc": "",
+      "options": "Acting, Debate, Leadership, Oratory",
+      "acting": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "debate": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "leadership": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "oratory": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      }
+    },
+    "techRedemption": {
+      "desc": "",
+      "options": "Craftredemption, Hightechredemption, Mechredemption, Voltredemption",
+      "craftredemption": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "hightechredemption": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "mechredemption": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "voltredemption": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      }
+    },
+    "warfare": {
+      "desc": "This skill is a general category which covers several aspects of warfare, from knowledge of tactics to the actual use of engines of war.",
+      "options": "Artillery, Demolitions, Gunnery, Military Tactics",
+      "artillery": {
+        "desc": "Roll Perception + Artillery. This skill allows the character to operate and fire ballistae, mortars, cannons, rockets, etc.",
+        "comp": "",
+        "default": "perception"
+      },
+      "demolitions": {
+        "desc": "Roll Perception + Artillery. This skill allows the character to operate and fire ballistae, mortars, cannons, rockets, etc.",
+        "comp": "",
+        "default": ""
+      },
+      "gunnery": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      },
+      "militarytactics": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      }
+    }
+  }
+}
