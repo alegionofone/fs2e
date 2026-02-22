@@ -2,7 +2,7 @@
   height: auto !important;
 
   .window-content {
-    background: transparent;
+    background: url("assets/stone.png") repeat;
     padding-top: 0;
     height: auto !important;
     max-height: none !important;
@@ -284,6 +284,51 @@
       padding: 4px 8px;
       cursor: pointer;
     }
+  }
+
+  .fs2e-accent-block {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .fs2e-accent-sep {
+    height: 1px;
+    background: var(--color-gold-dk-mid);
+  }
+
+  .fs2e-accent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .fs2e-accent-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fs2e-accent-btn {
+    border: 1px solid var(--color-gold-mid);
+    background: var(--color-grey-mid);
+    color: var(--color-gold-lt);
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  #fs2e-accent-value {
+    width: 50px;
+    text-align: center;
+    background: transparent;
+    border: 1px solid var(--color-gold-dk-mid);
+    color: var(--color-gold-lt);
+    padding: 2px 4px;
   }
 
   .fs2e-inline-result {

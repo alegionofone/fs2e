@@ -353,7 +353,59 @@
       padding: 10px 0 0 0;
   }
 
-}
+  nav.sheet-tabs.actor {
+    position: relative;
+    background: transparent;
+    padding: 6px 0 10px 0;
+    justify-content: space-between;
+    gap: 8px;
 
-.app.window-app.sheet.actor .window-header {
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 2px;
+      background: var(--color-gold-dk-mid);
+      transform: translateY(-50%);
+    }
+
+    .item {
+      position: relative;
+      z-index: 1;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-grey-dk-mid-80);
+      border: 1px solid var(--color-gold-dk-mid);
+      color: var(--color-gold-lt);
+      padding: 0;
+    }
+
+    .item.active {
+      background: var(--color-gold-dk);
+      color: var(--color-gold-lt);
+      border-color: var(--color-gold-mid);
+    }
+
+    .item:hover {
+      color: var(--color-grey-lt);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  }
+
 }

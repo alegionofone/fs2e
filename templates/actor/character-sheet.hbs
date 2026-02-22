@@ -77,18 +77,41 @@
               <span class="label">Rank</span>
               <input type="text" name="system.data.rank.value" value="{{system.data.rank.value}}" />
             </label>
-        </div>  
+        </div>
       </div>
-    </header>
+    </div>
+  </header>
 
-     <nav class="sheet-tabs tabs actor" data-group="primary">
-      <a class="item" data-tab="characteristics">Characteristics</a>
-      <a class="item" data-tab="skills">Skills</a>
-      <a class="item" data-tab="equipment">Equipment</a>
-      <a class="item" data-tab="traits">Traits</a>
-      <a class="item" data-tab="actions">Actions</a>
-      <a class="item" data-tab="effects">Effects</a>
-    </nav>
+      <nav class="sheet-tabs tabs actor" data-group="primary">
+        <a class="item" data-tab="characteristics" title="Characteristics" aria-label="Characteristics">
+          <i class="fa-solid fa-user"></i>
+          <span class="sr-only">Characteristics</span>
+        </a>
+        <a class="item" data-tab="skills" title="Skills" aria-label="Skills">
+          <i class="fa-solid fa-star"></i>
+          <span class="sr-only">Skills</span>
+        </a>
+        <a class="item" data-tab="equipment" title="Equipment" aria-label="Equipment">
+          <i class="fa-solid fa-briefcase"></i>
+          <span class="sr-only">Equipment</span>
+        </a>
+        <a class="item" data-tab="traits" title="Traits" aria-label="Traits">
+          <i class="fa-solid fa-tag"></i>
+          <span class="sr-only">Traits</span>
+        </a>
+        <a class="item" data-tab="actions" title="Actions" aria-label="Actions">
+          <i class="fa-solid fa-bolt"></i>
+          <span class="sr-only">Actions</span>
+        </a>
+        <a class="item" data-tab="effects" title="Effects" aria-label="Effects">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span class="sr-only">Effects</span>
+        </a>
+        <a class="item" data-tab="biography" title="Biography" aria-label="Biography">
+          <i class="fa-solid fa-book-open"></i>
+          <span class="sr-only">Biography</span>
+        </a>
+      </nav>
 
     <section class="sheet-body">
       <div class="tab characteristics" data-group="primary" data-tab="characteristics">
@@ -111,8 +134,23 @@
         <p>test</p>
       </div>
 
-      <div class="tab effects" data-group="primary" data-tab="effects">
-        <p>test</p>
-      </div>
-    </section>
+        <div class="tab effects" data-group="primary" data-tab="effects">
+          <p>test</p>
+        </div>
+
+        <div class="tab biography" data-group="primary" data-tab="biography">
+          <div class="container shade biography-grid grid cols-1 gap-sm">
+            {{#each view.histories}}
+              <label class="field underline" data-drop-history data-history-slot="{{this.idx}}">
+                <span class="label">{{this.label}}</span>
+                {{#if this.uuid}}
+                  <a class="open-history" data-uuid="{{this.uuid}}">{{this.name}}</a>
+                {{else}}
+                  <span class="placeholder">Drop history item here</span>
+                {{/if}}
+              </label>
+            {{/each}}
+          </div>
+        </div>
+      </section>
 </form>

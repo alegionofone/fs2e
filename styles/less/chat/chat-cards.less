@@ -14,18 +14,117 @@
       .p22();
       margin: 0;
       font-size: var(--font-size-14);
+      display: none;
     }
   }
 
+  &__who {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__thumb {
+    width: 29px;
+    height: 29px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid var(--color-gold-dk-mid);
+  }
+
   &__actor {
-    font-size: var(--font-size-12);
-    color: var(--color-gold-mid);
+    font-size: calc(var(--font-size-13) + 3px);
+    color: var(--color-gold-lt);
+    font-family: var(--font-family-foundation);
+    white-space: nowrap;
   }
 
   &__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    justify-items: center;
+    font-size: var(--font-size-12);
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 8px;
+  }
+
+  &__summary-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: calc(var(--font-size-12) + 3px);
+  }
+
+  &__quality {
+    margin-top: 9px;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--color-gold-lt);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  &__goal {
+    margin-top: 6px;
+    width: 100%;
+    padding: 6px;
+    background: var(--color-grey-mid);
+    color: var(--color-gold-lt);
+    border: 0;
+    font-size: var(--font-size-12);
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  &__details {
+    margin-top: 6px;
+  }
+
+  &__details summary {
+    list-style: none;
+  }
+
+  &__details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  &__breakdown {
+    margin-top: 6px;
+    padding: 6px;
+    border: 1px solid var(--color-gold-dk-mid);
+    background: transparent;
+    font-size: var(--font-size-12);
+  }
+
+  &__row {
     display: flex;
+    justify-content: space-between;
     gap: 8px;
-    flex-wrap: wrap;
+  }
+
+  &__row + &__row {
+    margin-top: 4px;
+  }
+
+  &__row .label {
+    color: var(--color-gold-lt);
+  }
+
+  &__row .value {
+    color: var(--color-gold-lt);
+  }
+
+  &__retry {
+    margin-top: 0;
+    width: 100%;
+    border: 1px solid var(--color-gold-mid);
+    background: var(--color-grey-mid);
+    color: var(--color-gold-lt);
+    padding: 4px 8px;
+    cursor: pointer;
     font-size: var(--font-size-12);
   }
 
@@ -43,4 +142,12 @@
     font-size: var(--font-size-12);
     color: var(--color-gold-lt-mid);
   }
+}
+
+.chat-message {
+  background: var(--color-grey-dk-mid-80);
+}
+
+.chat-message .message-header {
+  color: var(--color-gold-lt);
 }

@@ -58,74 +58,26 @@
   font-style: italic;
 }
 
-/* Base grid utility */
-.grid {
-  display: grid;
-  grid-template-columns: var(--grid-cols, 1fr); /* fallback single column */
-  grid-auto-rows: var(--grid-row, auto);
-  gap: var(--grid-gap, 8px);
+.app.window-app.sheet.item {
+  .window-title {
+    font-family: var(--font-foundation) !important;
+  }
 }
 
-/* Base grid */
+
+/* Base grid utility (minimal) */
 .grid {
   display: grid;
   grid-template-columns: var(--grid-cols, 1fr);
+  grid-auto-rows: var(--grid-row, auto);
   row-gap: var(--gap-y, var(--grid-gap, 8px));
   column-gap: var(--gap-x, var(--grid-gap, 8px));
 }
 
-/* Keep your existing “both axes” presets */
-.gap-0  { --grid-gap: 0; }
-.gap-xs { --grid-gap: 4px; }
+/* Grid helpers used in templates */
 .gap-sm { --grid-gap: 8px; }
-.gap-md { --grid-gap: 12px; }
-.gap-lg { --grid-gap: 16px; }
-
-/* New axis-specific presets */
-.gap-x-0  { --gap-x: 0; }
-.gap-x-xs { --gap-x: 4px; }
-.gap-x-sm { --gap-x: 8px; }
-.gap-x-md { --gap-x: 12px; }
-.gap-x-lg { --gap-x: 16px; }
-
-.gap-y-0  { --gap-y: 0; }
-.gap-y-xs { --gap-y: 4px; }
-.gap-y-sm { --gap-y: 8px; }
-.gap-y-md { --gap-y: 12px; }
-.gap-y-lg { --gap-y: 16px; }
-
-/* Common column presets (set the custom property only) */
-.cols-1        { --grid-cols: 1fr; }
-.cols-2        { --grid-cols: repeat(2, 1fr); }
-.cols-3        { --grid-cols: repeat(3, 1fr); }
-.cols-4        { --grid-cols: repeat(4, 1fr); }
-
-/* Sidebar + content presets */
-.cols-sidebar-sm  { --grid-cols: 160px 1fr; }
-.cols-sidebar-md  { --grid-cols: 200px 1fr; }
-.cols-sidebar-lg  { --grid-cols: 260px 1fr; }
-
-/* Form-friendly presets */
-.cols-label-input { --grid-cols: max-content 1fr; }   /* label then fluid input */
-.cols-auto-1fr    { --grid-cols: auto 1fr; }          /* auto width then fluid */
-.cols-1fr-auto    { --grid-cols: 1fr auto; }          /* fluid then tight */
-
-/* “Three parts” mixes */
-.cols-max-1fr-max { --grid-cols: max-content 1fr max-content; } /* label | main | actions */
-.cols-2fr-1fr     { --grid-cols: 2fr 1fr; }                      /* weighted split */
-
-/* Keep columns from growing beyond content (useful for compact info cells) */
-.nowrap { white-space: nowrap; }
-
-/* Column spans */
+.cols-1 { --grid-cols: 1fr; }
 .col-span-2 { grid-column: span 2 / span 2; }
-.col-span-3 { grid-column: span 3 / span 3; }
-.col-span-4 { grid-column: span 4 / span 4; }
-.col-span-full { grid-column: 1 / -1; }   /* take all columns */
-
-/* (Optional) Row spans */
-.row-span-2 { grid-row: span 2 / span 2; }
-.row-span-3 { grid-row: span 3 / span 3; }
 
 /* Fields */
 

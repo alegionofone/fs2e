@@ -2,13 +2,14 @@
   <header class="sheet-header flexrow">
     <img class="profile" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
     <h1 class="sheet-title">
-      <input class="fs2e-item-title" name="name" type="text" value="{{item.name}}" placeholder="Species Name" />
+      <input class="fs2e-item-title" name="name" type="text" value="{{item.name}}" placeholder="History Name" />
     </h1>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">Description</a>
     <a class="item" data-tab="characteristics">Traits</a>
+    <a class="item" data-tab="skills">Skills</a>
   </nav>
 
   <section class="sheet-body">
@@ -25,9 +26,7 @@
               <label class="stat" data-stat="{{this.key}}">
                 <span class="name">{{this.label}}</span>
                 <span class="values">
-                  <input class="stat-input" type="number" name="system.characteristics.body.{{this.key}}.base" value="{{this.base}}" min="0" />
-                  <span class="stat-slash">/</span>
-                  <input class="stat-input" type="number" name="system.characteristics.body.{{this.key}}.max" value="{{this.max}}" min="0" />
+                  <input class="stat-input" type="number" name="system.characteristics.body.{{this.key}}.history" value="{{this.history}}" min="0" />
                 </span>
               </label>
             {{/each}}
@@ -41,9 +40,7 @@
               <label class="stat" data-stat="{{this.key}}">
                 <span class="name">{{this.label}}</span>
                 <span class="values">
-                  <input class="stat-input" type="number" name="system.characteristics.mind.{{this.key}}.base" value="{{this.base}}" min="0" />
-                  <span class="stat-slash">/</span>
-                  <input class="stat-input" type="number" name="system.characteristics.mind.{{this.key}}.max" value="{{this.max}}" min="0" />
+                  <input class="stat-input" type="number" name="system.characteristics.mind.{{this.key}}.history" value="{{this.history}}" min="0" />
                 </span>
               </label>
             {{/each}}
@@ -91,6 +88,9 @@
           </div>
         </div>
       </section>
+    </div>
+
+    <div class="tab" data-group="primary" data-tab="skills">
     </div>
 
   </section>

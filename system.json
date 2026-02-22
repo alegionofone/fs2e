@@ -16,7 +16,14 @@
   "esmodules": ["module/fs2e.mjs"],
   "styles": ["styles/fs2e.css"],
 
-  "packs": [],
+  "packs": [
+    {
+      "name": "species",
+      "label": "Species",
+      "path": "packs/species.db",
+      "type": "Item"
+    }
+  ],
   "relationships": {
     "requires": []
   },

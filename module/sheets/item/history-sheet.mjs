@@ -2,11 +2,11 @@ import { FS2EItemSheet } from "./item-sheet.mjs";
 import { buildCharacteristicsView, bindSpiritRadios } from "./characteristics-helpers.mjs";
 import { enrichProseMirrorContent } from "../../ui/prosemirror/prosemirror.mjs";
 
-export class FS2ESpeciesSheet extends FS2EItemSheet {
+export class FS2EHistorySheet extends FS2EItemSheet {
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
-      classes: ["fs2e", "sheet", "item", "species"],
-      template: "systems/fs2e/templates/item/species-sheet.hbs",
+      classes: ["fs2e", "sheet", "item", "history"],
+      template: "systems/fs2e/templates/item/history-sheet.hbs",
       width: 560,
       height: 520,
       tabs: [

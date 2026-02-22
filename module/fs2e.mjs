@@ -4,7 +4,9 @@
 import { registerCharacterSheet } from "./sheets/actor/character-sheet.mjs";
 import { FS2EItemSheet } from "./sheets/item/item-sheet.mjs";
 import { FS2ESpeciesSheet } from "./sheets/item/species-sheet.mjs";
-import { openDiceRoller } from "./dice-roller.mjs";
+import { FS2EHistorySheet } from "./sheets/item/history-sheet.mjs";
+import { tagifyValue } from "./ui/tagify/tagify.mjs";
+import { openDiceRoller, rollFromPreset } from "./dice-roller.mjs";
 
 const FS2E = {
   ID: "fs2e",
@@ -28,6 +30,11 @@ Hooks.once("init", async () => {
 
   // Settings
   registerSettings();
+
+  // Handlebars helpers
+  if (!Handlebars.helpers.fs2eTagify) {
+    Handlebars.registerHelper("fs2eTagify", (value) => tagifyValue(value));
+  }
 
   // Preload any Handlebars partials you use with {{> "path"}}
   await preloadHandlebarsTemplates();
@@ -58,7 +65,6 @@ Hooks.once("init", async () => {
       "blessingCurse",
       "equipment",
       "faction",
-      "history",
       "maneuver",
       "planet",
       "weapon"
@@ -70,6 +76,11 @@ Hooks.once("init", async () => {
     types: ["species"]
   });
 
+  Items.registerSheet(FS2E.ID, FS2EHistorySheet, {
+    makeDefault: true,
+    types: ["history"]
+  });
+
   // (Optional) If your type labels look wrong, add lang entries or set CONFIG.Item.typeLabels in code.
 });
 
@@ -79,6 +90,28 @@ Hooks.once("setup", () => {
 
 Hooks.once("ready", () => {
   game.fs2e?.log?.(`Ready (v${FS2E.VERSION})`);
+});
+
+Hooks.on("renderChatMessage", (message, html) => {
+  const preset = message?.flags?.fs2e?.rollPreset;
+  if (!preset) return;
+  const root = html[0];
+  if (!root) return;
+  const retryBtn = root.querySelector(".fs2e-chat-card__retry");
+  if (!retryBtn) return;
+  retryBtn.addEventListener("click", async (ev) => {
+    ev.preventDefault();
+    const actorUuid = preset.actorUuid;
+    if (!actorUuid) return;
+    const actor = await fromUuid(actorUuid);
+    if (!actor) return;
+    const nextRetries = Math.min(2, Number(preset.retries ?? 0) + 1);
+    const nextPreset = {
+      ...preset,
+      retries: nextRetries
+    };
+    await rollFromPreset({ actor, preset: nextPreset });
+  });
 });
 
 Hooks.on("preUpdateActor", (actor, updateData) => {
@@ -123,6 +156,12 @@ Hooks.on("updateItem", async (item) => {
   };
 
   const speciesChars = item.system?.characteristics ?? {};
+  const speciesPairs = speciesChars.spiritPairs ?? {};
+  if (Object.keys(speciesPairs).length) {
+    updateData["system.characteristics.spiritPairs.extrovertIntrovert"] = speciesPairs.extrovertIntrovert ?? "extrovert";
+    updateData["system.characteristics.spiritPairs.passionCalm"] = speciesPairs.passionCalm ?? "passion";
+    updateData["system.characteristics.spiritPairs.faithEgo"] = speciesPairs.faithEgo ?? "faith";
+  }
   for (const group of ["body", "mind", "spirit"]) {
     const entries = speciesChars[group] ?? {};
     for (const [key, val] of Object.entries(entries)) {
@@ -135,15 +174,78 @@ Hooks.on("updateItem", async (item) => {
     }
   }
 
-  const spiritBase = speciesChars.spirit ?? {};
+  const spiritPairs = {
+    extrovertIntrovert: speciesPairs.extrovertIntrovert ?? "extrovert",
+    passionCalm: speciesPairs.passionCalm ?? "passion",
+    faithEgo: speciesPairs.faithEgo ?? "faith"
+  };
+  const baseMap = {
+    extrovert: spiritPairs.extrovertIntrovert === "extrovert" ? 3 : 1,
+    introvert: spiritPairs.extrovertIntrovert === "introvert" ? 3 : 1,
+    passion: spiritPairs.passionCalm === "passion" ? 3 : 1,
+    calm: spiritPairs.passionCalm === "calm" ? 3 : 1,
+    faith: spiritPairs.faithEgo === "faith" ? 3 : 1,
+    ego: spiritPairs.faithEgo === "ego" ? 3 : 1
+  };
   const opp = { extrovert: "introvert", introvert: "extrovert", passion: "calm", calm: "passion", faith: "ego", ego: "faith" };
   for (const key of Object.keys(opp)) {
-    const other = opp[key];
-    const otherBase = Number(spiritBase?.[other]?.base ?? 0);
-    updateData[`system.characteristics.spirit.${key}.max`] = 10 - otherBase;
+    updateData[`system.characteristics.spirit.${key}.base`] = baseMap[key];
+    updateData[`system.characteristics.spirit.${key}.max`] = 10 - baseMap[opp[key]];
   }
 
   await actor.update(updateData);
+});
+
+function recalcHistory(actor) {
+  if (!actor || actor.type !== "character") return;
+  const histories = actor.items?.filter((i) => i.type === "history") ?? [];
+  const sumFor = (group, key) =>
+    histories.reduce((acc, item) => acc + Number(item.system?.characteristics?.[group]?.[key]?.history ?? 0), 0);
+
+  const bodyKeys = ["strength", "dexterity", "endurance"];
+  const mindKeys = ["wits", "perception", "tech"];
+  const updateData = {};
+
+  for (const key of bodyKeys) {
+    const value = sumFor("body", key);
+    const current = Number(actor.system?.characteristics?.body?.[key]?.history ?? 0);
+    if (value !== current) {
+      updateData[`system.characteristics.body.${key}.history`] = value;
+    }
+  }
+
+  for (const key of mindKeys) {
+    const value = sumFor("mind", key);
+    const current = Number(actor.system?.characteristics?.mind?.[key]?.history ?? 0);
+    if (value !== current) {
+      updateData[`system.characteristics.mind.${key}.history`] = value;
+    }
+  }
+
+  if (Object.keys(updateData).length) {
+    actor.update(updateData);
+  }
+}
+
+Hooks.on("createItem", (item) => {
+  const actor = item?.parent;
+  if (!actor || actor.type !== "character") return;
+  if (item.type !== "history") return;
+  recalcHistory(actor);
+});
+
+Hooks.on("updateItem", (item) => {
+  const actor = item?.parent;
+  if (!actor || actor.type !== "character") return;
+  if (item.type !== "history") return;
+  recalcHistory(actor);
+});
+
+Hooks.on("deleteItem", (item) => {
+  const actor = item?.parent;
+  if (!actor || actor.type !== "character") return;
+  if (item.type !== "history") return;
+  recalcHistory(actor);
 });
 
 function registerSettings() {

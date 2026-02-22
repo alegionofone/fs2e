@@ -43,6 +43,19 @@ const vpFromSuccesses = (successes) => {
   return { vp: band.vp, quality: band.label };
 };
 
+const vpFromAccentedSuccesses = (successes, accent) => {
+  if (!successes || successes <= 0) return { vp: 0, quality: "Failure" };
+  if (accent > 0) {
+    const vp = Math.max(1, Math.floor((successes + 1) / 2));
+    return { vp, quality: "Accented (+)" };
+  }
+  if (accent < 0) {
+    const vp = Math.max(1, Math.floor((successes + 3) / 4));
+    return { vp, quality: "Accented (-)" };
+  }
+  return vpFromSuccesses(successes);
+};
+
 const buildSkillList = (actor) => {
   if (!actor) return [];
   const systemSkills = actor.system?.skills ?? {};
@@ -146,6 +159,162 @@ const getWoundPenalty = (actor) => {
   return -2 * vitalLost;
 };
 
+const getCharacteristicValue = (actor, key) => {
+  if (!actor || !key) return 0;
+  const ch = actor.system?.characteristics ?? actor.system?.system?.characteristics ?? {};
+  const groups = ["body", "mind", "spirit", "occult"];
+  for (const group of groups) {
+    if (ch[group]?.[key]) return sumStat(ch[group][key]);
+  }
+  return 0;
+};
+
+const getCharacteristicLabel = (key) => labelize(key ?? "");
+
+const getSkillValue = (actor, key) => {
+  if (!actor || !key) return 0;
+  const parts = key.split(".");
+  const type = parts[0];
+  const skills = actor.system?.skills ?? actor.system?.system?.skills ?? {};
+  if (type === "natural" && parts[1]) return sumStat(skills.natural?.[parts[1]]);
+  if (type === "learned" && parts[1]) return sumStat(skills.learned?.[parts[1]]);
+  if (type === "group" && parts[1] && parts[2]) return sumStat(skills.learned?.[parts[1]]?.[parts[2]]);
+  return 0;
+};
+
+const getSkillLabel = (actor, key) => {
+  if (!actor || !key) return "";
+  const parts = key.split(".");
+  const type = parts[0];
+  const skills = actor.system?.skills ?? actor.system?.system?.skills ?? {};
+  if (type === "natural" && parts[1]) return labelize(parts[1]);
+  if (type === "learned" && parts[1]) return labelize(parts[1]);
+  if (type === "group" && parts[1] && parts[2]) {
+    const sub = skills.learned?.[parts[1]]?.[parts[2]];
+    if (typeof sub?.display === "string" && sub.display.trim()) return sub.display;
+    return labelize(parts[2]);
+  }
+  return labelize(parts[parts.length - 1] ?? "");
+};
+
+const buildResultFromPreset = async (actor, preset = {}) => {
+  const skillKey = preset.skillKey ?? "";
+  const charKey = preset.charKey ?? "";
+  const skillVal = getSkillValue(actor, skillKey);
+  const charVal = getCharacteristicValue(actor, charKey);
+  const diff = Number(preset.diffValue ?? 0) + Number(preset.customDiff ?? 0);
+  const actions = Number(preset.actions ?? 1);
+  const retries = Number(preset.retries ?? 0);
+  const multiPenalty = actions === 1 ? 0 : (actions === 2 ? -4 : -6);
+  const retryPenalty = retries === 0 ? 0 : (retries === 1 ? -2 : -4);
+  const woundPenalty = getWoundPenalty(actor);
+  const compVP = Number(preset.compResult?.totalVP ?? 0);
+  const accentMax = Math.max(0, Number.isFinite(skillVal) ? skillVal : 0);
+  const accent = clamp(Number(preset.accent ?? 0), -accentMax, accentMax);
+
+  const base = charVal + skillVal;
+  const gn = base + diff + multiPenalty + retryPenalty + woundPenalty + compVP;
+
+  const skillLabel = getSkillLabel(actor, skillKey);
+  const charLabel = getCharacteristicLabel(charKey);
+  const breakdown = [
+    { label: `${charLabel} + ${skillLabel}`, value: `${base}` },
+    { label: "Difficulty", value: `${diff}` },
+    { label: "Multi-action", value: `${multiPenalty}` },
+    { label: "Retry", value: `${retryPenalty}` },
+    { label: "Wound penalty", value: `${woundPenalty}` },
+    { label: "Complementary VP", value: `${compVP}` }
+  ];
+
+  const roll = await (new Roll("1d20")).roll({ async: true });
+  const die = Number(roll.total);
+  const adjustedRoll = die + accent;
+
+  const natural1 = die === 1;
+  const natural20 = die === 20;
+  const critSuccess = (adjustedRoll === gn) || (gn > 20 && adjustedRoll === 18);
+  const critFailure = natural20;
+  const success = natural1 || (!critFailure && adjustedRoll <= gn);
+
+  const successes = success ? Math.max(1, gn - adjustedRoll) : 0;
+  const { vp: baseVP, quality: baseQuality } = success
+    ? vpFromAccentedSuccesses(successes, accent)
+    : { vp: 0, quality: "Failure" };
+  const quality = critFailure ? "Critical Failure" : baseQuality;
+  const extraVP = extendedBonus(gn);
+  const totalVP = success
+    ? (critSuccess ? (baseVP + extraVP) * 2 : (baseVP + extraVP))
+    : 0;
+
+  const trace = [
+    `Base (char + skill): ${charVal} + ${skillVal} = ${base}`,
+    `Difficulty: ${diff >= 0 ? "+" : ""}${diff}`,
+    `Multi-action: ${multiPenalty}`,
+    `Retry: ${retryPenalty}`,
+    `Wound penalty: ${woundPenalty}`,
+    `Accent: ${accent}`,
+    `Complementary VP: ${compVP}`,
+    `Final GN: ${base} + ${diff} + ${multiPenalty} + ${retryPenalty} + ${woundPenalty} + ${compVP} = ${gn}`
+  ].join("\n");
+
+  return {
+    gn,
+    roll: die,
+    rollAdjusted: adjustedRoll,
+    accent,
+    success,
+    natural1,
+    natural20,
+    critSuccess,
+    critFailure,
+    successes,
+    baseVP,
+    extraVP,
+    totalVP,
+    quality,
+    breakdown,
+    trace,
+    skillLabel
+  };
+};
+
+const postChatCard = async (actor, result, preset) => {
+  const retries = Number(preset?.retries ?? 0);
+  const showRetry = retries < 2;
+  const template = "systems/fs2e/templates/chat/roll-card.hbs";
+  const html = await renderTemplate(template, {
+    title: result.skillLabel ? `${result.skillLabel} Roll` : "Roll",
+    skillLabel: result.skillLabel ?? "",
+    actorName: actor?.name ?? "",
+    actorImg: actor?.img ?? "",
+    showRetry,
+    roll: result.roll,
+    rollAdjusted: result.rollAdjusted,
+    accent: result.accent,
+    gn: result.gn,
+    success: result.success,
+    successes: result.successes,
+    vp: result.totalVP,
+    quality: result.quality,
+    critSuccess: result.critSuccess,
+    critFailure: result.critFailure,
+    natural1: result.natural1,
+    natural20: result.natural20,
+    breakdown: result.breakdown,
+    trace: result.trace
+  });
+  await ChatMessage.create({
+    user: game.user?.id,
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content: html,
+    flags: {
+      fs2e: {
+        rollPreset: preset ?? null
+      }
+    }
+  });
+};
+
 
 export class FS2EDiceRoller extends Application {
   constructor(options = {}) {
@@ -155,11 +324,18 @@ export class FS2EDiceRoller extends Application {
       skillKey: options.defaultSkillKey ?? "",
       charKey: options.defaultCharacteristicKey ?? ""
     };
+    this.preset = options.preset ?? null;
     this.state = {
       compResult: null,
       mainResult: null,
       compLocked: false
     };
+    if (this.preset?.compResult) {
+      this.state.compResult = this.preset.compResult;
+    }
+    if (typeof this.preset?.compLocked === "boolean") {
+      this.state.compLocked = this.preset.compLocked;
+    }
   }
 
   static get defaultOptions() {
@@ -231,6 +407,7 @@ export class FS2EDiceRoller extends Application {
         return Number.isFinite(val) ? val : fallback;
       };
       const skillVal = Number(this.defaults.skillValue ?? 0);
+      const accentMax = Math.max(0, Number.isFinite(skillVal) ? skillVal : 0);
       const mainCharSelect = root.querySelector("#fs2e-main-char");
       const mainCharOpt = mainCharSelect?.selectedOptions?.[0];
       const charVal = Number(mainCharOpt?.dataset?.value ?? 0);
@@ -287,6 +464,12 @@ export class FS2EDiceRoller extends Application {
       const compGoal = compCharSum + compDiff + multiPenalty + retryPenalty + woundPenalty;
       const compGoalInput = root.querySelector("#fs2e-comp-final-tn");
       if (compGoalInput) compGoalInput.value = compEnabled ? compGoal : 0;
+
+      const accentInput = root.querySelector("#fs2e-accent-value");
+      if (accentInput) {
+        const accentVal = getNumber("#fs2e-accent-value", 0);
+        accentInput.value = clamp(accentVal, -accentMax, accentMax);
+      }
     };
 
     // Characteristic values are derived from selected option; no direct sync.
@@ -332,6 +515,51 @@ export class FS2EDiceRoller extends Application {
       if (option) compSkillSelect.value = this.defaults.skillKey;
     }
 
+    const applyPreset = () => {
+      if (!this.preset) return;
+      const preset = this.preset;
+      if (preset.compResult) {
+        this.state.compResult = preset.compResult;
+      }
+      if (typeof preset.compLocked === "boolean") {
+        this.state.compLocked = preset.compLocked;
+      }
+      const compToggle = root.querySelector("#fs2e-comp-toggle");
+      if (compToggle && typeof preset.compEnabled === "boolean") {
+        compToggle.checked = preset.compEnabled;
+      }
+      if (preset.charKey) applyDefault("#fs2e-main-char", "#fs2e-main-char-val", preset.charKey);
+      if (preset.compCharKey) applyDefault("#fs2e-comp-char", "#fs2e-comp-char-val", preset.compCharKey);
+      if (preset.compSkillKey) {
+        const compSkill = root.querySelector("#fs2e-comp-skill");
+        if (compSkill) compSkill.value = preset.compSkillKey;
+      }
+      const mainDiff = root.querySelector("#fs2e-main-diff-select");
+      if (mainDiff && preset.diffValue !== undefined) mainDiff.value = String(preset.diffValue);
+      const compDiff = root.querySelector("#fs2e-comp-diff-select");
+      if (compDiff && preset.compDiffValue !== undefined) compDiff.value = String(preset.compDiffValue);
+      const mainCustom = root.querySelector("#fs2e-main-diff-custom");
+      if (mainCustom && preset.customDiff !== undefined) mainCustom.value = String(preset.customDiff);
+      const compCustom = root.querySelector("#fs2e-comp-diff-custom");
+      if (compCustom && preset.compCustomDiff !== undefined) compCustom.value = String(preset.compCustomDiff);
+      if (preset.actions !== undefined) {
+        const actionRadio = root.querySelector(`input[name="fs2e-actions"][value="${preset.actions}"]`);
+        if (actionRadio) actionRadio.checked = true;
+      }
+      if (preset.retries !== undefined) {
+        const retryRadio = root.querySelector(`input[name="fs2e-retries"][value="${preset.retries}"]`);
+        if (retryRadio) retryRadio.checked = true;
+      }
+      if (preset.accent !== undefined) {
+        const accentInput = root.querySelector("#fs2e-accent-value");
+        if (accentInput) accentInput.value = String(preset.accent);
+      }
+      const compSection = root.querySelector(".fs2e-comp-section");
+      if (compToggle && compSection) {
+        compSection.dataset.enabled = compToggle.checked ? "1" : "0";
+      }
+    };
+
     const diffSelects = root.querySelectorAll("[data-diff-select]");
     diffSelects.forEach((select) => {
       select.addEventListener("change", () => updatePreview());
@@ -354,7 +582,7 @@ export class FS2EDiceRoller extends Application {
       rollComp.addEventListener("click", async (ev) => {
         ev.preventDefault();
         if (this.state.compLocked) return;
-        const result = await this.#rollFromForm(root, { isComplementary: true });
+        const result = await this._rollFromForm(root, { isComplementary: true });
         this.state.compResult = result;
         this.render(false);
       });
@@ -364,11 +592,11 @@ export class FS2EDiceRoller extends Application {
     if (rollMain) {
       rollMain.addEventListener("click", async (ev) => {
         ev.preventDefault();
-        const result = await this.#rollFromForm(root, { isComplementary: false });
+        const result = await this._rollFromForm(root, { isComplementary: false });
         this.state.mainResult = result;
         this.state.compLocked = true;
-        await this.#postChatCard(result);
-        this.render(false);
+        await this._postChatCard(result);
+        this.close();
       });
     }
 
@@ -382,6 +610,21 @@ export class FS2EDiceRoller extends Application {
       });
     }
 
+    root.querySelectorAll(".fs2e-accent-btn").forEach((btn) => {
+      btn.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        const step = Number(ev.currentTarget.dataset.accentStep ?? 0);
+        const input = root.querySelector("#fs2e-accent-value");
+        if (!input) return;
+        const current = Number(input.value ?? 0);
+        const skillVal = Number(this.defaults.skillValue ?? 0);
+        const accentMax = Math.max(0, Number.isFinite(skillVal) ? skillVal : 0);
+        const next = current + (Number.isFinite(step) ? step : 0);
+        input.value = clamp(next, -accentMax, accentMax);
+        updatePreview();
+      });
+    });
+
     root.addEventListener("input", (ev) => {
       if (!(ev.target instanceof HTMLInputElement || ev.target instanceof HTMLSelectElement)) return;
       updatePreview();
@@ -391,10 +634,11 @@ export class FS2EDiceRoller extends Application {
       updatePreview();
     });
 
+    applyPreset();
     updatePreview();
   }
 
-  async #rollFromForm(root, { isComplementary }) {
+  async _rollFromForm(root, { isComplementary }) {
     const getNumber = (sel, fallback = 0) => {
       const el = root.querySelector(sel);
       const val = Number(el?.value ?? fallback);
@@ -419,21 +663,58 @@ export class FS2EDiceRoller extends Application {
 
     const compVP = isComplementary ? 0 : (this.state.compResult?.totalVP ?? 0);
     const woundPenalty = getWoundPenalty(this.actor);
+    const accentMax = Math.max(0, Number.isFinite(this.defaults.skillValue) ? this.defaults.skillValue : 0);
+    const accent = clamp(getNumber("#fs2e-accent-value", 0), -accentMax, accentMax);
 
     const base = charVal + skillVal;
     const gn = base + diff + multiPenalty + retryPenalty + woundPenalty + compVP;
 
+    const skillLabel = isComplementary
+      ? (root.querySelector("#fs2e-comp-skill")?.selectedOptions?.[0]?.textContent ?? "").trim()
+      : (this.defaults.skillLabel ?? "");
+    const charLabel = (charOpt?.textContent ?? "").trim();
+    const preset = {
+      actorUuid: this.actor?.uuid ?? "",
+      skillKey: this.defaults.skillKey ?? "",
+      charKey: charSelect?.value ?? "",
+      diffValue: diffSelect?.value ?? 0,
+      customDiff,
+      actions,
+      retries,
+      compEnabled: root.querySelector("#fs2e-comp-toggle")?.checked ?? false,
+      compSkillKey: root.querySelector("#fs2e-comp-skill")?.value ?? "",
+      compCharKey: root.querySelector("#fs2e-comp-char")?.value ?? "",
+      compDiffValue: root.querySelector("#fs2e-comp-diff-select")?.value ?? 0,
+      compCustomDiff: getNumber("#fs2e-comp-diff-custom", 0),
+      accent,
+      compResult: this.state.compResult ? { totalVP: this.state.compResult.totalVP ?? 0 } : null,
+      compLocked: this.state.compLocked
+    };
+    const breakdown = [
+      { label: `${charLabel} + ${skillLabel}`, value: `${base}` },
+      { label: "Difficulty", value: `${diff}` },
+      { label: "Multi-action", value: `${multiPenalty}` },
+      { label: "Retry", value: `${retryPenalty}` },
+      { label: "Wound penalty", value: `${woundPenalty}` },
+      { label: "Complementary VP", value: `${compVP}` }
+    ];
+
+
     const roll = await (new Roll("1d20")).roll({ async: true });
     const die = Number(roll.total);
+    const adjustedRoll = die + accent;
 
     const natural1 = die === 1;
     const natural20 = die === 20;
-    const critSuccess = (die === gn) || (gn > 20 && die === 18);
+    const critSuccess = (adjustedRoll === gn) || (gn > 20 && adjustedRoll === 18);
     const critFailure = natural20;
-    const success = natural1 || (!critFailure && die <= gn);
+    const success = natural1 || (!critFailure && adjustedRoll <= gn);
 
-    const successes = success ? Math.max(0, gn - die) : 0;
-    const { vp: baseVP, quality } = success ? vpFromSuccesses(successes) : { vp: 0, quality: "Failure" };
+    const successes = success ? Math.max(1, gn - adjustedRoll) : 0;
+    const { vp: baseVP, quality: baseQuality } = success
+      ? vpFromAccentedSuccesses(successes, accent)
+      : { vp: 0, quality: "Failure" };
+    const quality = critFailure ? "Critical Failure" : baseQuality;
     const extraVP = extendedBonus(gn);
     const totalVP = success
       ? (critSuccess ? (baseVP + extraVP) * 2 : (baseVP + extraVP))
@@ -445,6 +726,7 @@ export class FS2EDiceRoller extends Application {
       `Multi-action: ${multiPenalty}`,
       `Retry: ${retryPenalty}`,
       `Wound penalty: ${woundPenalty}`,
+      `Accent: ${accent}`,
       `Complementary VP: ${compVP}`,
       `Final GN: ${base} + ${diff} + ${multiPenalty} + ${retryPenalty} + ${woundPenalty} + ${compVP} = ${gn}`
     ].join("\n");
@@ -453,6 +735,8 @@ export class FS2EDiceRoller extends Application {
       isComplementary,
       gn,
       roll: die,
+      rollAdjusted: adjustedRoll,
+      accent,
       success,
       natural1,
       natural20,
@@ -463,32 +747,17 @@ export class FS2EDiceRoller extends Application {
       extraVP,
       totalVP,
       quality,
-      trace
+      breakdown,
+      trace,
+      preset
     };
   }
 
-  async #postChatCard(result) {
-    const template = "systems/fs2e/templates/chat/roll-card.hbs";
-    const html = await renderTemplate(template, {
-      title: this.defaults.skillLabel ? `${this.defaults.skillLabel} Roll` : "Roll",
-      actorName: this.actor?.name ?? "",
-      roll: result.roll,
-      gn: result.gn,
-      success: result.success,
-      successes: result.successes,
-      vp: result.totalVP,
-      quality: result.quality,
-      critSuccess: result.critSuccess,
-      critFailure: result.critFailure,
-      natural1: result.natural1,
-      natural20: result.natural20,
-      trace: result.trace
-    });
-    await ChatMessage.create({
-      user: game.user?.id,
-      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-      content: html
-    });
+  async _postChatCard(result) {
+    await postChatCard(this.actor, {
+      ...result,
+      skillLabel: this.defaults.skillLabel ?? ""
+    }, result.preset ?? null);
   }
 }
 
@@ -496,4 +765,10 @@ export function openDiceRoller(options = {}) {
   const app = new FS2EDiceRoller(options);
   app.render(true);
   return app;
+}
+
+export async function rollFromPreset({ actor, preset }) {
+  if (!actor || !preset) return;
+  const result = await buildResultFromPreset(actor, preset);
+  await postChatCard(actor, result, preset);
 }

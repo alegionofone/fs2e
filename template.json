@@ -13,7 +13,14 @@
             "rank": "",
             "faction": "",
             "calling": "",
-            "reputation": ""
+            "reputation": "",
+            "histories": [
+              { "uuid": "", "name": "" },
+              { "uuid": "", "name": "" },
+              { "uuid": "", "name": "" },
+              { "uuid": "", "name": "" },
+              { "uuid": "", "name": "" }
+            ]
           },
           "languages": [],
           "characteristics": {
@@ -478,227 +485,12 @@
               },
               "artisan": [],
               "arts": [],
-              "drive": [
-                {
-                  "name": "aircraft",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "beastcraft",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "landcraft",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "spacecraft",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "watercraft",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                }
-              ],
+              "drive": [],
               "lore": [],
-              "science": [
-                {
-                  "name": "anthropology",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "archaeology",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "astronomy",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "biology",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "chemistry",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "cybernetics",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "engineering",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "genetics",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "geology",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "meteorology",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "physics",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "terraforming",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "xeno-biology",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                }
-              ],
-              "social": [
-                {
-                  "name": "acting",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "debate",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "leadership",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "oratory",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                }
-              ],
-              "techRedemption": [
-                {
-                  "name": "craftRedemption",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "highTechRedemption",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "mechRedemption",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "voltRedemption",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                }
-              ],
-              "warfare": [
-                {
-                  "name": "artillery",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "demolitions",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "gunnery",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                },
-                {
-                  "name": "militaryTactics",
-                  "base": 0,
-                  "mod": 0,
-                  "temp": 0,
-                  "max": 8
-                }
-              ]
+              "science": [],
+              "social": [],
+              "techRedemption": [],
+              "warfare": []
             }
           }
         }
@@ -737,74 +529,150 @@
       "physicalItem": {
         "quantity": 1
       },
-      "speciesDetails": {
-        "characteristics": {
-          "body": {
-            "strength": {
-              "base": 0,
-              "max": 0
+        "speciesDetails": {
+          "characteristics": {
+            "body": {
+              "strength": {
+                "base": 0,
+                "history": 0,
+                "max": 0
+              },
+              "dexterity": {
+                "base": 0,
+                "history": 0,
+                "max": 0
+              },
+              "endurance": {
+                "base": 0,
+                "history": 0,
+                "max": 0
+              }
             },
-            "dexterity": {
-              "base": 0,
-              "max": 0
+            "mind": {
+              "wits": {
+                "base": 0,
+                "history": 0,
+                "max": 0
+              },
+              "perception": {
+                "base": 0,
+                "history": 0,
+                "max": 0
+              },
+              "tech": {
+                "base": 0,
+                "history": 0,
+                "max": 0
+              }
             },
-            "endurance": {
-              "base": 0,
-              "max": 0
+            "spirit": {
+              "extrovert": {
+                "base": 0,
+                "max": 0
+              },
+              "introvert": {
+                "base": 0,
+                "max": 0
+              },
+              "passion": {
+                "base": 0,
+                "max": 0
+              },
+              "calm": {
+                "base": 0,
+                "max": 0
+              },
+              "faith": {
+                "base": 0,
+                "max": 0
+              },
+              "ego": {
+                "base": 0,
+                "max": 0
+              }
+            },
+            "spiritPairs": {
+              "extrovertIntrovert": "extrovert",
+              "passionCalm": "passion",
+              "faithEgo": "faith"
             }
           },
-          "mind": {
-            "wits": {
-              "base": 0,
-              "max": 0
-            },
-            "perception": {
-              "base": 0,
-              "max": 0
-            },
-            "tech": {
-              "base": 0,
-              "max": 0
-            }
-          },
-          "spirit": {
-            "extrovert": {
-              "base": 0,
-              "max": 0
-            },
-            "introvert": {
-              "base": 0,
-              "max": 0
-            },
-            "passion": {
-              "base": 0,
-              "max": 0
-            },
-            "calm": {
-              "base": 0,
-              "max": 0
-            },
-            "faith": {
-              "base": 0,
-              "max": 0
-            },
-            "ego": {
-              "base": 0,
-              "max": 0
-            }
-          },
-          "spiritPairs": {
-            "extrovertIntrovert": "extrovert",
-            "passionCalm": "passion",
-            "faithEgo": "faith"
+          "traits": {
+            "value": ""
           }
-        },
-        "traits": {
-          "value": ""
         }
-      }
-    },
-    "typeTemplates": {
+        ,
+        "historyDetails": {
+          "characteristics": {
+            "body": {
+              "strength": {
+                "base": 0,
+                "max": 0
+              },
+              "dexterity": {
+                "base": 0,
+                "max": 0
+              },
+              "endurance": {
+                "base": 0,
+                "max": 0
+              }
+            },
+            "mind": {
+              "wits": {
+                "base": 0,
+                "max": 0
+              },
+              "perception": {
+                "base": 0,
+                "max": 0
+              },
+              "tech": {
+                "base": 0,
+                "max": 0
+              }
+            },
+            "spirit": {
+              "extrovert": {
+                "base": 0,
+                "max": 0
+              },
+              "introvert": {
+                "base": 0,
+                "max": 0
+              },
+              "passion": {
+                "base": 0,
+                "max": 0
+              },
+              "calm": {
+                "base": 0,
+                "max": 0
+              },
+              "faith": {
+                "base": 0,
+                "max": 0
+              },
+              "ego": {
+                "base": 0,
+                "max": 0
+              }
+            },
+            "spiritPairs": {
+              "extrovertIntrovert": "extrovert",
+              "passionCalm": "passion",
+              "faithEgo": "faith"
+            }
+          },
+          "skills": {
+            "value": ""
+          },
+          "traits": {
+            "value": ""
+          }
+        }
+      },
+      "typeTemplates": {
       "armor": [
         "itemDescription",
         "physicalItem"
@@ -822,9 +690,10 @@
       "faction": [
         "itemDescription"
       ],
-      "history": [
-        "itemDescription"
-      ],
+        "history": [
+          "itemDescription",
+          "historyDetails"
+        ],
       "maneuver": [
         "itemDescription"
       ],

@@ -306,20 +306,7 @@ export class FS2ECharacterSheet extends ActorSheet {
 
     const normalizeGroupObject = (value) => {
       if (value && typeof value === "object" && !Array.isArray(value)) return value;
-      if (Array.isArray(value)) {
-        return value.reduce((acc, entry) => {
-          if (!entry || typeof entry !== "object") return acc;
-          const key = normalizeSkillKey(entry.key ?? entry.name);
-          if (!key) return acc;
-          acc[key] = {
-            base: Number(entry.base ?? 0),
-            temp: Number(entry.temp ?? 0),
-            mod: Number(entry.mod ?? 0),
-            display: typeof entry.display === "string" ? entry.display : undefined
-          };
-          return acc;
-        }, {});
-      }
+      if (Array.isArray(value)) return {};
       return {};
     };
 
@@ -404,6 +391,24 @@ export class FS2ECharacterSheet extends ActorSheet {
       learned: learnedEntries
     };
 
+    const historyLabels = [
+      "Upbringing",
+      "Apprenticeship",
+      "Early Career",
+      "Tour of Duty",
+      "Tour of Duty"
+    ];
+    const historySlots = context.system?.data?.histories ?? [];
+    context.view.histories = historyLabels.map((label, idx) => {
+      const slot = historySlots[idx] ?? {};
+      return {
+        idx,
+        label,
+        uuid: slot.uuid ?? "",
+        name: slot.name ?? ""
+      };
+    });
+
     return context;
   }
 
@@ -433,29 +438,7 @@ export class FS2ECharacterSheet extends ActorSheet {
       if (value && typeof value === "object" && !Array.isArray(value)) {
         return foundry.utils.deepClone(value);
       }
-      if (Array.isArray(value)) {
-        return value.reduce((acc, entry) => {
-          if (!entry || typeof entry !== "object") return acc;
-          let rawKey = entry.key ?? entry.name;
-          if (!rawKey) {
-            const candidate = Object.keys(entry).find((k) => !["base","temp","mod","display","name","key"].includes(k));
-            if (candidate) rawKey = candidate;
-          }
-          const key = normalizeSkillKey(rawKey);
-          if (!key) return acc;
-          acc[key] = {
-            base: num(entry.base ?? 0),
-            temp: num(entry.temp ?? 0),
-            mod: num(entry.mod ?? 0),
-            display:
-              typeof entry.display === "string" ? entry.display :
-              typeof entry.name === "string" ? entry.name :
-              typeof entry[rawKey] === "string" && entry[rawKey].trim() ? entry[rawKey] :
-              undefined
-          };
-          return acc;
-        }, {});
-      }
+      if (Array.isArray(value)) return {};
       return {};
     };
     // ----- Tabs (manual, v13-safe)
@@ -539,6 +522,52 @@ export class FS2ECharacterSheet extends ActorSheet {
         });
       });
     }
+
+    // ----- Histories: drop to set
+    root.querySelectorAll('[data-drop-history]').forEach(el => {
+      el.addEventListener('dragover', ev => ev.preventDefault());
+      el.addEventListener('drop', async ev => {
+        ev.preventDefault();
+        try {
+          const slotIndex = Number(ev.currentTarget.dataset.historySlot ?? -1);
+          if (!Number.isInteger(slotIndex) || slotIndex < 0) return;
+          const data = TextEditor.getDragEventData(ev);
+          if (!data?.uuid) return ui.notifications?.warn("Drop a History item here.");
+          const doc = await fromUuid(data.uuid);
+          if (!(doc && doc.documentName === "Item")) {
+            return ui.notifications?.warn("Only Items can be dropped here.");
+          }
+          if (doc.type !== "history") {
+            return ui.notifications?.warn("Only History items are allowed.");
+          }
+
+          let historyItem = doc;
+          if (doc.parent?.id !== this.actor.id) {
+            const created = await this.actor.createEmbeddedDocuments("Item", [doc.toObject()]);
+            historyItem = created?.[0] ?? doc;
+          }
+
+          const histories = foundry.utils.deepClone(this.actor.system?.data?.histories ?? []);
+          while (histories.length < 5) histories.push({ uuid: "", name: "" });
+          histories[slotIndex] = { uuid: historyItem.uuid, name: historyItem.name };
+          await this.actor.update({ "system.data.histories": histories });
+        } catch (err) {
+          console.error("fs2e | History drop failed", err);
+          ui.notifications?.error("Failed to set History from drop.");
+        }
+      });
+    });
+
+    root.querySelectorAll('.open-history').forEach(el => {
+      el.addEventListener('click', async ev => {
+        ev.preventDefault();
+        const uuid = ev.currentTarget.dataset.uuid;
+        if (!uuid) return;
+        const doc = await fromUuid(uuid);
+        if (doc?.sheet) return doc.sheet.render(true);
+        ui.notifications?.warn("Could not open History item.");
+      });
+    });
 
     // Core tooltips
     if (ui?.tooltip?.activate) ui.tooltip.activate(root, { delay: 1000 });
@@ -802,6 +831,12 @@ export class FS2ECharacterSheet extends ActorSheet {
       };
 
       const speciesChars = speciesItem.system?.characteristics ?? {};
+      const speciesPairs = speciesChars.spiritPairs ?? {};
+      if (Object.keys(speciesPairs).length) {
+        updateData["system.characteristics.spiritPairs.extrovertIntrovert"] = speciesPairs.extrovertIntrovert ?? "extrovert";
+        updateData["system.characteristics.spiritPairs.passionCalm"] = speciesPairs.passionCalm ?? "passion";
+        updateData["system.characteristics.spiritPairs.faithEgo"] = speciesPairs.faithEgo ?? "faith";
+      }
       for (const group of ["body", "mind", "spirit"]) {
         const entries = speciesChars[group] ?? {};
         for (const [key, val] of Object.entries(entries)) {
@@ -814,12 +849,23 @@ export class FS2ECharacterSheet extends ActorSheet {
         }
       }
 
-      const spiritBase = speciesChars.spirit ?? {};
+      const spiritPairs = {
+        extrovertIntrovert: speciesPairs.extrovertIntrovert ?? "extrovert",
+        passionCalm: speciesPairs.passionCalm ?? "passion",
+        faithEgo: speciesPairs.faithEgo ?? "faith"
+      };
+      const baseMap = {
+        extrovert: spiritPairs.extrovertIntrovert === "extrovert" ? 3 : 1,
+        introvert: spiritPairs.extrovertIntrovert === "introvert" ? 3 : 1,
+        passion: spiritPairs.passionCalm === "passion" ? 3 : 1,
+        calm: spiritPairs.passionCalm === "calm" ? 3 : 1,
+        faith: spiritPairs.faithEgo === "faith" ? 3 : 1,
+        ego: spiritPairs.faithEgo === "ego" ? 3 : 1
+      };
       const opp = { extrovert: "introvert", introvert: "extrovert", passion: "calm", calm: "passion", faith: "ego", ego: "faith" };
       for (const key of Object.keys(opp)) {
-        const other = opp[key];
-        const otherBase = Number(spiritBase?.[other]?.base ?? 0);
-        updateData[`system.characteristics.spirit.${key}.max`] = 10 - otherBase;
+        updateData[`system.characteristics.spirit.${key}.base`] = baseMap[key];
+        updateData[`system.characteristics.spirit.${key}.max`] = 10 - baseMap[opp[key]];
       }
 
       await this.actor.update(updateData);
