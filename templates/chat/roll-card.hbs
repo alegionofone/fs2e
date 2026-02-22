@@ -3,9 +3,7 @@
     <div class="fs2e-chat-card__who">
       {{#if actorImg}}<img class="fs2e-chat-card__thumb" src="{{actorImg}}" alt="{{actorName}}" />{{/if}}
       {{#if actorName}}
-        <span class="fs2e-chat-card__actor">
-          {{actorName}} rolls {{#if skillLabel}}{{skillLabel}}{{else}}a roll{{/if}}
-        </span>
+        <span class="fs2e-chat-card__actor">{{actorName}}</span>
       {{/if}}
     </div>
     <h3>{{title}}</h3>
@@ -44,11 +42,27 @@
       <i class="fa-solid fa-check-double"></i>{{successes}}
     </span>
     <span class="fs2e-chat-card__summary-item {{#if success}}is-success{{else}}is-failure{{/if}}">
-      <i class="fa-solid fa-medal"></i>{{vp}}
+      <i class="fa-solid fa-medal"></i>{{vp}}{{#if sustainEnabled}} ({{sustainTotal}}){{/if}}
     </span>
   </div>
-
-  {{#if showRetry}}
-    <button class="fs2e-chat-card__retry" type="button">Retry</button>
+  {{#if sustainCompleted}}
+    <div class="fs2e-chat-card__sustain-success">SUSTAINED ACTION SUCCESS</div>
   {{/if}}
+
+  {{#unless sustainCompleted}}
+    {{#if showRetry}}
+      {{#if showContinue}}
+        <div class="fs2e-chat-card__actions">
+          <button class="fs2e-chat-card__retry" type="button">Retry</button>
+          <button class="fs2e-chat-card__continue" type="button">Continue</button>
+        </div>
+      {{else}}
+        <button class="fs2e-chat-card__retry" type="button">Retry</button>
+      {{/if}}
+    {{else}}
+      {{#if showContinue}}
+        <button class="fs2e-chat-card__continue" type="button">Continue</button>
+      {{/if}}
+    {{/if}}
+  {{/unless}}
 </section>

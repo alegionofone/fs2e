@@ -1,6 +1,3 @@
-// systems/fs2e/module/sheets/actor/character-sheet.mjs
-// FS2E Character sheet (Foundry VTT v13)
-
 export class FS2ECharacterSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
@@ -18,9 +15,8 @@ export class FS2ECharacterSheet extends ActorSheet {
     context.actor = this.actor;
     context.system = this.actor.system;
 
-    // ---------------- helpers ----------------
-    const num  = (n, d = 0) => Number(n ?? d);
-    const sum  = (s) => num(s?.base) + num(s?.temp) + num(s?.mod);
+    const num = (n, d = 0) => Number(n ?? d);
+    const sum = (s) => num(s?.base) + num(s?.temp) + num(s?.mod);
     const clamp = (n, min, max) => Math.min(Math.max(num(n), min), max);
     const labelize = (k) =>
       (k ?? "").replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());

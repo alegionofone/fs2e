@@ -136,6 +136,34 @@
     font-size: var(--font-size-12);
   }
 
+  &__actions {
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  &__continue {
+    margin-top: 0;
+    width: 100%;
+    border: 1px solid var(--color-gold-mid);
+    background: var(--color-grey-mid);
+    color: var(--color-gold-lt);
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: var(--font-size-12);
+  }
+
+  &__sustain-success {
+    margin-top: 4px;
+    text-align: center;
+    font-size: var(--font-size-12);
+    color: #6fbf6f;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
   &__flags {
     margin-top: 4px;
     display: flex;

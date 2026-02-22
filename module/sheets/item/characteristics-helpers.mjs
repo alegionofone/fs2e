@@ -2,7 +2,7 @@ export function buildCharacteristicsView(system = {}) {
   const labelize = (k) =>
     (k ?? "").replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
 
-  const toEntries = (group, keys = null) => {
+  const toEntries = (group, keys = undefined) => {
     if (keys) {
       return keys.map((key) => ({
         key,

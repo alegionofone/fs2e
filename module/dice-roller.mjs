@@ -1,6 +1,3 @@
-// systems/fs2e/module/dice-roller.mjs
-// FS2E Dice Roller (Foundry VTT v13)
-
 const DIFFICULTY_OPTIONS = [
   { label: "None (0)", value: 0 },
   { label: "Natural (+2)", value: 2 },
@@ -96,6 +93,47 @@ const vpFromAccentedSuccesses = (successes, accent) => {
     return { vp, quality: "Accented (-)" };
   }
   return vpFromSuccesses(successes);
+};
+
+const resolveRoll = ({ die, gn, accent }) => {
+  const adjustedRoll = die + accent;
+  const natural1 = die === 1;
+  const natural18 = die === 18;
+  const natural19 = die === 19;
+  const natural20 = die === 20;
+  const critSuccess = natural18;
+  const critFailure = natural20;
+  const success = natural1 || critSuccess || (!critFailure && !natural19 && adjustedRoll <= gn);
+
+  const successes = success ? Math.max(1, gn - adjustedRoll) : 0;
+  const { vp: baseVP, quality: baseQuality } = success
+    ? vpFromAccentedSuccesses(successes, accent)
+    : { vp: 0, quality: "Failure" };
+  const extraVP = extendedBonus(gn);
+  const totalVP = success
+    ? (critSuccess ? (baseVP + extraVP) * 2 : (baseVP + extraVP))
+    : 0;
+  const quality = critFailure ? "Critical Failure" : baseQuality;
+
+  return {
+    adjustedRoll,
+    natural1,
+    natural20,
+    critSuccess,
+    critFailure,
+    success,
+    successes,
+    baseVP,
+    extraVP,
+    totalVP,
+    quality
+  };
+};
+
+const resolveSustain = ({ sustainEnabled, sustainCurrent, sustainTaskValue, totalVP }) => {
+  const sustainTotal = sustainEnabled ? (sustainCurrent + totalVP) : totalVP;
+  const sustainCompleted = sustainEnabled && sustainTaskValue > 0 && sustainTotal >= sustainTaskValue;
+  return { sustainTotal, sustainCompleted };
 };
 
 const buildSkillList = (actor) => {
@@ -251,6 +289,9 @@ const buildResultFromPreset = async (actor, preset = {}) => {
   const retryPenalty = retries === 0 ? 0 : (retries === 1 ? -2 : -4);
   const woundPenalty = getWoundPenalty(actor);
   const compVP = Number(preset.compResult?.totalVP ?? 0);
+  const sustainEnabled = !!preset.sustainEnabled;
+  const sustainTaskValue = Number(preset.sustainTaskValue ?? 0);
+  const sustainCurrent = Number(preset.sustainCurrent ?? 0);
   const accentMax = Math.max(0, Number.isFinite(skillVal) ? skillVal : 0);
   const accent = clamp(Number(preset.accent ?? 0), -accentMax, accentMax);
 
@@ -270,23 +311,13 @@ const buildResultFromPreset = async (actor, preset = {}) => {
 
   const roll = await (new Roll("1d20")).roll({ async: true });
   const die = Number(roll.total);
-  const adjustedRoll = die + accent;
-
-  const natural1 = die === 1;
-  const natural20 = die === 20;
-  const critSuccess = (adjustedRoll === gn) || (gn > 20 && adjustedRoll === 18);
-  const critFailure = natural20;
-  const success = natural1 || (!critFailure && adjustedRoll <= gn);
-
-  const successes = success ? Math.max(1, gn - adjustedRoll) : 0;
-  const { vp: baseVP, quality: baseQuality } = success
-    ? vpFromAccentedSuccesses(successes, accent)
-    : { vp: 0, quality: "Failure" };
-  const quality = critFailure ? "Critical Failure" : baseQuality;
-  const extraVP = extendedBonus(gn);
-  const totalVP = success
-    ? (critSuccess ? (baseVP + extraVP) * 2 : (baseVP + extraVP))
-    : 0;
+  const rollResult = resolveRoll({ die, gn, accent });
+  const sustainResult = resolveSustain({
+    sustainEnabled,
+    sustainCurrent,
+    sustainTaskValue,
+    totalVP: rollResult.totalVP
+  });
 
   const trace = [
     `Base (char + skill): ${charVal} + ${skillVal} = ${base}`,
@@ -302,18 +333,23 @@ const buildResultFromPreset = async (actor, preset = {}) => {
   return {
     gn,
     roll: die,
-    rollAdjusted: adjustedRoll,
+    rollAdjusted: rollResult.adjustedRoll,
     accent,
-    success,
-    natural1,
-    natural20,
-    critSuccess,
-    critFailure,
-    successes,
-    baseVP,
-    extraVP,
-    totalVP,
-    quality,
+    success: rollResult.success,
+    natural1: rollResult.natural1,
+    natural20: rollResult.natural20,
+    critSuccess: rollResult.critSuccess,
+    critFailure: rollResult.critFailure,
+    successes: rollResult.successes,
+    baseVP: rollResult.baseVP,
+    extraVP: rollResult.extraVP,
+    totalVP: rollResult.totalVP,
+    sustainEnabled,
+    sustainCurrent,
+    sustainTaskValue,
+    sustainTotal: sustainResult.sustainTotal,
+    sustainCompleted: sustainResult.sustainCompleted,
+    quality: rollResult.quality,
     breakdown,
     trace,
     skillLabel
@@ -330,6 +366,7 @@ const postChatCard = async (actor, result, preset) => {
     actorName: actor?.name ?? "",
     actorImg: actor?.img ?? "",
     showRetry,
+    showContinue: !!result.sustainEnabled,
     roll: result.roll,
     rollAdjusted: result.rollAdjusted,
     accent: result.accent,
@@ -337,6 +374,11 @@ const postChatCard = async (actor, result, preset) => {
     success: result.success,
     successes: result.successes,
     vp: result.totalVP,
+    sustainEnabled: result.sustainEnabled,
+    sustainCurrent: result.sustainCurrent,
+    sustainTaskValue: result.sustainTaskValue,
+    sustainTotal: result.sustainTotal,
+    sustainCompleted: result.sustainCompleted,
     quality: result.quality,
     critSuccess: result.critSuccess,
     critFailure: result.critFailure,
@@ -351,7 +393,8 @@ const postChatCard = async (actor, result, preset) => {
     content: html,
     flags: {
       fs2e: {
-        rollPreset: preset ?? null
+        rollPreset: preset ?? null,
+        lastVP: result.sustainEnabled ? (result.sustainTotal ?? 0) : (result.totalVP ?? 0)
       }
     }
   });
@@ -370,7 +413,10 @@ export class FS2EDiceRoller extends Application {
     this.state = {
       compResult: null,
       mainResult: null,
-      compLocked: false
+      compLocked: false,
+      sustainEnabled: false,
+      sustainTaskValue: 6,
+      sustainCurrent: 0
     };
     if (this.preset?.compResult) {
       this.state.compResult = this.preset.compResult;
@@ -451,6 +497,14 @@ export class FS2EDiceRoller extends Application {
       const gnPreview = diff;
       const gnInput = root.querySelector("#fs2e-main-gn-preview");
       if (gnInput) gnInput.value = gnPreview;
+
+      const sustainTaskSelect = root.querySelector("#fs2e-sustain-task-select");
+      if (sustainTaskSelect) {
+        const sustainOpt = sustainTaskSelect.selectedOptions?.[0];
+        const sustainVal = Number(sustainOpt?.dataset?.value ?? sustainTaskSelect.value ?? 0);
+        const sustainTotal = root.querySelector("#fs2e-sustain-required");
+        if (sustainTotal) sustainTotal.value = Number.isFinite(sustainVal) ? sustainVal : 0;
+      }
       const baseGn = charSum + diff;
 
       const compEnabled = root.querySelector("#fs2e-comp-toggle")?.checked ?? false;
@@ -501,6 +555,15 @@ export class FS2EDiceRoller extends Application {
       }
     };
 
+    const cacheSustainState = () => {
+      this.state.sustainEnabled = root.querySelector("#fs2e-sustain-toggle")?.checked ?? false;
+      const sustainTaskSelect = root.querySelector("#fs2e-sustain-task-select");
+      this.state.sustainTaskValue = Number(
+        sustainTaskSelect?.selectedOptions?.[0]?.dataset?.value ?? sustainTaskSelect?.value ?? this.state.sustainTaskValue
+      );
+      this.state.sustainCurrent = Number(root.querySelector("#fs2e-sustain-current-successes")?.value ?? 0);
+    };
+
     // Characteristic values are derived from selected option; no direct sync.
 
     const applyDefault = (selectId, valueId, key) => {
@@ -543,24 +606,36 @@ export class FS2EDiceRoller extends Application {
       if (typeof preset.compLocked === "boolean") {
         this.state.compLocked = preset.compLocked;
       }
-      const compToggle = root.querySelector("#fs2e-comp-toggle");
-      if (compToggle && typeof preset.compEnabled === "boolean") {
-        compToggle.checked = preset.compEnabled;
-      }
+        const compToggle = root.querySelector("#fs2e-comp-toggle");
+        if (compToggle && typeof preset.compEnabled === "boolean") {
+          compToggle.checked = preset.compEnabled;
+        }
+        const sustainToggle = root.querySelector("#fs2e-sustain-toggle");
+        if (sustainToggle && typeof preset.sustainEnabled === "boolean") {
+          sustainToggle.checked = preset.sustainEnabled;
+        }
       if (preset.charKey) applyDefault("#fs2e-main-char", "#fs2e-main-char-val", preset.charKey);
       if (preset.compCharKey) applyDefault("#fs2e-comp-char", "#fs2e-comp-char-val", preset.compCharKey);
       if (preset.compSkillKey) {
         const compSkill = root.querySelector("#fs2e-comp-skill");
         if (compSkill) compSkill.value = preset.compSkillKey;
       }
-      const mainDiff = root.querySelector("#fs2e-main-diff-select");
-      if (mainDiff && preset.diffValue !== undefined) mainDiff.value = String(preset.diffValue);
-      const compDiff = root.querySelector("#fs2e-comp-diff-select");
-      if (compDiff && preset.compDiffValue !== undefined) compDiff.value = String(preset.compDiffValue);
-      const mainCustom = root.querySelector("#fs2e-main-diff-custom");
-      if (mainCustom && preset.customDiff !== undefined) mainCustom.value = String(preset.customDiff);
-      const compCustom = root.querySelector("#fs2e-comp-diff-custom");
-      if (compCustom && preset.compCustomDiff !== undefined) compCustom.value = String(preset.compCustomDiff);
+        const mainDiff = root.querySelector("#fs2e-main-diff-select");
+        if (mainDiff && preset.diffValue !== undefined) mainDiff.value = String(preset.diffValue);
+        const compDiff = root.querySelector("#fs2e-comp-diff-select");
+        if (compDiff && preset.compDiffValue !== undefined) compDiff.value = String(preset.compDiffValue);
+        const sustainTask = root.querySelector("#fs2e-sustain-task-select");
+        if (sustainTask && preset.sustainTaskValue !== undefined) {
+          sustainTask.value = String(preset.sustainTaskValue);
+        }
+        const mainCustom = root.querySelector("#fs2e-main-diff-custom");
+        if (mainCustom && preset.customDiff !== undefined) mainCustom.value = String(preset.customDiff);
+        const compCustom = root.querySelector("#fs2e-comp-diff-custom");
+        if (compCustom && preset.compCustomDiff !== undefined) compCustom.value = String(preset.compCustomDiff);
+        const sustainCurrent = root.querySelector("#fs2e-sustain-current-successes");
+        if (sustainCurrent && preset.sustainCurrent !== undefined) {
+          sustainCurrent.value = String(preset.sustainCurrent);
+        }
       if (preset.actions !== undefined) {
         const actionRadio = root.querySelector(`input[name="fs2e-actions"][value="${preset.actions}"]`);
         if (actionRadio) actionRadio.checked = true;
@@ -574,10 +649,24 @@ export class FS2EDiceRoller extends Application {
         if (accentInput) accentInput.value = String(preset.accent);
       }
       const compSection = root.querySelector(".fs2e-comp-section");
-      if (compToggle && compSection) {
-        compSection.dataset.enabled = compToggle.checked ? "1" : "0";
-      }
+        if (compToggle && compSection) {
+          compSection.dataset.enabled = compToggle.checked ? "1" : "0";
+        }
+        const sustainSection = root.querySelector(".fs2e-sustain-section");
+        if (sustainToggle && sustainSection) {
+          sustainSection.dataset.enabled = sustainToggle.checked ? "1" : "0";
+        }
+      cacheSustainState();
     };
+
+    if (!this.preset) {
+      const sustainToggle = root.querySelector("#fs2e-sustain-toggle");
+      if (sustainToggle) sustainToggle.checked = !!this.state.sustainEnabled;
+      const sustainTask = root.querySelector("#fs2e-sustain-task-select");
+      if (sustainTask) sustainTask.value = String(this.state.sustainTaskValue ?? 6);
+      const sustainCurrent = root.querySelector("#fs2e-sustain-current-successes");
+      if (sustainCurrent) sustainCurrent.value = String(this.state.sustainCurrent ?? 0);
+    }
 
     const diffSelects = root.querySelectorAll("[data-diff-select]");
     diffSelects.forEach((select) => {
@@ -596,11 +685,24 @@ export class FS2EDiceRoller extends Application {
       update();
     }
 
+    const sustainToggle = root.querySelector("#fs2e-sustain-toggle");
+    const sustainSection = root.querySelector(".fs2e-sustain-section");
+    if (sustainToggle && sustainSection) {
+      const update = () => {
+        sustainSection.dataset.enabled = sustainToggle.checked ? "1" : "0";
+        cacheSustainState();
+        updatePreview();
+      };
+      sustainToggle.addEventListener("change", update);
+      update();
+    }
+
     const rollComp = root.querySelector("#fs2e-roll-comp");
     if (rollComp) {
       rollComp.addEventListener("click", async (ev) => {
         ev.preventDefault();
         if (this.state.compLocked) return;
+        cacheSustainState();
         const result = await this._rollFromForm(root, { isComplementary: true });
         this.state.compResult = result;
         this.render(false);
@@ -611,6 +713,7 @@ export class FS2EDiceRoller extends Application {
     if (rollMain) {
       rollMain.addEventListener("click", async (ev) => {
         ev.preventDefault();
+        cacheSustainState();
         const result = await this._rollFromForm(root, { isComplementary: false });
         this.state.mainResult = result;
         this.state.compLocked = true;
@@ -684,6 +787,12 @@ export class FS2EDiceRoller extends Application {
     const woundPenalty = getWoundPenalty(this.actor);
     const accentMax = Math.max(0, Number.isFinite(this.defaults.skillValue) ? this.defaults.skillValue : 0);
     const accent = clamp(getNumber("#fs2e-accent-value", 0), -accentMax, accentMax);
+    const sustainEnabled = root.querySelector("#fs2e-sustain-toggle")?.checked ?? false;
+    const sustainTaskSelect = root.querySelector("#fs2e-sustain-task-select");
+    const sustainTaskValue = Number(
+      sustainTaskSelect?.selectedOptions?.[0]?.dataset?.value ?? sustainTaskSelect?.value ?? 0
+    );
+    const sustainCurrent = getNumber("#fs2e-sustain-current-successes", 0);
 
     const base = charVal + skillVal;
     const gn = base + diff + multiPenalty + retryPenalty + woundPenalty + compVP;
@@ -707,7 +816,10 @@ export class FS2EDiceRoller extends Application {
       compCustomDiff: getNumber("#fs2e-comp-diff-custom", 0),
       accent,
       compResult: this.state.compResult ? { totalVP: this.state.compResult.totalVP ?? 0 } : null,
-      compLocked: this.state.compLocked
+      compLocked: this.state.compLocked,
+      sustainEnabled,
+      sustainTaskValue,
+      sustainCurrent
     };
     const breakdown = [
       { label: `${charLabel} + ${skillLabel}`, value: `${base}` },
@@ -721,23 +833,13 @@ export class FS2EDiceRoller extends Application {
 
     const roll = await (new Roll("1d20")).roll({ async: true });
     const die = Number(roll.total);
-    const adjustedRoll = die + accent;
-
-    const natural1 = die === 1;
-    const natural20 = die === 20;
-    const critSuccess = (adjustedRoll === gn) || (gn > 20 && adjustedRoll === 18);
-    const critFailure = natural20;
-    const success = natural1 || (!critFailure && adjustedRoll <= gn);
-
-    const successes = success ? Math.max(1, gn - adjustedRoll) : 0;
-    const { vp: baseVP, quality: baseQuality } = success
-      ? vpFromAccentedSuccesses(successes, accent)
-      : { vp: 0, quality: "Failure" };
-    const quality = critFailure ? "Critical Failure" : baseQuality;
-    const extraVP = extendedBonus(gn);
-    const totalVP = success
-      ? (critSuccess ? (baseVP + extraVP) * 2 : (baseVP + extraVP))
-      : 0;
+    const rollResult = resolveRoll({ die, gn, accent });
+    const sustainResult = resolveSustain({
+      sustainEnabled,
+      sustainCurrent,
+      sustainTaskValue,
+      totalVP: rollResult.totalVP
+    });
 
     const trace = [
       `Base (char + skill): ${charVal} + ${skillVal} = ${base}`,
@@ -754,18 +856,23 @@ export class FS2EDiceRoller extends Application {
       isComplementary,
       gn,
       roll: die,
-      rollAdjusted: adjustedRoll,
+      rollAdjusted: rollResult.adjustedRoll,
       accent,
-      success,
-      natural1,
-      natural20,
-      critSuccess,
-      critFailure,
-      successes,
-      baseVP,
-      extraVP,
-      totalVP,
-      quality,
+      success: rollResult.success,
+      natural1: rollResult.natural1,
+      natural20: rollResult.natural20,
+      critSuccess: rollResult.critSuccess,
+      critFailure: rollResult.critFailure,
+      successes: rollResult.successes,
+      baseVP: rollResult.baseVP,
+      extraVP: rollResult.extraVP,
+      totalVP: rollResult.totalVP,
+      sustainEnabled,
+      sustainCurrent,
+      sustainTaskValue,
+      sustainTotal: sustainResult.sustainTotal,
+      sustainCompleted: sustainResult.sustainCompleted,
+      quality: rollResult.quality,
       breakdown,
       trace,
       preset

@@ -3,6 +3,48 @@
     <h2>{{#if defaults.skillLabel}}{{defaults.skillLabel}} Roll{{else}}Dice Roller{{/if}}</h2>
   </header>
 
+  <label class="fs2e-toggle fs2e-sustain-toggle">
+    <input id="fs2e-sustain-toggle" type="checkbox" />
+    Sustained Action
+  </label>
+
+  <section class="fs2e-section fs2e-sustain-section" data-enabled="0">
+    <h3>Sustained Action</h3>
+    <div class="fs2e-grid-roll-comp">
+      <div class="fs2e-inline-block">
+        <div class="fs2e-inline-title">Task</div>
+        <div class="fs2e-inline-field">
+          <select id="fs2e-sustain-task-select" data-diff-select>
+            <option value="6" data-value="6">Simple (6)</option>
+            <option value="9" data-value="9">Complex (9)</option>
+            <option value="12" data-value="12">Involved (12)</option>
+            <option value="18" data-value="18">Obscure (18)</option>
+            <option value="23" data-value="23">Arcane (23)</option>
+          </select>
+        </div>
+      </div>
+      <div class="fs2e-eq-field">
+        <div class="fs2e-eq-spacer"></div>
+        <div class="fs2e-eq-row">
+          <span class="fs2e-sr-only">Sustained Required Total</span>
+          <span class="fs2e-inline-plus">=</span>
+          <input id="fs2e-sustain-required" type="number" value="0" readonly />
+        </div>
+      </div>
+      <div class="fs2e-sustain-sep"></div>
+      <div class="fs2e-comp-label">
+        <span class="fs2e-inline-title">Current Successes</span>
+      </div>
+      <div class="fs2e-eq-field fs2e-eq-merge">
+        <div class="fs2e-eq-row">
+          <span class="fs2e-sr-only">Current Successes</span>
+          <span class="fs2e-inline-plus">=</span>
+          <input id="fs2e-sustain-current-successes" type="number" value="0" />
+        </div>
+      </div>
+    </div>
+  </section>
+
   <label class="fs2e-toggle fs2e-comp-toggle">
     <input id="fs2e-comp-toggle" type="checkbox" />
     Complementary Roll

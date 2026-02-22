@@ -9,22 +9,14 @@ export class FS2EHistorySheet extends FS2EItemSheet {
       template: "systems/fs2e/templates/item/history-sheet.hbs",
       width: 560,
       height: 520,
-      tabs: [
-        {
-          navSelector: ".sheet-tabs",
-          contentSelector: ".sheet-body",
-          initial: "description"
-        }
-      ]
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description" }]
     });
   }
 
   async getData() {
     const data = super.getData();
     const system = data.system ?? this.item.system ?? {};
-    data.view = {
-      characteristics: buildCharacteristicsView(system)
-    };
+    data.view = { characteristics: buildCharacteristicsView(system) };
     data.enrichedContent = {
       description: await enrichProseMirrorContent(system.description?.value ?? "", {
         document: this.item,

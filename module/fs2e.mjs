@@ -1,6 +1,3 @@
-// systems/fs2e/module/fs2e.mjs
-// Entrypoint for the fs2e system (Foundry VTT v13)
-
 import { registerCharacterSheet } from "./sheets/actor/character-sheet.mjs";
 import { FS2EItemSheet } from "./sheets/item/item-sheet.mjs";
 import { FS2ESpeciesSheet } from "./sheets/item/species-sheet.mjs";
@@ -17,101 +14,85 @@ const FS2E = {
 Hooks.once("init", async () => {
   console.log("%cfs2e | Initializing Fading Suns 2e system", "color: #42b983; font-weight: bold;");
 
-  // Namespaces
   CONFIG.fs2e = CONFIG.fs2e ?? {};
   game.fs2e = game.fs2e ?? {
-    log: (...args) => {
-      if (game.settings?.get?.(FS2E.ID, "debug")) console.log("fs2e |", ...args);
-    },
+    log: (...args) => game.settings?.get?.(FS2E.ID, "debug") && console.log("fs2e |", ...args),
     warn: (...args) => console.warn("fs2e |", ...args),
     error: (...args) => console.error("fs2e |", ...args),
     openDiceRoller: (options = {}) => openDiceRoller(options)
   };
 
-  // Settings
   registerSettings();
 
-  // Handlebars helpers
   if (!Handlebars.helpers.fs2eTagify) {
     Handlebars.registerHelper("fs2eTagify", (value) => tagifyValue(value));
   }
 
-  // Preload any Handlebars partials you use with {{> "path"}}
   await preloadHandlebarsTemplates();
-
-  // Load static mapping data
   await loadStaticData();
-
-  // Actor sheets
   registerCharacterSheet();
 
-  // Initiative (placeholder)
   CONFIG.Combat.initiative = { formula: "1d20", decimals: 0 };
 
-  // -----------------------------
-  // Item sheets
-  // -----------------------------
   try {
     Items.unregisterSheet("core", ItemSheet);
   } catch (e) {
-    // If already unregistered, ignore
   }
 
   Items.registerSheet(FS2E.ID, FS2EItemSheet, {
     makeDefault: true,
-    types: [
-      "armor",
-      "beneficeAffliction",
-      "blessingCurse",
-      "equipment",
-      "faction",
-      "maneuver",
-      "planet",
-      "weapon"
-    ]
+    types: ["armor", "beneficeAffliction", "blessingCurse", "equipment", "faction", "maneuver", "planet", "weapon"]
   });
 
-  Items.registerSheet(FS2E.ID, FS2ESpeciesSheet, {
-    makeDefault: true,
-    types: ["species"]
-  });
-
-  Items.registerSheet(FS2E.ID, FS2EHistorySheet, {
-    makeDefault: true,
-    types: ["history"]
-  });
-
-  // (Optional) If your type labels look wrong, add lang entries or set CONFIG.Item.typeLabels in code.
+  Items.registerSheet(FS2E.ID, FS2ESpeciesSheet, { makeDefault: true, types: ["species"] });
+  Items.registerSheet(FS2E.ID, FS2EHistorySheet, { makeDefault: true, types: ["history"] });
 });
 
-Hooks.once("setup", () => {
-  game.fs2e?.log?.("Setup complete");
-});
+Hooks.once("setup", () => game.fs2e?.log?.("Setup complete"));
+Hooks.once("ready", () => game.fs2e?.log?.(`Ready (v${FS2E.VERSION})`));
 
-Hooks.once("ready", () => {
-  game.fs2e?.log?.(`Ready (v${FS2E.VERSION})`);
-});
+const getActorFromPreset = async (preset) => {
+  const actorUuid = preset?.actorUuid;
+  if (!actorUuid) return null;
+  const actor = await fromUuid(actorUuid);
+  return actor ?? null;
+};
 
 Hooks.on("renderChatMessage", (message, html) => {
   const preset = message?.flags?.fs2e?.rollPreset;
-  if (!preset) return;
-  const root = html[0];
-  if (!root) return;
+  const root = html?.[0];
+  if (!preset || !root) return;
+
   const retryBtn = root.querySelector(".fs2e-chat-card__retry");
-  if (!retryBtn) return;
-  retryBtn.addEventListener("click", async (ev) => {
-    ev.preventDefault();
-    const actorUuid = preset.actorUuid;
-    if (!actorUuid) return;
-    const actor = await fromUuid(actorUuid);
-    if (!actor) return;
-    const nextRetries = Math.min(2, Number(preset.retries ?? 0) + 1);
-    const nextPreset = {
-      ...preset,
-      retries: nextRetries
-    };
-    await rollFromPreset({ actor, preset: nextPreset });
-  });
+  if (retryBtn) {
+    retryBtn.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      const actor = await getActorFromPreset(preset);
+      if (!actor) return;
+      const nextPreset = { ...preset, retries: Math.min(2, Number(preset.retries ?? 0) + 1) };
+      await rollFromPreset({ actor, preset: nextPreset });
+    });
+  }
+
+  const continueBtn = root.querySelector(".fs2e-chat-card__continue");
+  if (continueBtn) {
+    continueBtn.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      const actor = await getActorFromPreset(preset);
+      if (!actor) return;
+      const lastVP = Number(message?.flags?.fs2e?.lastVP ?? 0);
+      game.fs2e?.openDiceRoller?.({
+        actor,
+        preset: {
+          ...preset,
+          sustainEnabled: true,
+          sustainCurrent: lastVP,
+          compLocked: false,
+          compResult: null
+        }
+      });
+    });
+  }
 });
 
 Hooks.on("preUpdateActor", (actor, updateData) => {
@@ -132,68 +113,14 @@ Hooks.on("preUpdateActor", (actor, updateData) => {
     faith: getBase("faith"),
     ego: getBase("ego")
   };
-
-  const setMax = (key, value) => {
-    const path = `system.characteristics.spirit.${key}.max`;
-    foundry.utils.setProperty(updateData, path, value);
-  };
-
+  const setMax = (key, value) =>
+    foundry.utils.setProperty(updateData, `system.characteristics.spirit.${key}.max`, value);
   setMax("extrovert", 10 - bases.introvert);
   setMax("introvert", 10 - bases.extrovert);
   setMax("passion", 10 - bases.calm);
   setMax("calm", 10 - bases.passion);
   setMax("faith", 10 - bases.ego);
   setMax("ego", 10 - bases.faith);
-});
-
-Hooks.on("updateItem", async (item) => {
-  const actor = item?.parent;
-  if (!actor || actor.type !== "character") return;
-  if (item.type !== "species") return;
-
-  const updateData = {
-    "system.data.species": { uuid: item.uuid, name: item.name }
-  };
-
-  const speciesChars = item.system?.characteristics ?? {};
-  const speciesPairs = speciesChars.spiritPairs ?? {};
-  if (Object.keys(speciesPairs).length) {
-    updateData["system.characteristics.spiritPairs.extrovertIntrovert"] = speciesPairs.extrovertIntrovert ?? "extrovert";
-    updateData["system.characteristics.spiritPairs.passionCalm"] = speciesPairs.passionCalm ?? "passion";
-    updateData["system.characteristics.spiritPairs.faithEgo"] = speciesPairs.faithEgo ?? "faith";
-  }
-  for (const group of ["body", "mind", "spirit"]) {
-    const entries = speciesChars[group] ?? {};
-    for (const [key, val] of Object.entries(entries)) {
-      if (val?.base !== undefined) {
-        updateData[`system.characteristics.${group}.${key}.base`] = val.base;
-      }
-      if (group !== "spirit" && val?.max !== undefined) {
-        updateData[`system.characteristics.${group}.${key}.max`] = val.max;
-      }
-    }
-  }
-
-  const spiritPairs = {
-    extrovertIntrovert: speciesPairs.extrovertIntrovert ?? "extrovert",
-    passionCalm: speciesPairs.passionCalm ?? "passion",
-    faithEgo: speciesPairs.faithEgo ?? "faith"
-  };
-  const baseMap = {
-    extrovert: spiritPairs.extrovertIntrovert === "extrovert" ? 3 : 1,
-    introvert: spiritPairs.extrovertIntrovert === "introvert" ? 3 : 1,
-    passion: spiritPairs.passionCalm === "passion" ? 3 : 1,
-    calm: spiritPairs.passionCalm === "calm" ? 3 : 1,
-    faith: spiritPairs.faithEgo === "faith" ? 3 : 1,
-    ego: spiritPairs.faithEgo === "ego" ? 3 : 1
-  };
-  const opp = { extrovert: "introvert", introvert: "extrovert", passion: "calm", calm: "passion", faith: "ego", ego: "faith" };
-  for (const key of Object.keys(opp)) {
-    updateData[`system.characteristics.spirit.${key}.base`] = baseMap[key];
-    updateData[`system.characteristics.spirit.${key}.max`] = 10 - baseMap[opp[key]];
-  }
-
-  await actor.update(updateData);
 });
 
 function recalcHistory(actor) {
@@ -222,31 +149,60 @@ function recalcHistory(actor) {
     }
   }
 
-  if (Object.keys(updateData).length) {
-    actor.update(updateData);
-  }
+  if (Object.keys(updateData).length) actor.update(updateData);
 }
 
-Hooks.on("createItem", (item) => {
+const updateSpecies = async (item) => {
   const actor = item?.parent;
-  if (!actor || actor.type !== "character") return;
-  if (item.type !== "history") return;
-  recalcHistory(actor);
-});
+  if (!actor || actor.type !== "character" || item.type !== "species") return;
+  const updateData = { "system.data.species": { uuid: item.uuid, name: item.name } };
+  const speciesChars = item.system?.characteristics ?? {};
+  const speciesPairs = speciesChars.spiritPairs ?? {};
+  if (Object.keys(speciesPairs).length) {
+    updateData["system.characteristics.spiritPairs.extrovertIntrovert"] = speciesPairs.extrovertIntrovert ?? "extrovert";
+    updateData["system.characteristics.spiritPairs.passionCalm"] = speciesPairs.passionCalm ?? "passion";
+    updateData["system.characteristics.spiritPairs.faithEgo"] = speciesPairs.faithEgo ?? "faith";
+  }
+  for (const group of ["body", "mind", "spirit"]) {
+    const entries = speciesChars[group] ?? {};
+    for (const [key, val] of Object.entries(entries)) {
+      if (val?.base !== undefined) updateData[`system.characteristics.${group}.${key}.base`] = val.base;
+      if (group !== "spirit" && val?.max !== undefined) updateData[`system.characteristics.${group}.${key}.max`] = val.max;
+    }
+  }
+  const spiritPairs = {
+    extrovertIntrovert: speciesPairs.extrovertIntrovert ?? "extrovert",
+    passionCalm: speciesPairs.passionCalm ?? "passion",
+    faithEgo: speciesPairs.faithEgo ?? "faith"
+  };
+  const baseMap = {
+    extrovert: spiritPairs.extrovertIntrovert === "extrovert" ? 3 : 1,
+    introvert: spiritPairs.extrovertIntrovert === "introvert" ? 3 : 1,
+    passion: spiritPairs.passionCalm === "passion" ? 3 : 1,
+    calm: spiritPairs.passionCalm === "calm" ? 3 : 1,
+    faith: spiritPairs.faithEgo === "faith" ? 3 : 1,
+    ego: spiritPairs.faithEgo === "ego" ? 3 : 1
+  };
+  const opp = { extrovert: "introvert", introvert: "extrovert", passion: "calm", calm: "passion", faith: "ego", ego: "faith" };
+  for (const key of Object.keys(opp)) {
+    updateData[`system.characteristics.spirit.${key}.base`] = baseMap[key];
+    updateData[`system.characteristics.spirit.${key}.max`] = 10 - baseMap[opp[key]];
+  }
+  await actor.update(updateData);
+};
 
-Hooks.on("updateItem", (item) => {
+const onHistoryChange = (item) => {
   const actor = item?.parent;
-  if (!actor || actor.type !== "character") return;
-  if (item.type !== "history") return;
+  if (!actor || actor.type !== "character" || item.type !== "history") return;
   recalcHistory(actor);
-});
+};
 
-Hooks.on("deleteItem", (item) => {
-  const actor = item?.parent;
-  if (!actor || actor.type !== "character") return;
-  if (item.type !== "history") return;
-  recalcHistory(actor);
+Hooks.on("updateItem", async (item) => {
+  await updateSpecies(item);
+  onHistoryChange(item);
 });
+Hooks.on("createItem", onHistoryChange);
+Hooks.on("deleteItem", onHistoryChange);
 
 function registerSettings() {
   game.settings.register(FS2E.ID, "debug", {
