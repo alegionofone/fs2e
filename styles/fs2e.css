@@ -731,6 +731,12 @@ nav.sheet-tabs.actor [data-tab] {
   gap: 6px;
   font-size: calc(var(--font-size-12) + 3px);
 }
+.fs2e-chat-card__summary-item.is-success {
+  color: #6fbf6f;
+}
+.fs2e-chat-card__summary-item.is-failure {
+  color: #d16464;
+}
 .fs2e-chat-card__quality {
   margin-top: 9px;
   font-size: 22px;

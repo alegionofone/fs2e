@@ -40,8 +40,12 @@
   <div class="fs2e-chat-card__quality">{{quality}}</div>
 
   <div class="fs2e-chat-card__summary">
-    <span class="fs2e-chat-card__summary-item"><i class="fa-solid fa-check-double"></i>{{successes}}</span>
-    <span class="fs2e-chat-card__summary-item"><i class="fa-solid fa-medal"></i>{{vp}}</span>
+    <span class="fs2e-chat-card__summary-item {{#if success}}is-success{{else}}is-failure{{/if}}">
+      <i class="fa-solid fa-check-double"></i>{{successes}}
+    </span>
+    <span class="fs2e-chat-card__summary-item {{#if success}}is-success{{else}}is-failure{{/if}}">
+      <i class="fa-solid fa-medal"></i>{{vp}}
+    </span>
   </div>
 
   {{#if showRetry}}

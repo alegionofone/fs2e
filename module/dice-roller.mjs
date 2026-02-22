@@ -37,10 +37,52 @@ const extendedBonus = (gn) => {
   return Math.floor((gn - 21) / 3) + 1;
 };
 
+const toCamelSuffix = (name) => {
+  const parts = (name ?? "")
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+  if (!parts.length) return "";
+  return parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
+};
+
+const toCamelLower = (name) => {
+  const suffix = toCamelSuffix(name);
+  if (!suffix) return "";
+  return suffix.charAt(0).toLowerCase() + suffix.slice(1);
+};
+
+const normalizeCharKey = (value) => toCamelLower(String(value ?? ""));
+
+const mappingDefaultForSkill = (skillKey) => {
+  if (!skillKey) return "";
+  const mapping = CONFIG?.fs2e?.mappingData ?? {};
+  const parts = skillKey.split(".");
+  const type = parts[0];
+  if (type === "natural" && parts[1]) {
+    return normalizeCharKey(mapping?.natural?.[parts[1]]?.default ?? "");
+  }
+  if (type === "learned" && parts[1]) {
+    return normalizeCharKey(mapping?.learned?.[parts[1]]?.default ?? "");
+  }
+  if (type === "group" && parts[1] && parts[2]) {
+    const fallback =
+      mapping?.groups?.[parts[1]]?.[parts[2]]?.default ??
+      mapping?.groups?.[parts[1]]?.default ??
+      "";
+    return normalizeCharKey(fallback);
+  }
+  return "";
+};
+
 const vpFromSuccesses = (successes) => {
   const band = QUALITY_BANDS.find((b) => successes >= b.min && successes <= b.max);
-  if (!band) return { vp: 0, quality: "Failure" };
-  return { vp: band.vp, quality: band.label };
+  if (band) return { vp: band.vp, quality: band.label };
+  if (successes >= 21) {
+    const vp = 6 + Math.ceil((successes - 20) / 3);
+    return { vp, quality: "Virtuoso" };
+  }
+  return { vp: 0, quality: "Failure" };
 };
 
 const vpFromAccentedSuccesses = (successes, accent) => {
@@ -367,23 +409,10 @@ export class FS2EDiceRoller extends Application {
         this.defaults.skillValue = 0;
       }
     }
-    if (!this.defaults.charKey && this.defaults.skillKey) {
-      const mapping = CONFIG?.fs2e?.mappingData ?? {};
-      const parts = this.defaults.skillKey.split(".");
-      const type = parts[0];
-      if (type === "natural" && parts[1]) {
-        const skillKey = parts[1];
-        this.defaults.charKey = mapping?.natural?.[skillKey]?.default ?? "";
-      } else if (type === "learned" && parts[1]) {
-        const skillKey = parts[1];
-        this.defaults.charKey = mapping?.learned?.[skillKey]?.default ?? "";
-      } else if (type === "group" && parts[1] && parts[2]) {
-        const groupKey = parts[1];
-        const skillKey = parts[2];
-        this.defaults.charKey =
-          mapping?.groups?.[groupKey]?.[skillKey]?.default ??
-          mapping?.groups?.[groupKey]?.default ??
-          "";
+    if (this.defaults.skillKey) {
+      const hasChar = characteristics.some((c) => c.key === this.defaults.charKey);
+      if (!this.defaults.charKey || !hasChar) {
+        this.defaults.charKey = mappingDefaultForSkill(this.defaults.skillKey);
       }
     }
     return {
@@ -486,23 +515,13 @@ export class FS2EDiceRoller extends Application {
       if (input) input.value = Number(option.dataset.value ?? 0);
     };
 
-    if (!this.defaults.charKey && this.defaults.skillKey) {
-      const mapping = CONFIG?.fs2e?.mappingData ?? {};
-      const parts = this.defaults.skillKey.split(".");
-      const type = parts[0];
-      if (type === "natural" && parts[1]) {
-        const skillKey = parts[1];
-        this.defaults.charKey = mapping?.natural?.[skillKey]?.default ?? "";
-      } else if (type === "learned" && parts[1]) {
-        const skillKey = parts[1];
-        this.defaults.charKey = mapping?.learned?.[skillKey]?.default ?? "";
-      } else if (type === "group" && parts[1] && parts[2]) {
-        const groupKey = parts[1];
-        const skillKey = parts[2];
-        this.defaults.charKey =
-          mapping?.groups?.[groupKey]?.[skillKey]?.default ??
-          mapping?.groups?.[groupKey]?.default ??
-          "";
+    if (this.defaults.skillKey) {
+      const mainCharSelect = root.querySelector("#fs2e-main-char");
+      const hasChar =
+        !!mainCharSelect &&
+        Array.from(mainCharSelect.options).some((opt) => opt.value === this.defaults.charKey);
+      if (!this.defaults.charKey || !hasChar) {
+        this.defaults.charKey = mappingDefaultForSkill(this.defaults.skillKey);
       }
     }
 

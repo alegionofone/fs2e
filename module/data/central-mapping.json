@@ -52,31 +52,39 @@
   "natural": {
     "charm": {
       "desc": "This is the ability to get people to like you. It can be used to ingratiate yourself to someone, reduce their hostility to you, enable you to con them or even make them fall in love with you. Characters should use this skill whenever they hope to leave someone else with a better view of them than they started with. This skill usually only works on individuals and small groups; swaying larger groups requires Oratory or Leadership.",
-      "comp": ""
+      "default": "extrovert"
     },
     "dodge": {
-      "desc": "This encompasses all kinds of different ways of avoiding an attack \u00e2\u20ac\u201d bobbing and weaving, ducking, leaping over a kick or diving for cover. A successful dodge usually leaves a character about where he was when he made the roll, but players can also specify that their characters end up as far as they like."
+      "desc": "This encompasses all kinds of different ways of avoiding an attack bobbing and weaving, ducking, leaping over a kick or diving for cover. A successful dodge usually leaves a character about where he was when he made the roll, but players can also specify that their characters end up as far as they like.",
+      "default": "dexterity"
     },
     "fight": {
-      "desc": "Fight represents a character\u00e2\u20ac\u2122s ability in unarmed hand-to-hand combat. Low levels generally mean a character rarely gets into fights and, when he does, is little more than a brawler. Higher levels imply that a character has fought a lot, had advanced training in the subject, or both. Extensive training in hand-to-hand combat can also mean having the character learn some martial arts (see Combat Actions, under Learned Skills). More detailed rules on Fight are in Chapter Six: Combat."
+      "desc": "Fight represents a character's ability in unarmed hand-to-hand combat. Low levels generally mean a character rarely gets into fights and, when he does, is little more than a brawler. Higher levels imply that a character has fought a lot, had advanced training in the subject, or both. Extensive training in hand-to-hand combat can also mean having the character learn some martial arts (see Combat Actions, under Learned Skills). More detailed rules on Fight are in Chapter Six: Combat.",
+      "default": "strength"
     },
     "impress": {
-      "desc": "While Charm helps a character make other people like her, Impress can have any number of effects on its target. A character might want to scare someone, gain her respect, browbeat her into submission or just make sure she remembers something. This can be a useful skill for getting information out of people, though that sometimes requires torture."
+      "desc": "While Charm helps a character make other people like her, Impress can have any number of effects on its target. A character might want to scare someone, gain her respect, browbeat her into submission or just make sure she remembers something. This can be a useful skill for getting information out of people, though that sometimes requires torture.",
+      "default": "extrovert"
     },
     "melee": {
-      "desc": "While Fight deals with unarmed combat, Melee takes into account all the hand-to-hand weapons, be they clubs, energy swords, rapiers or poisoned daggers. The most talented characters generally also learn various fencing actions (see Combat Actions, under Learned Skills). The uses of Melee are more fully explored in Chapter Six: Combat."
+      "desc": "While Fight deals with unarmed combat, Melee takes into account all the hand-to-hand weapons, be they clubs, energy swords, rapiers or poisoned daggers. The most talented characters generally also learn various fencing actions (see Combat Actions, under Learned Skills). The uses of Melee are more fully explored in Chapter Six: Combat.",
+      "default": "strength"
     },
     "observe": {
-      "desc": "Some people stay constantly aware of the world around them, and others have to work at it \u00e2\u20ac\u201d and still remain oblivious to everything else. The Observe skill generally reflects a person\u00e2\u20ac\u2122s innate sensitivity to the world around him. When she actually tries to see what\u00e2\u20ac\u2122s going on she should use Inquiry or Search. Thus a sentry would generally need Observe while someone frisking an infiltrator would need Search."
+      "desc": "Some people stay constantly aware of the world around them, and others have to work at it and still remain oblivious to everything else. The Observe skill generally reflects a person\u00e2\u20ac\u2122s innate sensitivity to the world around him. When she actually tries to see what's going on she should use Inquiry or Search. Thus a sentry would generally need Observe while someone frisking an infiltrator would need Search.",
+      "default": "perception"
     },
     "shoot": {
-      "desc": "Shoot covers any portable missile weapon that doesn\u00e2\u20ac\u2122t rely on muscle power. This means muskets, lasers, blasters, assault rifles, flamers, stunners and all sorts of weird alien guns. It does not cover such areas as artillery and most ship or vehicle-mounted guns. For more information on using Shoot, see Chapter Six: Combat."
+      "desc": "Shoot covers any portable missile weapon that doesn't rely on muscle power. This means muskets, lasers, blasters, assault rifles, flamers, stunners and all sorts of weird alien guns. It does not cover such areas as artillery and most ship or vehicle-mounted guns. For more information on using Shoot, see Chapter Six: Combat.",
+      "default": "dexterity"
     },
     "sneak": {
-      "desc": "Characters do a lot of things that they don\u00e2\u20ac\u2122t want other people to notice. Sneak takes that into account, and applies to actions like moving quietly, hiding, using camouflage or slipping past sentries. It almost always applies to physical actions, and attempts to sneak into a computer database require science skills, not Sneak."
+      "desc": "Characters do a lot of things that they don't want other people to notice. Sneak takes that into account, and applies to actions like moving quietly, hiding, using camouflage or slipping past sentries. It almost always applies to physical actions, and attempts to sneak into a computer database require science skills, not Sneak.",
+      "default": "dexterity"
     },
     "vigor": {
-      "desc": "This skill takes into account many of the physical activities in which people engage. Running, jumping, swimming, climbing, and more all fall into this category. Almost everyone has at least some familiarity with these activities, but most people have not had any real training in them. Characters with more extensive training, and who want to make neat rolls and flips, should buy the Acrobatics learned skill.\n\nSome of the rolls listed here give specific details on how far a character can run, jump or swim, but gamemasters should not feel tied to these. For the most part, Vigor rolls are all or nothing affairs. Either the character leapt from the grav car to the galloping horse or else he fell on his face. The distance guidelines are only there for special circumstances."
+      "desc": "This skill takes into account many of the physical activities in which people engage. Running, jumping, swimming, climbing, and more all fall into this category. Almost everyone has at least some familiarity with these activities, but most people have not had any real training in them. Characters with more extensive training, and who want to make neat rolls and flips, should buy the Acrobatics learned skill.\n\nSome of the rolls listed here give specific details on how far a character can run, jump or swim, but gamemasters should not feel tied to these. For the most part, Vigor rolls are all or nothing affairs. Either the character leapt from the grav car to the galloping horse or else he fell on his face. The distance guidelines are only there for special circumstances.",
+      "default": "strength"
     }
   },
   "learned": {
