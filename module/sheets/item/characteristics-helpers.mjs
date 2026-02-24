@@ -19,16 +19,14 @@ export function buildCharacteristicsView(system = {}) {
         key,
         label: labelize(key),
         history: group?.[key]?.history ?? 0,
-        base: group?.[key]?.base ?? 0,
-        max: group?.[key]?.max ?? 0
+        base: group?.[key]?.base ?? 0
       }));
     }
     return Object.entries(group ?? {}).map(([key, val]) => ({
       key,
       label: labelize(key),
       history: val?.history ?? 0,
-      base: val?.base ?? 0,
-      max: val?.max ?? 0
+      base: val?.base ?? 0
     }));
   };
 
@@ -68,15 +66,6 @@ export function buildCharacteristicsView(system = {}) {
     faith: pairValues.faithEgo === "faith" ? 3 : 1,
     ego: pairValues.faithEgo === "ego" ? 3 : 1
   };
-  const maxMap = {
-    extrovert: 10 - baseMap.introvert,
-    introvert: 10 - baseMap.extrovert,
-    passion: 10 - baseMap.calm,
-    calm: 10 - baseMap.passion,
-    faith: 10 - baseMap.ego,
-    ego: 10 - baseMap.faith
-  };
-
   const spiritLeft = leftKeys.map((key) => {
     const pair = pairMap[key];
     const spiritTags = normalizeSpiritTags(speciesSpirit?.[pair]);
@@ -87,8 +76,7 @@ export function buildCharacteristicsView(system = {}) {
       speciesSpirit: spiritTags,
       showRadios: !hasAlwaysTag(spiritTags),
       label: labelize(key),
-      base: baseMap[key] ?? 0,
-      max: maxMap[key] ?? 0
+      base: baseMap[key] ?? 0
     };
   });
   const spiritRight = rightKeys.map((key) => {
@@ -98,8 +86,7 @@ export function buildCharacteristicsView(system = {}) {
       pair,
       checked: pairValues[pair] === key,
       label: labelize(key),
-      base: baseMap[key] ?? 0,
-      max: maxMap[key] ?? 0
+      base: baseMap[key] ?? 0
     };
   });
 
@@ -140,13 +127,6 @@ export function bindSpiritRadios(html, item) {
     updateData["system.characteristics.spirit.calm.base"] = baseCalm;
     updateData["system.characteristics.spirit.faith.base"] = baseFaith;
     updateData["system.characteristics.spirit.ego.base"] = baseEgo;
-
-    updateData["system.characteristics.spirit.extrovert.max"] = 10 - baseIntrovert;
-    updateData["system.characteristics.spirit.introvert.max"] = 10 - baseExtrovert;
-    updateData["system.characteristics.spirit.passion.max"] = 10 - baseCalm;
-    updateData["system.characteristics.spirit.calm.max"] = 10 - basePassion;
-    updateData["system.characteristics.spirit.faith.max"] = 10 - baseEgo;
-    updateData["system.characteristics.spirit.ego.max"] = 10 - baseFaith;
 
     item.update(updateData);
   });

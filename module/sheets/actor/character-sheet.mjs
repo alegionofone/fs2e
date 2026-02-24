@@ -111,7 +111,17 @@ export class FS2ECharacterSheet extends ActorSheet {
     };
 
     // ---------------- characteristics ----------------
-    const ch = context.system?.characteristics ?? {};
+    const chPrimary = context.system?.characteristics ?? {};
+    const chLegacy = context.system?.system?.characteristics ?? {};
+    const chModel =
+      game?.system?.documentTypes?.Actor?.character?.system?.characteristics ??
+      game?.system?.model?.Actor?.character?.system?.characteristics ??
+      {};
+    const ch = foundry.utils.mergeObject(
+      chModel,
+      foundry.utils.mergeObject(chLegacy, chPrimary, { inplace: false, recursive: true }),
+      { inplace: false, recursive: true }
+    );
     const body   = ch.body   ?? {};
     const mind   = ch.mind   ?? {};
     const spirit = ch.spirit ?? {};
@@ -467,7 +477,10 @@ export class FS2ECharacterSheet extends ActorSheet {
     const speciesField = root.querySelector('[data-drop-species]');
     if (speciesField) {
       // Allow dropping
-      speciesField.addEventListener('dragover', ev => ev.preventDefault());
+      speciesField.addEventListener('dragover', ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+      });
       speciesField.addEventListener('drop', this.#onDropSpecies.bind(this));
 
       // Open linked species item
@@ -486,7 +499,14 @@ export class FS2ECharacterSheet extends ActorSheet {
       root.querySelectorAll('.clear-species').forEach(el => {
         el.addEventListener('click', async ev => {
           ev.preventDefault();
-          await this.actor.update({ "system.data.species": { uuid: "", name: "" } });
+          await this.#restoreSpeciesFromSnapshot({ clearSpeciesLink: true });
+          const speciesIds = (this.actor.items ?? [])
+            .filter((i) => i.type === "species")
+            .map((i) => i.id)
+            .filter(Boolean);
+          if (speciesIds.length) {
+            await this.actor.deleteEmbeddedDocuments("Item", speciesIds);
+          }
         });
       });
     }
@@ -802,9 +822,245 @@ export class FS2ECharacterSheet extends ActorSheet {
     });
   }
 
+  #normalizeSpeciesSpiritTags(value) {
+    const list = Array.isArray(value) ? value : [];
+    return [...new Set(list
+      .map((v) => String(v ?? "").trim().toLowerCase())
+      .filter((v) => v === "always" || v === "choice"))];
+  }
+
+  async #promptSpiritCharacteristics(speciesItem) {
+    const speciesSpirit = speciesItem?.system?.characteristics?.speciesSpirit ?? {};
+    const currentPairs = speciesItem?.system?.characteristics?.spiritPairs ?? {};
+    const pairDefaults = {
+      extrovertIntrovert: "extrovert",
+      passionCalm: "passion",
+      faithEgo: "faith"
+    };
+    const pairs = {
+      extrovertIntrovert: currentPairs.extrovertIntrovert ?? pairDefaults.extrovertIntrovert,
+      passionCalm: currentPairs.passionCalm ?? pairDefaults.passionCalm,
+      faithEgo: currentPairs.faithEgo ?? pairDefaults.faithEgo
+    };
+
+    const rows = [
+      {
+        pair: "extrovertIntrovert",
+        left: { key: "extrovert", label: "Extrovert" },
+        right: { key: "introvert", label: "Introvert" }
+      },
+      {
+        pair: "passionCalm",
+        left: { key: "passion", label: "Passion" },
+        right: { key: "calm", label: "Calm" }
+      },
+      {
+        pair: "faithEgo",
+        left: { key: "faith", label: "Faith" },
+        right: { key: "ego", label: "Ego" }
+      }
+    ];
+
+    const selectableRows = rows.filter((row) => {
+      const tags = this.#normalizeSpeciesSpiritTags(speciesSpirit?.[row.pair]);
+      const hasAlways = tags.includes("always");
+      const hasChoice = tags.includes("choice");
+      return hasChoice && !hasAlways;
+    });
+
+    if (!selectableRows.length) return pairs;
+
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      };
+
+      const rowsHtml = selectableRows.map((row) => `
+        <div
+          class="fs2e-species-spirit-row"
+          data-pair="${row.pair}"
+          style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:8px;padding-bottom:5px;"
+        >
+          <label style="justify-self:end;display:inline-flex;align-items:center;gap:4px;">
+            <input type="radio" name="${row.pair}" value="${row.left.key}" />
+            <span>${row.left.label}</span>
+          </label>
+          <span style="justify-self:center;">/</span>
+          <label style="justify-self:start;display:inline-flex;align-items:center;gap:4px;">
+            <span>${row.right.label}</span>
+            <input type="radio" name="${row.pair}" value="${row.right.key}" />
+          </label>
+        </div>
+      `).join("");
+
+      const content = `
+        <form class="fs2e-dice-roller">
+          <header class="fs2e-dialog-header">
+            <h2>Spirit Charactertics</h2>
+            <div class="fs2e-subtitle">Please chose your primary spirit characteristics.</div>
+          </header>
+          <section class="fs2e-section">
+            ${rowsHtml}
+            <div class="fs2e-actions" style="margin-top: 8px;">
+              <button
+                type="button"
+                class="fs2e-species-spirit-continue"
+                disabled
+                style="opacity: 0.45; cursor: not-allowed;"
+              >Continue</button>
+            </div>
+          </section>
+        </form>
+      `;
+
+      let dialog = null;
+      dialog = new Dialog({
+        title: "Spirit Charactertics",
+        content,
+        buttons: {},
+        render: (html) => {
+          const root = html[0];
+          const continueBtn = root.querySelector(".fs2e-species-spirit-continue");
+          if (!continueBtn) return;
+
+          const setContinueState = () => {
+            const ready = selectableRows.every((row) =>
+              !!root.querySelector(`input[name="${row.pair}"]:checked`)
+            );
+            continueBtn.disabled = !ready;
+            continueBtn.style.opacity = ready ? "1" : "0.45";
+            continueBtn.style.cursor = ready ? "pointer" : "not-allowed";
+          };
+
+          root.querySelectorAll('input[type="radio"]').forEach((input) => {
+            input.addEventListener("change", setContinueState);
+          });
+
+          continueBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            const selected = { ...pairs };
+            for (const row of selectableRows) {
+              const value = root.querySelector(`input[name="${row.pair}"]:checked`)?.value;
+              if (!value) return;
+              selected[row.pair] = value;
+            }
+            finish(selected);
+            dialog?.close();
+          });
+
+          setContinueState();
+        },
+        close: () => finish(null)
+      }, {
+        classes: ["fs2e", "dialog", "dice-roller"],
+        width: 350,
+        height: "auto",
+        resizable: true
+      });
+      dialog.render(true);
+    });
+  }
+
+  #speciesRestorePaths() {
+    return [
+      "spiritPairs.extrovertIntrovert",
+      "spiritPairs.passionCalm",
+      "spiritPairs.faithEgo",
+      "body.strength.base",
+      "body.dexterity.base",
+      "body.endurance.base",
+      "mind.wits.base",
+      "mind.perception.base",
+      "mind.tech.base",
+      "spirit.extrovert.base",
+      "spirit.introvert.base",
+      "spirit.passion.base",
+      "spirit.calm.base",
+      "spirit.faith.base",
+      "spirit.ego.base",
+      "spirit.extrovert.max",
+      "spirit.introvert.max",
+      "spirit.passion.max",
+      "spirit.calm.max",
+      "spirit.faith.max",
+      "spirit.ego.max"
+    ];
+  }
+
+  async #saveSpeciesRestoreSnapshot() {
+    const hasPrimary = !!foundry.utils.getProperty(this.actor.system, "characteristics");
+    const hasLegacy = !!foundry.utils.getProperty(this.actor.system, "system.characteristics");
+    const hasPrimaryData = !!foundry.utils.getProperty(this.actor.system, "data");
+    const hasLegacyData = !!foundry.utils.getProperty(this.actor.system, "system.data");
+    const snapshot = {
+      hasPrimary,
+      hasLegacy,
+      hasPrimaryData,
+      hasLegacyData,
+      characteristics: {},
+      legacyCharacteristics: {},
+      speciesRef: hasPrimaryData
+        ? foundry.utils.deepClone(this.actor.system?.data?.species ?? { uuid: "", name: "" })
+        : null,
+      legacySpeciesRef: hasLegacyData
+        ? foundry.utils.deepClone(foundry.utils.getProperty(this.actor.system, "system.data.species") ?? { uuid: "", name: "" })
+        : null
+    };
+    for (const suffix of this.#speciesRestorePaths()) {
+      if (hasPrimary) {
+        snapshot.characteristics[suffix] = foundry.utils.getProperty(this.actor.system, `characteristics.${suffix}`);
+      }
+      if (hasLegacy) {
+        snapshot.legacyCharacteristics[suffix] = foundry.utils.getProperty(this.actor.system, `system.characteristics.${suffix}`);
+      }
+    }
+    await this.actor.setFlag("fs2e", "speciesRestoreSnapshot", snapshot);
+  }
+
+  async #restoreSpeciesFromSnapshot({ clearSpeciesLink = true } = {}) {
+    const snapshot = this.actor.getFlag("fs2e", "speciesRestoreSnapshot");
+    if (!snapshot || typeof snapshot !== "object") {
+      if (clearSpeciesLink) {
+        const fallbackUpdate = { "system.data.species": { uuid: "", name: "" } };
+        fallbackUpdate["system.system.data.species"] = { uuid: "", name: "" };
+        await this.actor.update(fallbackUpdate);
+      }
+      return;
+    }
+
+    const updateData = {};
+    const hasPrimary = !!snapshot.hasPrimary;
+    const hasLegacy = !!snapshot.hasLegacy;
+    const hasPrimaryData = !!snapshot.hasPrimaryData;
+    const hasLegacyData = !!snapshot.hasLegacyData;
+    for (const suffix of this.#speciesRestorePaths()) {
+      if (hasPrimary && Object.prototype.hasOwnProperty.call(snapshot.characteristics ?? {}, suffix)) {
+        updateData[`system.characteristics.${suffix}`] = snapshot.characteristics[suffix];
+      }
+      if (hasLegacy && Object.prototype.hasOwnProperty.call(snapshot.legacyCharacteristics ?? {}, suffix)) {
+        updateData[`system.system.characteristics.${suffix}`] = snapshot.legacyCharacteristics[suffix];
+      }
+    }
+
+    if (clearSpeciesLink) {
+      updateData["system.data.species"] = { uuid: "", name: "" };
+      updateData["system.system.data.species"] = { uuid: "", name: "" };
+    } else {
+      updateData["system.data.species"] = foundry.utils.deepClone(snapshot.speciesRef ?? { uuid: "", name: "" });
+      updateData["system.system.data.species"] = foundry.utils.deepClone(snapshot.legacySpeciesRef ?? snapshot.speciesRef ?? { uuid: "", name: "" });
+    }
+
+    await this.actor.update(updateData);
+    await this.actor.unsetFlag("fs2e", "speciesRestoreSnapshot");
+  }
+
   // ----- Handle dropping an Item on the Species field
   async #onDropSpecies(event) {
     event.preventDefault();
+    event.stopPropagation();
     try {
       const data = TextEditor.getDragEventData(event);
       // Expecting an Item drag with a UUID
@@ -816,33 +1072,89 @@ export class FS2ECharacterSheet extends ActorSheet {
       if (doc.type !== "species") {
         return ui.notifications?.warn("Only Species items are allowed.");
       }
+
+      const currentSpeciesUuid =
+        (this.actor.system?.data?.species?.uuid || "") ||
+        (foundry.utils.getProperty(this.actor.system, "system.data.species.uuid") || "");
+      if (currentSpeciesUuid) {
+        await this.#restoreSpeciesFromSnapshot({ clearSpeciesLink: true });
+      }
+      await this.#saveSpeciesRestoreSnapshot();
+
       let speciesItem = doc;
+      const allSpeciesItems = (this.actor.items ?? []).filter((i) => i.type === "species");
+      const droppedSourceId =
+        doc?.uuid ||
+        doc?.getFlag?.("core", "sourceId") ||
+        doc?._stats?.compendiumSource ||
+        "";
+
       if (doc.parent?.id !== this.actor.id) {
-        const created = await this.actor.createEmbeddedDocuments("Item", [doc.toObject()]);
-        speciesItem = created?.[0] ?? doc;
+        const sameSpeciesItem = allSpeciesItems.find((i) => {
+          const sourceId =
+            i?.getFlag?.("core", "sourceId") ||
+            i?._stats?.compendiumSource ||
+            "";
+          return (droppedSourceId && sourceId === droppedSourceId) || i.name === doc.name;
+        });
+        if (sameSpeciesItem) {
+          speciesItem = sameSpeciesItem;
+        } else {
+          const created = await this.actor.createEmbeddedDocuments("Item", [doc.toObject()]);
+          speciesItem = created?.[0] ?? doc;
+        }
       }
 
-      const updateData = {
-        "system.data.species": { uuid: speciesItem.uuid, name: speciesItem.name }
+      const staleSpeciesIds = (this.actor.items ?? [])
+        .filter((i) => i.type === "species" && i.id !== speciesItem.id)
+        .map((i) => i.id)
+        .filter(Boolean);
+      if (staleSpeciesIds.length) {
+        await this.actor.deleteEmbeddedDocuments("Item", staleSpeciesIds);
+      }
+
+      const selectedPairs = await this.#promptSpiritCharacteristics(speciesItem);
+      if (!selectedPairs) return;
+
+      await speciesItem.update({
+        "system.characteristics.spiritPairs.extrovertIntrovert": selectedPairs.extrovertIntrovert,
+        "system.characteristics.spiritPairs.passionCalm": selectedPairs.passionCalm,
+        "system.characteristics.spiritPairs.faithEgo": selectedPairs.faithEgo
+      });
+
+      const hasPrimaryCharacteristics = !!foundry.utils.getProperty(this.actor.system, "characteristics");
+      const hasLegacyCharacteristics = !!foundry.utils.getProperty(this.actor.system, "system.characteristics");
+      const updateData = {};
+      updateData["system.data.species"] = { uuid: speciesItem.uuid, name: speciesItem.name };
+      updateData["system.system.data.species"] = { uuid: speciesItem.uuid, name: speciesItem.name };
+      const setCharacteristicValue = (pathSuffix, value) => {
+        if (hasPrimaryCharacteristics) {
+          updateData[`system.characteristics.${pathSuffix}`] = value;
+        }
+        if (hasLegacyCharacteristics) {
+          updateData[`system.system.characteristics.${pathSuffix}`] = value;
+        }
       };
 
       const speciesChars = speciesItem.system?.characteristics ?? {};
-      const speciesPairs = speciesChars.spiritPairs ?? {};
-      if (Object.keys(speciesPairs).length) {
-        updateData["system.characteristics.spiritPairs.extrovertIntrovert"] = speciesPairs.extrovertIntrovert ?? "extrovert";
-        updateData["system.characteristics.spiritPairs.passionCalm"] = speciesPairs.passionCalm ?? "passion";
-        updateData["system.characteristics.spiritPairs.faithEgo"] = speciesPairs.faithEgo ?? "faith";
+      const speciesPairs = selectedPairs ?? speciesChars.spiritPairs ?? {};
+      setCharacteristicValue("spiritPairs.extrovertIntrovert", speciesPairs.extrovertIntrovert ?? "extrovert");
+      setCharacteristicValue("spiritPairs.passionCalm", speciesPairs.passionCalm ?? "passion");
+      setCharacteristicValue("spiritPairs.faithEgo", speciesPairs.faithEgo ?? "faith");
+      const charModel =
+        game?.system?.documentTypes?.Actor?.character?.system?.characteristics ??
+        game?.system?.model?.Actor?.character?.system?.characteristics ??
+        {};
+      const defaultBase = (group, key) => Number(charModel?.[group]?.[key]?.base ?? 0);
+      const bodyKeys = ["strength", "dexterity", "endurance"];
+      const mindKeys = ["wits", "perception", "tech"];
+      for (const key of bodyKeys) {
+        const value = speciesChars?.body?.[key]?.base;
+        setCharacteristicValue(`body.${key}.base`, value !== undefined ? value : defaultBase("body", key));
       }
-      for (const group of ["body", "mind", "spirit"]) {
-        const entries = speciesChars[group] ?? {};
-        for (const [key, val] of Object.entries(entries)) {
-          if (val?.base !== undefined) {
-            updateData[`system.characteristics.${group}.${key}.base`] = val.base;
-          }
-          if (group !== "spirit" && val?.max !== undefined) {
-            updateData[`system.characteristics.${group}.${key}.max`] = val.max;
-          }
-        }
+      for (const key of mindKeys) {
+        const value = speciesChars?.mind?.[key]?.base;
+        setCharacteristicValue(`mind.${key}.base`, value !== undefined ? value : defaultBase("mind", key));
       }
 
       const spiritPairs = {
@@ -860,8 +1172,8 @@ export class FS2ECharacterSheet extends ActorSheet {
       };
       const opp = { extrovert: "introvert", introvert: "extrovert", passion: "calm", calm: "passion", faith: "ego", ego: "faith" };
       for (const key of Object.keys(opp)) {
-        updateData[`system.characteristics.spirit.${key}.base`] = baseMap[key];
-        updateData[`system.characteristics.spirit.${key}.max`] = 10 - baseMap[opp[key]];
+        setCharacteristicValue(`spirit.${key}.base`, baseMap[key]);
+        setCharacteristicValue(`spirit.${key}.max`, 10 - baseMap[opp[key]]);
       }
 
       await this.actor.update(updateData);

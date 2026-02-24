@@ -117,11 +117,16 @@ Hooks.once("ready", () => {
 
 Hooks.on("preUpdateActor", (actor, updateData) => {
   if (actor?.type !== "character") return;
+  const hasPrimaryCharacteristics = !!foundry.utils.getProperty(actor.system, "characteristics");
+  const hasLegacyCharacteristics = !!foundry.utils.getProperty(actor.system, "system.characteristics");
 
   const getBase = (key) => {
-    const current = actor.system?.characteristics?.spirit?.[key]?.base ?? 0;
-    const path = `system.characteristics.spirit.${key}.base`;
-    const pending = foundry.utils.getProperty(updateData, path);
+    const currentPrimary = actor.system?.characteristics?.spirit?.[key]?.base;
+    const currentLegacy = actor.system?.system?.characteristics?.spirit?.[key]?.base;
+    const pendingPrimary = foundry.utils.getProperty(updateData, `system.characteristics.spirit.${key}.base`);
+    const pendingLegacy = foundry.utils.getProperty(updateData, `system.system.characteristics.spirit.${key}.base`);
+    const pending = pendingPrimary ?? pendingLegacy;
+    const current = currentPrimary ?? currentLegacy ?? 0;
     return Number(pending ?? current ?? 0);
   };
 
@@ -133,8 +138,14 @@ Hooks.on("preUpdateActor", (actor, updateData) => {
     faith: getBase("faith"),
     ego: getBase("ego")
   };
-  const setMax = (key, value) =>
-    foundry.utils.setProperty(updateData, `system.characteristics.spirit.${key}.max`, value);
+  const setMax = (key, value) => {
+    if (hasPrimaryCharacteristics) {
+      foundry.utils.setProperty(updateData, `system.characteristics.spirit.${key}.max`, value);
+    }
+    if (hasLegacyCharacteristics) {
+      foundry.utils.setProperty(updateData, `system.system.characteristics.spirit.${key}.max`, value);
+    }
+  };
   setMax("extrovert", 10 - bases.introvert);
   setMax("introvert", 10 - bases.extrovert);
   setMax("passion", 10 - bases.calm);
@@ -175,20 +186,42 @@ function recalcHistory(actor) {
 const updateSpecies = async (item) => {
   const actor = item?.parent;
   if (!actor || actor.type !== "character" || item.type !== "species") return;
-  const updateData = { "system.data.species": { uuid: item.uuid, name: item.name } };
+  const linkedSpeciesUuid =
+    (actor.system?.data?.species?.uuid || "") ||
+    (foundry.utils.getProperty(actor.system, "system.data.species.uuid") || "");
+  if (!linkedSpeciesUuid || linkedSpeciesUuid !== item.uuid) return;
+  const hasPrimaryCharacteristics = !!foundry.utils.getProperty(actor.system, "characteristics");
+  const hasLegacyCharacteristics = !!foundry.utils.getProperty(actor.system, "system.characteristics");
+  const updateData = {};
+  updateData["system.data.species"] = { uuid: item.uuid, name: item.name };
+  updateData["system.system.data.species"] = { uuid: item.uuid, name: item.name };
+  const setCharacteristicValue = (pathSuffix, value) => {
+    if (hasPrimaryCharacteristics) {
+      updateData[`system.characteristics.${pathSuffix}`] = value;
+    }
+    if (hasLegacyCharacteristics) {
+      updateData[`system.system.characteristics.${pathSuffix}`] = value;
+    }
+  };
   const speciesChars = item.system?.characteristics ?? {};
   const speciesPairs = speciesChars.spiritPairs ?? {};
-  if (Object.keys(speciesPairs).length) {
-    updateData["system.characteristics.spiritPairs.extrovertIntrovert"] = speciesPairs.extrovertIntrovert ?? "extrovert";
-    updateData["system.characteristics.spiritPairs.passionCalm"] = speciesPairs.passionCalm ?? "passion";
-    updateData["system.characteristics.spiritPairs.faithEgo"] = speciesPairs.faithEgo ?? "faith";
+  setCharacteristicValue("spiritPairs.extrovertIntrovert", speciesPairs.extrovertIntrovert ?? "extrovert");
+  setCharacteristicValue("spiritPairs.passionCalm", speciesPairs.passionCalm ?? "passion");
+  setCharacteristicValue("spiritPairs.faithEgo", speciesPairs.faithEgo ?? "faith");
+  const charModel =
+    game?.system?.documentTypes?.Actor?.character?.system?.characteristics ??
+    game?.system?.model?.Actor?.character?.system?.characteristics ??
+    {};
+  const defaultBase = (group, key) => Number(charModel?.[group]?.[key]?.base ?? 0);
+  const bodyKeys = ["strength", "dexterity", "endurance"];
+  const mindKeys = ["wits", "perception", "tech"];
+  for (const key of bodyKeys) {
+    const value = speciesChars?.body?.[key]?.base;
+    setCharacteristicValue(`body.${key}.base`, value !== undefined ? value : defaultBase("body", key));
   }
-  for (const group of ["body", "mind", "spirit"]) {
-    const entries = speciesChars[group] ?? {};
-    for (const [key, val] of Object.entries(entries)) {
-      if (val?.base !== undefined) updateData[`system.characteristics.${group}.${key}.base`] = val.base;
-      if (group !== "spirit" && val?.max !== undefined) updateData[`system.characteristics.${group}.${key}.max`] = val.max;
-    }
+  for (const key of mindKeys) {
+    const value = speciesChars?.mind?.[key]?.base;
+    setCharacteristicValue(`mind.${key}.base`, value !== undefined ? value : defaultBase("mind", key));
   }
   const spiritPairs = {
     extrovertIntrovert: speciesPairs.extrovertIntrovert ?? "extrovert",
@@ -205,8 +238,8 @@ const updateSpecies = async (item) => {
   };
   const opp = { extrovert: "introvert", introvert: "extrovert", passion: "calm", calm: "passion", faith: "ego", ego: "faith" };
   for (const key of Object.keys(opp)) {
-    updateData[`system.characteristics.spirit.${key}.base`] = baseMap[key];
-    updateData[`system.characteristics.spirit.${key}.max`] = 10 - baseMap[opp[key]];
+    setCharacteristicValue(`spirit.${key}.base`, baseMap[key]);
+    setCharacteristicValue(`spirit.${key}.max`, 10 - baseMap[opp[key]]);
   }
   await actor.update(updateData);
 };

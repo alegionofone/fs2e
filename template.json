@@ -534,61 +534,49 @@
             "body": {
               "strength": {
                 "base": 0,
-                "history": 0,
-                "max": 0
+                "history": 0
               },
               "dexterity": {
                 "base": 0,
-                "history": 0,
-                "max": 0
+                "history": 0
               },
               "endurance": {
                 "base": 0,
-                "history": 0,
-                "max": 0
+                "history": 0
               }
             },
             "mind": {
               "wits": {
                 "base": 0,
-                "history": 0,
-                "max": 0
+                "history": 0
               },
               "perception": {
                 "base": 0,
-                "history": 0,
-                "max": 0
+                "history": 0
               },
               "tech": {
                 "base": 0,
-                "history": 0,
-                "max": 0
+                "history": 0
               }
             },
             "spirit": {
               "extrovert": {
-                "base": 0,
-                "max": 0
+                "base": 0
               },
               "introvert": {
-                "base": 0,
-                "max": 0
+                "base": 0
               },
               "passion": {
-                "base": 0,
-                "max": 0
+                "base": 0
               },
               "calm": {
-                "base": 0,
-                "max": 0
+                "base": 0
               },
               "faith": {
-                "base": 0,
-                "max": 0
+                "base": 0
               },
               "ego": {
-                "base": 0,
-                "max": 0
+                "base": 0
               }
             },
             "spiritPairs": {
