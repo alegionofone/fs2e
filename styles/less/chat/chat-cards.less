@@ -34,9 +34,9 @@
   }
 
   &__actor {
-    font-size: calc(var(--font-size-13) + 3px);
+    font-size: var(--font-size-16);
     color: var(--color-gold-lt);
-    font-family: var(--font-family-foundation);
+    font-family: var(--font-p22);
     white-space: nowrap;
   }
 
@@ -55,7 +55,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: calc(var(--font-size-12) + 3px);
+    font-size: var(--font-size-15);
   }
 
   &__summary-item.is-success {
@@ -68,11 +68,17 @@
 
   &__quality {
     margin-top: 9px;
-    font-size: 22px;
+    font-size: var(--font-size-22);
     font-weight: 600;
     color: var(--color-gold-lt);
     text-align: center;
     text-transform: uppercase;
+  }
+  &__quality.is-success {
+    color: #6fbf6f;
+  }
+  &__quality.is-failure {
+    color: #d16464;
   }
 
   &__goal {
@@ -177,6 +183,21 @@
     white-space: pre-line;
     font-size: var(--font-size-12);
     color: var(--color-gold-lt-mid);
+  }
+}
+
+.fs2e-contested-card {
+  .fs2e-contested-card__side {
+    margin-bottom: 6px;
+  }
+
+  .fs2e-contested-card__versus {
+    text-align: center;
+    font-size: var(--font-size-12);
+    color: var(--color-gold-lt-mid);
+    margin: 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 }
 

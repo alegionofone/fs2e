@@ -101,7 +101,7 @@ const resolveRoll = ({ die, gn, accent }) => {
   const natural18 = die === 18;
   const natural19 = die === 19;
   const natural20 = die === 20;
-  const critSuccess = natural18;
+  const critSuccess = (gn >= 18 && natural18) || (gn < 18 && die === gn);
   const critFailure = natural20;
   const success = natural1 || critSuccess || (!critFailure && !natural19 && adjustedRoll <= gn);
 
@@ -277,6 +277,59 @@ const getSkillLabel = (actor, key) => {
   return labelize(parts[parts.length - 1] ?? "");
 };
 
+const findTargetOwner = (actor) => {
+  const owner = game.users?.find((u) => u.active && actor?.testUserPermission?.(u, "OWNER"));
+  return owner ?? game.users?.find((u) => u.active && u.isGM) ?? game.user ?? null;
+};
+
+const postContestedChat = async ({ attacker, attackerResult, defender, defenderResult }) => {
+  const template = "systems/fs2e/templates/chat/contested-card.hbs";
+  const eff = (r) => (r.critSuccess ? (r.successes ?? 0) * 2 : (r.successes ?? 0));
+  const netSuccesses = eff(attackerResult) - eff(defenderResult);
+  const success = netSuccesses > 0;
+  const { vp: baseVP, quality: baseQuality } = success
+    ? vpFromAccentedSuccesses(netSuccesses, attackerResult.accent ?? 0)
+    : { vp: 0, quality: "Failure" };
+  const extraVP = extendedBonus(attackerResult.gn ?? 0);
+  const totalVP = success
+    ? (attackerResult.critSuccess ? (baseVP + extraVP) * 2 : (baseVP + extraVP))
+    : 0;
+  const quality = attackerResult.critFailure ? "Critical Failure" : baseQuality;
+  const html = await renderTemplate(template, {
+    attacker: {
+      title: attackerResult.skillLabel ? `${attackerResult.skillLabel} Roll` : "Roll",
+      actorName: attacker?.name ?? "",
+      actorImg: attacker?.img ?? "",
+      roll: attackerResult.roll,
+      rollAdjusted: attackerResult.rollAdjusted,
+      accent: attackerResult.accent,
+      gn: attackerResult.gn,
+      breakdown: attackerResult.breakdown
+    },
+    defender: {
+      title: defenderResult.skillLabel ? `${defenderResult.skillLabel} Roll` : "Roll",
+      actorName: defender?.name ?? "",
+      actorImg: defender?.img ?? "",
+      roll: defenderResult.roll,
+      rollAdjusted: defenderResult.rollAdjusted,
+      accent: defenderResult.accent,
+      gn: defenderResult.gn,
+      breakdown: defenderResult.breakdown
+    },
+    outcome: {
+      success,
+      successes: success ? netSuccesses : 0,
+      vp: totalVP,
+      quality
+    }
+  });
+  await ChatMessage.create({
+    user: game.user?.id,
+    speaker: ChatMessage.getSpeaker({ actor: attacker }),
+    content: html
+  });
+};
+
 const buildResultFromPreset = async (actor, preset = {}) => {
   const skillKey = preset.skillKey ?? "";
   const charKey = preset.charKey ?? "";
@@ -416,7 +469,8 @@ export class FS2EDiceRoller extends Application {
       compLocked: false,
       sustainEnabled: false,
       sustainTaskValue: 6,
-      sustainCurrent: 0
+      sustainCurrent: 0,
+      contestedEnabled: false
     };
     if (this.preset?.compResult) {
       this.state.compResult = this.preset.compResult;
@@ -434,6 +488,14 @@ export class FS2EDiceRoller extends Application {
       height: "auto",
       resizable: true
     });
+  }
+
+  get title() {
+    if (this.preset?.contestedResponder) {
+      const attackerSkill = this.preset?.contestedRequest?.attackerResult?.skillLabel ?? "";
+      return attackerSkill ? `Contested ${attackerSkill}` : "Contested Roll";
+    }
+    return this.defaults?.skillLabel ? `${this.defaults.skillLabel} Roll` : "Dice Roller";
   }
 
   /** @override */
@@ -467,7 +529,16 @@ export class FS2EDiceRoller extends Application {
       characteristics,
       difficulties: DIFFICULTY_OPTIONS,
       state: this.state,
-      defaults: this.defaults
+      defaults: this.defaults,
+      contestedAvailable: (game?.user?.targets?.size ?? 0) > 0 && !this.preset?.contestedResponder,
+      contestedEnabled: this.preset?.contestedEnabled ?? this.state.contestedEnabled,
+      contestedResponder: !!this.preset?.contestedResponder,
+      contestedTitle: this.preset?.contestedResponder
+        ? (() => {
+          const attackerSkill = this.preset?.contestedRequest?.attackerResult?.skillLabel ?? "";
+          return attackerSkill ? `Contested ${attackerSkill}` : "Contested Roll";
+        })()
+        : ""
     };
   }
 
@@ -481,7 +552,10 @@ export class FS2EDiceRoller extends Application {
         const val = Number(el?.value ?? fallback);
         return Number.isFinite(val) ? val : fallback;
       };
-      const skillVal = Number(this.defaults.skillValue ?? 0);
+      const mainSkillSelect = root.querySelector("#fs2e-main-skill");
+      const skillVal = mainSkillSelect
+        ? Number(mainSkillSelect.selectedOptions?.[0]?.dataset?.value ?? 0)
+        : Number(this.defaults.skillValue ?? 0);
       const accentMax = Math.max(0, Number.isFinite(skillVal) ? skillVal : 0);
       const mainCharSelect = root.querySelector("#fs2e-main-char");
       const mainCharOpt = mainCharSelect?.selectedOptions?.[0];
@@ -563,6 +637,10 @@ export class FS2EDiceRoller extends Application {
       );
       this.state.sustainCurrent = Number(root.querySelector("#fs2e-sustain-current-successes")?.value ?? 0);
     };
+    const cacheContestedState = () => {
+      const contestedToggle = root.querySelector("#fs2e-contested-toggle");
+      if (contestedToggle) this.state.contestedEnabled = contestedToggle.checked;
+    };
 
     // Characteristic values are derived from selected option; no direct sync.
 
@@ -606,6 +684,9 @@ export class FS2EDiceRoller extends Application {
       if (typeof preset.compLocked === "boolean") {
         this.state.compLocked = preset.compLocked;
       }
+      if (typeof preset.contestedEnabled === "boolean") {
+        this.state.contestedEnabled = preset.contestedEnabled;
+      }
         const compToggle = root.querySelector("#fs2e-comp-toggle");
         if (compToggle && typeof preset.compEnabled === "boolean") {
           compToggle.checked = preset.compEnabled;
@@ -613,6 +694,10 @@ export class FS2EDiceRoller extends Application {
         const sustainToggle = root.querySelector("#fs2e-sustain-toggle");
         if (sustainToggle && typeof preset.sustainEnabled === "boolean") {
           sustainToggle.checked = preset.sustainEnabled;
+        }
+        const contestedToggle = root.querySelector("#fs2e-contested-toggle");
+        if (contestedToggle && typeof preset.contestedEnabled === "boolean") {
+          contestedToggle.checked = preset.contestedEnabled;
         }
       if (preset.charKey) applyDefault("#fs2e-main-char", "#fs2e-main-char-val", preset.charKey);
       if (preset.compCharKey) applyDefault("#fs2e-comp-char", "#fs2e-comp-char-val", preset.compCharKey);
@@ -653,10 +738,11 @@ export class FS2EDiceRoller extends Application {
           compSection.dataset.enabled = compToggle.checked ? "1" : "0";
         }
         const sustainSection = root.querySelector(".fs2e-sustain-section");
-        if (sustainToggle && sustainSection) {
-          sustainSection.dataset.enabled = sustainToggle.checked ? "1" : "0";
-        }
+      if (sustainToggle && sustainSection) {
+        sustainSection.dataset.enabled = sustainToggle.checked ? "1" : "0";
+      }
       cacheSustainState();
+      cacheContestedState();
     };
 
     if (!this.preset) {
@@ -666,6 +752,8 @@ export class FS2EDiceRoller extends Application {
       if (sustainTask) sustainTask.value = String(this.state.sustainTaskValue ?? 6);
       const sustainCurrent = root.querySelector("#fs2e-sustain-current-successes");
       if (sustainCurrent) sustainCurrent.value = String(this.state.sustainCurrent ?? 0);
+      const contestedToggle = root.querySelector("#fs2e-contested-toggle");
+      if (contestedToggle) contestedToggle.checked = (game?.user?.targets?.size ?? 0) > 0;
     }
 
     const diffSelects = root.querySelectorAll("[data-diff-select]");
@@ -696,6 +784,11 @@ export class FS2EDiceRoller extends Application {
       sustainToggle.addEventListener("change", update);
       update();
     }
+    const contestedToggle = root.querySelector("#fs2e-contested-toggle");
+    if (contestedToggle) {
+      contestedToggle.addEventListener("change", () => cacheContestedState());
+      cacheContestedState();
+    }
 
     const rollComp = root.querySelector("#fs2e-roll-comp");
     if (rollComp) {
@@ -703,6 +796,7 @@ export class FS2EDiceRoller extends Application {
         ev.preventDefault();
         if (this.state.compLocked) return;
         cacheSustainState();
+        cacheContestedState();
         const result = await this._rollFromForm(root, { isComplementary: true });
         this.state.compResult = result;
         this.render(false);
@@ -714,9 +808,69 @@ export class FS2EDiceRoller extends Application {
       rollMain.addEventListener("click", async (ev) => {
         ev.preventDefault();
         cacheSustainState();
+        cacheContestedState();
         const result = await this._rollFromForm(root, { isComplementary: false });
         this.state.mainResult = result;
         this.state.compLocked = true;
+        if (result.preset?.contestedEnabled && !result.preset?.contestedResponder) {
+          const targets = Array.from(game.user?.targets ?? []);
+          if (!targets.length) {
+            ui.notifications?.warn?.("No valid target for contested roll.");
+            return;
+          }
+          let sent = 0;
+          for (const target of targets) {
+            const targetActor = target?.actor ?? null;
+            const owner = targetActor ? findTargetOwner(targetActor) : null;
+            if (!targetActor || !owner) continue;
+            const payload = {
+              type: "contested-request",
+              targetUserId: owner.id,
+              targetActorUuid: targetActor.uuid,
+              attackerUuid: this.actor?.uuid ?? "",
+              attackerResult: result
+            };
+            if (owner.id === game.user?.id) {
+              game.fs2e?.openDiceRoller?.({
+                actor: targetActor,
+                preset: {
+                  contestedResponder: true,
+                  contestedEnabled: false,
+                  contestedRequest: {
+                    attackerUuid: payload.attackerUuid,
+                    attackerResult: payload.attackerResult
+                  }
+                }
+              });
+            } else {
+              game.socket?.emit("system.fs2e", payload);
+            }
+            sent++;
+          }
+          if (!sent) {
+            ui.notifications?.warn?.("No valid targets for contested roll.");
+            return;
+          }
+          ui.notifications?.info?.("Contested roll sent to target.");
+          this.close();
+          return;
+        }
+        if (result.preset?.contestedResponder && result.preset?.contestedRequest) {
+          const req = result.preset.contestedRequest;
+          const attacker = await fromUuid(req.attackerUuid);
+          if (attacker) {
+      await postContestedChat({
+        attacker,
+        attackerResult: req.attackerResult,
+        defender: this.actor,
+        defenderResult: result
+      });
+          } else {
+            await this._postChatCard(result);
+          }
+          this.close();
+          return;
+        }
         await this._postChatCard(result);
         this.close();
       });
@@ -767,9 +921,12 @@ export class FS2EDiceRoller extends Application {
       return Number.isFinite(val) ? val : fallback;
     };
 
+    const mainSkillSelect = root.querySelector("#fs2e-main-skill");
     const skillVal = isComplementary
       ? Number(root.querySelector("#fs2e-comp-skill")?.selectedOptions?.[0]?.dataset?.value ?? 0)
-      : Number(this.defaults.skillValue ?? 0);
+      : Number(
+        mainSkillSelect?.selectedOptions?.[0]?.dataset?.value ?? this.defaults.skillValue ?? 0
+      );
     const charSelect = root.querySelector(isComplementary ? "#fs2e-comp-char" : "#fs2e-main-char");
     const charOpt = charSelect?.selectedOptions?.[0];
     const charVal = Number(charOpt?.dataset?.value ?? 0);
@@ -787,7 +944,8 @@ export class FS2EDiceRoller extends Application {
     const woundPenalty = getWoundPenalty(this.actor);
     const accentMax = Math.max(0, Number.isFinite(this.defaults.skillValue) ? this.defaults.skillValue : 0);
     const accent = clamp(getNumber("#fs2e-accent-value", 0), -accentMax, accentMax);
-    const sustainEnabled = root.querySelector("#fs2e-sustain-toggle")?.checked ?? false;
+    const contestedEnabled = root.querySelector("#fs2e-contested-toggle")?.checked ?? false;
+    const sustainEnabled = !contestedEnabled && (root.querySelector("#fs2e-sustain-toggle")?.checked ?? false);
     const sustainTaskSelect = root.querySelector("#fs2e-sustain-task-select");
     const sustainTaskValue = Number(
       sustainTaskSelect?.selectedOptions?.[0]?.dataset?.value ?? sustainTaskSelect?.value ?? 0
@@ -799,11 +957,11 @@ export class FS2EDiceRoller extends Application {
 
     const skillLabel = isComplementary
       ? (root.querySelector("#fs2e-comp-skill")?.selectedOptions?.[0]?.textContent ?? "").trim()
-      : (this.defaults.skillLabel ?? "");
+      : (mainSkillSelect?.selectedOptions?.[0]?.textContent ?? this.defaults.skillLabel ?? "").trim();
     const charLabel = (charOpt?.textContent ?? "").trim();
     const preset = {
       actorUuid: this.actor?.uuid ?? "",
-      skillKey: this.defaults.skillKey ?? "",
+      skillKey: mainSkillSelect?.value ?? this.defaults.skillKey ?? "",
       charKey: charSelect?.value ?? "",
       diffValue: diffSelect?.value ?? 0,
       customDiff,
@@ -819,7 +977,10 @@ export class FS2EDiceRoller extends Application {
       compLocked: this.state.compLocked,
       sustainEnabled,
       sustainTaskValue,
-      sustainCurrent
+      sustainCurrent,
+      contestedEnabled,
+      contestedResponder: !!this.preset?.contestedResponder,
+      contestedRequest: this.preset?.contestedRequest ?? null
     };
     const breakdown = [
       { label: `${charLabel} + ${skillLabel}`, value: `${base}` },
@@ -875,20 +1036,25 @@ export class FS2EDiceRoller extends Application {
       quality: rollResult.quality,
       breakdown,
       trace,
-      preset
+      preset,
+      skillLabel
     };
   }
 
   async _postChatCard(result) {
     await postChatCard(this.actor, {
       ...result,
-      skillLabel: this.defaults.skillLabel ?? ""
+      skillLabel: result.skillLabel ?? this.defaults.skillLabel ?? ""
     }, result.preset ?? null);
   }
 }
 
 export function openDiceRoller(options = {}) {
   const app = new FS2EDiceRoller(options);
+  if (options?.preset?.contestedResponder) {
+    const attackerSkill = options?.preset?.contestedRequest?.attackerResult?.skillLabel ?? "";
+    app.options.title = attackerSkill ? `Contested ${attackerSkill}` : "Contested Roll";
+  }
   app.render(true);
   return app;
 }

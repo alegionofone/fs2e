@@ -1,83 +1,80 @@
 {{!-- systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs --}}
 <section class="skills container shade">
-
   <h3>Natural Skills</h3>
-    <div class="natural-list">
-      {{#each view.skills.natural}}
-        <label class="stat" data-skill="{{this.key}}" data-skill-type="natural" data-skill-key="{{this.key}}">
-          <span class="name"
-                data-tooltip="{{this.tooltipDesc}}"
-                data-tooltip-class="fs2e-multiline">
-            {{this.label}}
-          </span>
-          <span class="value"
-                data-tooltip="{{this.tooltipStats}}"
-                data-tooltip-class="fs2e-multiline">
-            {{this.total}}
-          </span>
-        </label>
-      {{/each}}
-    </div>
+  <div class="natural-list">
+    {{#each view.skills.natural}}
+      <label class="stat" data-skill="{{this.key}}" data-skill-type="natural" data-skill-key="{{this.key}}">
+        <span class="name"
+              data-tooltip="{{this.tooltipDesc}}"
+              data-tooltip-class="fs2e-multiline">
+          {{this.label}}
+        </span>
+        <span class="value"
+              data-tooltip="{{this.tooltipStats}}"
+              data-tooltip-class="fs2e-multiline">
+          {{this.total}}
+        </span>
+      </label>
+    {{/each}}
+  </div>
+</section>
 
-  <div class="container learned-skills">
-    <h3>Learned Skills</h3>
-
-    <div class="fs2e-grid-skills-learned">
-      {{#each view.skills.learned}}
-        {{#if this.isGroup}}
-          <div class="skills-group-block">
-            <div class="stat skills-group" data-skill="{{this.key}}">
-              <span class="skills-name-actions">
-                <span class="name"
-                      data-tooltip="{{this.tooltipDesc}}"
-                      data-tooltip-class="fs2e-multiline">{{this.label}}</span>
-                <button type="button" class="skills-add" data-action="add-skill" data-skill-group="{{this.key}}">+</button>
-              </span>
-            </div>
-            {{#each this.items}}
-              <div class="stat skills-subskill"
-                   data-skill="{{this.key}}:{{this.idx}}"
-                   data-skill-type="group"
-                   data-skill-group="{{this.key}}"
-                   data-skill-key="{{this.entryKey}}">
-                <span class="skills-name-actions">
-                  <button type="button"
-                          class="skills-remove skills-remove-prefix"
-                          data-action="remove-skill"
-                          data-skill-group="{{this.key}}"
-                          data-skill-key="{{this.entryKey}}">-</button>
-                  <span class="name"
-                        data-tooltip="{{this.tooltipDesc}}"
-                        data-tooltip-class="fs2e-multiline">
-                    {{this.displayKey}}
-                  </span>
-                </span>
-                <span class="value"
-                      data-tooltip="{{this.tooltipStats}}"
-                      data-tooltip-class="fs2e-multiline">
-                  {{this.total}}
-                </span>
-              </div>
-            {{/each}}
-          </div>
-        {{else}}
-          <div class="skills-item">
-            <label class="stat" data-skill="{{this.key}}" data-skill-type="learned" data-skill-key="{{this.key}}">
+<section class="skills container shade skills-section learned-skills">
+  <h3>Learned Skills</h3>
+  <div class="fs2e-grid-skills-learned">
+    {{#each view.skills.learned}}
+      {{#if this.isGroup}}
+        <div class="skills-group-block">
+          <div class="stat skills-group" data-skill="{{this.key}}">
+            <span class="skills-name-actions">
               <span class="name"
                     data-tooltip="{{this.tooltipDesc}}"
-                    data-tooltip-class="fs2e-multiline">
-                {{this.label}}
+                    data-tooltip-class="fs2e-multiline">{{this.label}}</span>
+              <button type="button" class="skills-add" data-action="add-skill" data-skill-group="{{this.key}}">+</button>
+            </span>
+          </div>
+          {{#each this.items}}
+            <div class="stat skills-subskill"
+                 data-skill="{{this.key}}:{{this.idx}}"
+                 data-skill-type="group"
+                 data-skill-group="{{this.key}}"
+                 data-skill-key="{{this.entryKey}}">
+              <span class="skills-name-actions">
+                <button type="button"
+                        class="skills-remove skills-remove-prefix"
+                        data-action="remove-skill"
+                        data-skill-group="{{this.key}}"
+                        data-skill-key="{{this.entryKey}}">-</button>
+                <span class="name"
+                      data-tooltip="{{this.tooltipDesc}}"
+                      data-tooltip-class="fs2e-multiline">
+                  {{this.displayKey}}
+                </span>
               </span>
               <span class="value"
                     data-tooltip="{{this.tooltipStats}}"
                     data-tooltip-class="fs2e-multiline">
                 {{this.total}}
               </span>
-            </label>
-          </div>
-        {{/if}}
-      {{/each}}
-    </div>
-
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="skills-item">
+          <label class="stat" data-skill="{{this.key}}" data-skill-type="learned" data-skill-key="{{this.key}}">
+            <span class="name"
+                  data-tooltip="{{this.tooltipDesc}}"
+                  data-tooltip-class="fs2e-multiline">
+              {{this.label}}
+            </span>
+            <span class="value"
+                  data-tooltip="{{this.tooltipStats}}"
+                  data-tooltip-class="fs2e-multiline">
+              {{this.total}}
+            </span>
+          </label>
+        </div>
+      {{/if}}
+    {{/each}}
   </div>
 </section>

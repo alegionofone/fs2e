@@ -95,6 +95,26 @@ Hooks.on("renderChatMessage", (message, html) => {
   }
 });
 
+Hooks.once("ready", () => {
+  game.socket?.on("system.fs2e", async (data) => {
+    if (!data || data.type !== "contested-request") return;
+    if (data.targetUserId && data.targetUserId !== game.user?.id) return;
+    const actor = await fromUuid(data.targetActorUuid);
+    if (!actor) return;
+    game.fs2e?.openDiceRoller?.({
+      actor,
+      preset: {
+        contestedResponder: true,
+        contestedEnabled: false,
+        contestedRequest: {
+          attackerUuid: data.attackerUuid,
+          attackerResult: data.attackerResult
+        }
+      }
+    });
+  });
+});
+
 Hooks.on("preUpdateActor", (actor, updateData) => {
   if (actor?.type !== "character") return;
 
@@ -222,7 +242,8 @@ async function preloadHandlebarsTemplates() {
     "systems/fs2e/templates/actor/actor-tabs/characteristics-tab.hbs",
     "systems/fs2e/templates/actor/actor-tabs/skills-tab.hbs",
     // Chat cards
-    "systems/fs2e/templates/chat/roll-card.hbs"
+    "systems/fs2e/templates/chat/roll-card.hbs",
+    "systems/fs2e/templates/chat/contested-card.hbs"
   ];
   await loadTemplates(templatePaths);
 }

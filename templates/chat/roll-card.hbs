@@ -35,7 +35,7 @@
     </div>
   </details>
 
-  <div class="fs2e-chat-card__quality">{{quality}}</div>
+  <div class="fs2e-chat-card__quality {{#if success}}is-success{{else}}is-failure{{/if}}">{{quality}}</div>
 
   <div class="fs2e-chat-card__summary">
     <span class="fs2e-chat-card__summary-item {{#if success}}is-success{{else}}is-failure{{/if}}">

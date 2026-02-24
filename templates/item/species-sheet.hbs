@@ -1,9 +1,14 @@
 <form class="{{cssClass}}" autocomplete="off">
   <header class="sheet-header flexrow">
     <img class="profile" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
-    <h1 class="sheet-title">
-      <input class="fs2e-item-title" name="name" type="text" value="{{item.name}}" placeholder="Species Name" />
-    </h1>
+    <div class="sheet-header-meta">
+      <h1 class="sheet-title">
+        <input class="fs2e-item-title" name="name" type="text" value="{{item.name}}" placeholder="Species Name" />
+      </h1>
+      <div class="sheet-tags-slot">
+        <fs2e-tagify-tags class="fs2e-tags"></fs2e-tagify-tags>
+      </div>
+    </div>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
@@ -17,78 +22,67 @@
     </div>
 
     <div class="tab" data-group="primary" data-tab="characteristics">
-      <section class="characteristics fs2e-grid-chars">
-        <div class="container shade body">
-          <h3>Body</h3>
-          <div class="fs2e-grid-chars-body">
-            {{#each view.characteristics.body}}
-              <label class="stat" data-stat="{{this.key}}">
-                <span class="name">{{this.label}}</span>
-                <span class="values">
-                  <input class="stat-input" type="number" name="system.characteristics.body.{{this.key}}.base" value="{{this.base}}" min="0" />
-                  <span class="stat-slash">/</span>
-                  <input class="stat-input" type="number" name="system.characteristics.body.{{this.key}}.max" value="{{this.max}}" min="0" />
-                </span>
-              </label>
-            {{/each}}
-          </div>
+      <section class="fs2e-traits-basic">
+        <div class="traits-block">
+          <div class="traits-heading">Body</div>
+          {{#each view.characteristics.body}}
+            <label class="traits-row" data-stat="{{this.key}}">
+              <span class="traits-label">{{this.label}}</span>
+              <span class="traits-values">
+                <input class="traits-input" type="number" name="system.characteristics.body.{{this.key}}.base" value="{{this.base}}" min="0" />
+                <span class="traits-slash">/</span>
+                <input class="traits-input" type="number" name="system.characteristics.body.{{this.key}}.max" value="{{this.max}}" min="0" />
+              </span>
+            </label>
+          {{/each}}
         </div>
 
-        <div class="container shade mind">
-          <h3>Mind</h3>
-          <div class="fs2e-grid-chars-mind">
-            {{#each view.characteristics.mind}}
-              <label class="stat" data-stat="{{this.key}}">
-                <span class="name">{{this.label}}</span>
-                <span class="values">
-                  <input class="stat-input" type="number" name="system.characteristics.mind.{{this.key}}.base" value="{{this.base}}" min="0" />
-                  <span class="stat-slash">/</span>
-                  <input class="stat-input" type="number" name="system.characteristics.mind.{{this.key}}.max" value="{{this.max}}" min="0" />
-                </span>
-              </label>
-            {{/each}}
-          </div>
+        <div class="traits-block">
+          <div class="traits-heading">Mind</div>
+          {{#each view.characteristics.mind}}
+            <label class="traits-row" data-stat="{{this.key}}">
+              <span class="traits-label">{{this.label}}</span>
+              <span class="traits-values">
+                <input class="traits-input" type="number" name="system.characteristics.mind.{{this.key}}.base" value="{{this.base}}" min="0" />
+                <span class="traits-slash">/</span>
+                <input class="traits-input" type="number" name="system.characteristics.mind.{{this.key}}.max" value="{{this.max}}" min="0" />
+              </span>
+            </label>
+          {{/each}}
         </div>
 
-        <div class="container shade col-span-2 spirit">
-          <h3>Spirit</h3>
-          <div class="fs2e-grid-chars-spirit">
-            <div class="fs2e-grid-chars-spirit-left spirit-left">
-              {{#each view.characteristics.spirit.left}}
-                <label class="stat" data-stat="{{this.key}}">
-                  <span class="name">{{this.label}}</span>
+        <div class="traits-block">
+          <div class="traits-heading">Spirit</div>
+          {{#each view.characteristics.spirit.left}}
+            {{#with (lookup ../view.characteristics.spirit.right @index)}}
+              <div class="traits-row traits-spirit-row">
+                <span class="traits-label">{{../label}} / {{this.label}}</span>
+                <span class="traits-spirit-tags-slot">
+                  <fs2e-tagify-tags
+                    class="fs2e-tags species-spirit-tagify"
+                    data-pair="{{../pair}}"
+                    data-whitelist='["Always","Choice"]'
+                    data-single-tag="true"
+                  ></fs2e-tagify-tags>
+                </span>
+                <span class="traits-radios{{#unless ../showRadios}} is-hidden{{/unless}}">
                   <input class="stat-radio" type="radio"
-                         name="system.characteristics.spiritPairs.{{this.pair}}"
+                         name="system.characteristics.spiritPairs.{{../pair}}"
+                         value="{{../key}}"
+                         {{checked ../checked}} />
+                  <input class="stat-radio" type="radio"
+                         name="system.characteristics.spiritPairs.{{../pair}}"
                          value="{{this.key}}"
                          {{checked this.checked}} />
-                  <span class="values">
-                    <span class="stat-num">{{this.base}}</span>
-                    <span class="stat-slash">/</span>
-                    <span class="stat-num">{{this.max}}</span>
-                  </span>
-                </label>
-              {{/each}}
-            </div>
-
-            <div class="fs2e-grid-chars-spirit-mid spirit-mid" aria-hidden="true"></div>
-
-            <div class="fs2e-grid-chars-spirit-right spirit-right">
-              {{#each view.characteristics.spirit.right}}
-                <label class="stat" data-stat="{{this.key}}">
-                  <span class="values">
-                    <span class="stat-num">{{this.base}}</span>
-                    <span class="stat-slash">/</span>
-                    <span class="stat-num">{{this.max}}</span>
-                  </span>
-                  <input class="stat-radio" type="radio"
-                         name="system.characteristics.spiritPairs.{{this.pair}}"
-                         value="{{this.key}}"
-                         {{checked this.checked}} />
-                  <span class="name">{{this.label}}</span>
-                </label>
-              {{/each}}
-            </div>
-          </div>
+                </span>
+                <span class="traits-values traits-spirit-values">
+                  <input class="traits-input" type="number" name="system.characteristics.spirit.{{../key}}.base" value="{{../base}}" min="0" readonly />
+                  <span class="traits-slash">/</span>
+                  <input class="traits-input" type="number" name="system.characteristics.spirit.{{this.key}}.base" value="{{this.base}}" min="0" readonly />
+                </span>
+              </div>
+            {{/with}}
+          {{/each}}
         </div>
       </section>
     </div>

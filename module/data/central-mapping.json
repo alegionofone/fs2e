@@ -103,10 +103,10 @@
       "comp": "",
       "default": "faith"
     },
-    "archery": {
+    "artisan": {
       "desc": "",
       "comp": "",
-      "default": "dexterity"
+      "default": ""
     },
     "arts": {
       "desc": "",
@@ -123,20 +123,15 @@
       "comp": "",
       "default": "wits"
     },
-    "crossbow": {
-      "desc": "",
-      "comp": "",
-      "default": "dexterity"
-    },
-    "disguise": {
-      "desc": "",
-      "comp": "",
-      "default": "perception"
-    },
     "empathy": {
       "desc": "",
       "comp": "",
       "default": "perception"
+    },
+    "etiquette": {
+      "desc": "",
+      "comp": "",
+      "default": ""
     },
     "focus": {
       "desc": "",
@@ -178,10 +173,25 @@
       "comp": "",
       "default": "wits"
     },
+    "drive": {
+      "desc": "",
+      "comp": "",
+      "default": ""
+    },
+    "lore": {
+      "desc": "",
+      "comp": "",
+      "default": ""
+    },
     "ride": {
       "desc": "",
       "comp": "",
       "default": "dexterity"
+    },
+    "science": {
+      "desc": "",
+      "comp": "",
+      "default": ""
     },
     "search": {
       "desc": "",
@@ -208,6 +218,16 @@
       "comp": "",
       "default": "wits"
     },
+    "social": {
+      "desc": "",
+      "comp": "",
+      "default": ""
+    },
+    "spacesuit": {
+      "desc": "",
+      "comp": "",
+      "default": ""
+    },
     "survival": {
       "desc": "",
       "comp": "",
@@ -217,6 +237,11 @@
       "desc": "",
       "comp": "",
       "default": "tech"
+    },
+    "techRedemption": {
+      "desc": "",
+      "comp": "",
+      "default": ""
     },
     "throwing": {
       "desc": "",
@@ -233,10 +258,15 @@
       "comp": "",
       "default": "perception"
     },
-    "xeno-empathy": {
+    "warfare": {
       "desc": "",
       "comp": "",
-      "default": "perception"
+      "default": ""
+    },
+    "xenoEmpathy": {
+      "desc": "",
+      "comp": "",
+      "default": ""
     }
   },
   "groups": {
@@ -279,7 +309,12 @@
     },
     "lore": {
       "desc": "",
-      "options": ""
+      "options": "Heraldry",
+      "history": {
+        "desc": "",
+        "comp": "",
+        "default": ""
+      }
     },
     "science": {
       "desc": "",
@@ -421,6 +456,52 @@
         "comp": "",
         "default": ""
       }
+    }
+  },
+  "tags": {
+    "item": {
+      "common": [
+        "al-Malik",
+        "Ascorbite",
+        "Brother Battle",
+        "Changed",
+        "Charioteers",
+        "Decados",
+        "Engineers",
+        "Eskatonic Order",
+        "Etyri",
+        "Gannok",
+        "Hawkwood",
+        "Hazat",
+        "Hironem",
+        "Human",
+        "Li Halan",
+        "Oro'ym",
+        "Sanctuary Aeon",
+        "Scravers",
+        "Shantor",
+        "Symbiot",
+        "Temple Avesti",
+        "The Muster",
+        "The Reeves",
+        "Ur-Obun",
+        "Ur-Ukar",
+        "Urth Orthodox",
+        "Vau",
+        "Vorox"
+      ],
+      "species": [
+        "Human"
+      ],
+      "faction": [
+        ""
+      ],
+      "history": [
+        "Upbringing",
+        "Apprenticeship",
+        "Early Career",
+        "Tour of Durty"
+      ]
     }
   }
 }

@@ -1,4 +1,15 @@
 export function buildCharacteristicsView(system = {}) {
+  const hasAlwaysTag = (tags) =>
+    (Array.isArray(tags) ? tags : []).some((tag) => String(tag ?? "").trim().toLowerCase() === "always");
+  const normalizeSpiritTags = (value) => {
+    const list = Array.isArray(value) ? value : [];
+    const normalized = [...new Set(list
+      .map((v) => String(v ?? "").trim().toLowerCase())
+      .filter((v) => v === "always" || v === "choice"))];
+    if (normalized.includes("always")) return ["Always"];
+    if (normalized.includes("choice")) return ["Choice"];
+    return [];
+  };
   const labelize = (k) =>
     (k ?? "").replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
 
@@ -28,6 +39,7 @@ export function buildCharacteristicsView(system = {}) {
 
   const spirit = system.characteristics?.spirit ?? {};
   const spiritPairs = system.characteristics?.spiritPairs ?? {};
+  const speciesSpirit = system.characteristics?.speciesSpirit ?? {};
   const pairDefaults = {
     extrovertIntrovert: "extrovert",
     passionCalm: "passion",
@@ -67,10 +79,13 @@ export function buildCharacteristicsView(system = {}) {
 
   const spiritLeft = leftKeys.map((key) => {
     const pair = pairMap[key];
+    const spiritTags = normalizeSpiritTags(speciesSpirit?.[pair]);
     return {
       key,
       pair,
       checked: pairValues[pair] === key,
+      speciesSpirit: spiritTags,
+      showRadios: !hasAlwaysTag(spiritTags),
       label: labelize(key),
       base: baseMap[key] ?? 0,
       max: maxMap[key] ?? 0
@@ -135,4 +150,52 @@ export function bindSpiritRadios(html, item) {
 
     item.update(updateData);
   });
+}
+
+const normalizeSpiritTags = (value) => {
+  const list = Array.isArray(value) ? value : [];
+  const normalized = [...new Set(list
+    .map((v) => String(v ?? "").trim().toLowerCase())
+    .filter((v) => v === "always" || v === "choice"))];
+  if (normalized.includes("always")) return ["Always"];
+  if (normalized.includes("choice")) return ["Choice"];
+  return [];
+};
+
+const hasAlwaysTag = (tags) =>
+  (Array.isArray(tags) ? tags : []).some((tag) => String(tag ?? "").trim().toLowerCase() === "always");
+
+export function bindSpeciesSpiritTags(html, item) {
+  const els = html[0]?.querySelectorAll?.("fs2e-tagify-tags.species-spirit-tagify") ?? [];
+  for (const el of els) {
+    const pair = String(el.getAttribute("data-pair") ?? "").trim();
+    if (!pair) continue;
+
+    const setRadiosVisible = (visible) => {
+      const row = el.closest(".traits-spirit-row");
+      if (!row) return;
+      const radios = row.querySelector(".traits-radios");
+      if (!radios) return;
+      radios.classList.toggle("is-hidden", !visible);
+    };
+
+    const initial = normalizeSpiritTags(item.system?.characteristics?.speciesSpirit?.[pair]);
+    el.whitelist = ["Always", "Choice"];
+    el.tags = initial;
+    setRadiosVisible(!hasAlwaysTag(initial));
+
+    let saving = false;
+    el.addEventListener("fs2e-tags-change", async (event) => {
+      if (saving) return;
+      saving = true;
+      try {
+        const tags = normalizeSpiritTags(event.detail?.tags);
+        el.tags = tags;
+        setRadiosVisible(!hasAlwaysTag(tags));
+        await item.update({ [`system.characteristics.speciesSpirit.${pair}`]: tags });
+      } finally {
+        saving = false;
+      }
+    });
+  }
 }

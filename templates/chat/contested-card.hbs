@@ -1,0 +1,89 @@
+<section class="fs2e-chat-card fs2e-contested-card">
+  <div class="fs2e-contested-card__side">
+    <header class="fs2e-chat-card__header">
+      <div class="fs2e-chat-card__who">
+        {{#if attacker.actorImg}}<img class="fs2e-chat-card__thumb" src="{{attacker.actorImg}}" alt="{{attacker.actorName}}" />{{/if}}
+        {{#if attacker.actorName}}
+          <span class="fs2e-chat-card__actor">{{attacker.actorName}}</span>
+        {{/if}}
+      </div>
+      <h3>{{attacker.title}}</h3>
+    </header>
+
+    <details class="fs2e-chat-card__details">
+      <summary class="fs2e-chat-card__goal">Goal Number: {{attacker.gn}}</summary>
+      <div class="fs2e-chat-card__breakdown">
+        {{#each attacker.breakdown}}
+          <div class="fs2e-chat-card__row">
+            <span class="label">{{this.label}}</span>
+            <span class="value">{{this.value}}</span>
+          </div>
+        {{/each}}
+      </div>
+    </details>
+
+    <details class="fs2e-chat-card__details">
+      <summary class="fs2e-chat-card__goal">Roll Number: {{attacker.rollAdjusted}}</summary>
+      <div class="fs2e-chat-card__breakdown">
+        <div class="fs2e-chat-card__row">
+          <span class="label">Roll Number</span>
+          <span class="value">{{attacker.roll}}</span>
+        </div>
+        <div class="fs2e-chat-card__row">
+          <span class="label">Accented Roll</span>
+          <span class="value">{{attacker.accent}}</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="fs2e-contested-card__versus">Versus</div>
+
+  <div class="fs2e-contested-card__side">
+    <header class="fs2e-chat-card__header">
+      <div class="fs2e-chat-card__who">
+        {{#if defender.actorImg}}<img class="fs2e-chat-card__thumb" src="{{defender.actorImg}}" alt="{{defender.actorName}}" />{{/if}}
+        {{#if defender.actorName}}
+          <span class="fs2e-chat-card__actor">{{defender.actorName}}</span>
+        {{/if}}
+      </div>
+      <h3>{{defender.title}}</h3>
+    </header>
+
+    <details class="fs2e-chat-card__details">
+      <summary class="fs2e-chat-card__goal">Goal Number: {{defender.gn}}</summary>
+      <div class="fs2e-chat-card__breakdown">
+        {{#each defender.breakdown}}
+          <div class="fs2e-chat-card__row">
+            <span class="label">{{this.label}}</span>
+            <span class="value">{{this.value}}</span>
+          </div>
+        {{/each}}
+      </div>
+    </details>
+
+    <details class="fs2e-chat-card__details">
+      <summary class="fs2e-chat-card__goal">Roll Number: {{defender.rollAdjusted}}</summary>
+      <div class="fs2e-chat-card__breakdown">
+        <div class="fs2e-chat-card__row">
+          <span class="label">Roll Number</span>
+          <span class="value">{{defender.roll}}</span>
+        </div>
+        <div class="fs2e-chat-card__row">
+          <span class="label">Accented Roll</span>
+          <span class="value">{{defender.accent}}</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="fs2e-chat-card__quality {{#if outcome.success}}is-success{{else}}is-failure{{/if}}">{{outcome.quality}}</div>
+  <div class="fs2e-chat-card__summary">
+    <span class="fs2e-chat-card__summary-item {{#if outcome.success}}is-success{{else}}is-failure{{/if}}">
+      <i class="fa-solid fa-check-double"></i>{{outcome.successes}}
+    </span>
+    <span class="fs2e-chat-card__summary-item {{#if outcome.success}}is-success{{else}}is-failure{{/if}}">
+      <i class="fa-solid fa-medal"></i>{{outcome.vp}}
+    </span>
+  </div>
+</section>

@@ -1,15 +1,19 @@
 <form class="{{cssClass}}" autocomplete="off">
   <header class="sheet-header flexrow">
     <img class="profile" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
-    <h1 class="sheet-title">
-      <input class="fs2e-item-title" name="name" type="text" value="{{item.name}}" placeholder="History Name" />
-    </h1>
+    <div class="sheet-header-meta">
+      <h1 class="sheet-title">
+        <input class="fs2e-item-title" name="name" type="text" value="{{item.name}}" placeholder="History Name" />
+      </h1>
+      <div class="sheet-tags-slot">
+        <fs2e-tagify-tags class="fs2e-tags"></fs2e-tagify-tags>
+      </div>
+    </div>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">Description</a>
     <a class="item" data-tab="characteristics">Traits</a>
-    <a class="item" data-tab="skills">Skills</a>
   </nav>
 
   <section class="sheet-body">
@@ -18,79 +22,16 @@
     </div>
 
     <div class="tab" data-group="primary" data-tab="characteristics">
-      <section class="characteristics fs2e-grid-chars">
-        <div class="container shade body">
-          <h3>Body</h3>
-          <div class="fs2e-grid-chars-body">
-            {{#each view.characteristics.body}}
-              <label class="stat" data-stat="{{this.key}}">
-                <span class="name">{{this.label}}</span>
-                <span class="values">
-                  <input class="stat-input" type="number" name="system.characteristics.body.{{this.key}}.history" value="{{this.history}}" min="0" />
-                </span>
-              </label>
-            {{/each}}
-          </div>
+      <section class="fs2e-history-mods">
+        <div class="fs2e-history-mods-row">
+          <h3>Characteristics</h3>
+          <fs2e-mod-tags class="fs2e-history-char-mods"></fs2e-mod-tags>
         </div>
-
-        <div class="container shade mind">
-          <h3>Mind</h3>
-          <div class="fs2e-grid-chars-mind">
-            {{#each view.characteristics.mind}}
-              <label class="stat" data-stat="{{this.key}}">
-                <span class="name">{{this.label}}</span>
-                <span class="values">
-                  <input class="stat-input" type="number" name="system.characteristics.mind.{{this.key}}.history" value="{{this.history}}" min="0" />
-                </span>
-              </label>
-            {{/each}}
-          </div>
-        </div>
-
-        <div class="container shade col-span-2 spirit">
-          <h3>Spirit</h3>
-          <div class="fs2e-grid-chars-spirit">
-            <div class="fs2e-grid-chars-spirit-left spirit-left">
-              {{#each view.characteristics.spirit.left}}
-                <label class="stat" data-stat="{{this.key}}">
-                  <span class="name">{{this.label}}</span>
-                  <input class="stat-radio" type="radio"
-                         name="system.characteristics.spiritPairs.{{this.pair}}"
-                         value="{{this.key}}"
-                         {{checked this.checked}} />
-                  <span class="values">
-                    <span class="stat-num">{{this.base}}</span>
-                    <span class="stat-slash">/</span>
-                    <span class="stat-num">{{this.max}}</span>
-                  </span>
-                </label>
-              {{/each}}
-            </div>
-
-            <div class="fs2e-grid-chars-spirit-mid spirit-mid" aria-hidden="true"></div>
-
-            <div class="fs2e-grid-chars-spirit-right spirit-right">
-              {{#each view.characteristics.spirit.right}}
-                <label class="stat" data-stat="{{this.key}}">
-                  <span class="values">
-                    <span class="stat-num">{{this.base}}</span>
-                    <span class="stat-slash">/</span>
-                    <span class="stat-num">{{this.max}}</span>
-                  </span>
-                  <input class="stat-radio" type="radio"
-                         name="system.characteristics.spiritPairs.{{this.pair}}"
-                         value="{{this.key}}"
-                         {{checked this.checked}} />
-                  <span class="name">{{this.label}}</span>
-                </label>
-              {{/each}}
-            </div>
-          </div>
+        <div class="fs2e-history-mods-row">
+          <h3>Skills</h3>
+          <fs2e-mod-tags class="fs2e-history-skill-mods"></fs2e-mod-tags>
         </div>
       </section>
-    </div>
-
-    <div class="tab" data-group="primary" data-tab="skills">
     </div>
 
   </section>

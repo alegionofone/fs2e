@@ -595,6 +595,11 @@
               "extrovertIntrovert": "extrovert",
               "passionCalm": "passion",
               "faithEgo": "faith"
+            },
+            "speciesSpirit": {
+              "extrovertIntrovert": [],
+              "passionCalm": [],
+              "faithEgo": []
             }
           },
           "traits": {
@@ -662,8 +667,15 @@
               "extrovertIntrovert": "extrovert",
               "passionCalm": "passion",
               "faithEgo": "faith"
+            },
+            "speciesSpirit": {
+              "extrovertIntrovert": [],
+              "passionCalm": [],
+              "faithEgo": []
             }
           },
+          "characteristicsAdjustments": [],
+          "skillsAdjustments": [],
           "skills": {
             "value": ""
           },
