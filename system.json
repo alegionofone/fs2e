@@ -1,0 +1,63 @@
+{
+  "id": "fs2e",
+  "title": "Fading Suns 2e",
+  "description": "Work-in-progress game system for Foundry VTT. Unofficial, for personal use.",
+  "version": "0.0.1",
+
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+
+  "authors": [
+    { "name": "Alex" }
+  ],
+
+  "esmodules": ["module/fs2e.mjs"],
+  "styles": [
+    "styles/fs2e.css",
+    "module/ui/tagify/index.css",
+    "module/ui/prosemirror/index.css"
+  ],
+
+  "packs": [
+    {
+      "name": "species",
+      "label": "Species",
+      "path": "packs/species.db",
+      "type": "Item"
+    },
+    {
+      "name": "histories",
+      "label": "Histories",
+      "path": "packs/histories.db",
+      "type": "Item"
+    },
+    {
+      "name": "blessing-curses",
+      "label": "Blessings and Curses",
+      "path": "packs/blessing-curses.db",
+      "type": "Item"
+    },
+    {
+      "name": "benefices-afflications",
+      "label": "Benefices and Afflications",
+      "path": "packs/benefices-afflications.db",
+      "type": "Item"
+    },
+    {
+      "name": "actions",
+      "label": "Actions",
+      "path": "packs/actions.db",
+      "type": "Item"
+    }
+  ],
+  "relationships": {
+    "requires": []
+  },
+
+  "url": "https://example.com/fs2e",
+  "readme": "README.md",
+  "changelog": "CHANGELOG.md",
+  "license": "LICENSE.txt"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "fs2e-system",
+  "version": "0.0.1",
+  "description": "Build tools for Fading Suns 2e Foundry system",
+  "main": "gulpfile.js",
+  "scripts": {
+    "build": "npm run build:styles && npm run build:prosemirror",
+    "build:styles": "gulp styles",
+    "build:prosemirror": "esbuild ./module/ui/prosemirror/bundle-entry.mjs --bundle --format=esm --platform=browser --outfile=./module/ui/prosemirror/dist/prosemirror.bundle.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.3",
+    "gulp": "^4.0.2",
+    "gulp-less": "^5.0.0"
+  }
+}

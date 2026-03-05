@@ -1,0 +1,26 @@
+<form class="{{cssClass}} fs2e actor-sheet character" autocomplete="off">
+	<header class="sheet-header">
+		<img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
+		<div class="header-fields">
+			<h1 class="charname">
+				<input name="name" type="text" value="{{actor.name}}" placeholder="Character Name" />
+			</h1>
+		</div>
+	</header>
+
+	<section class="sheet-body">
+		<div class="grid cols-1 gap-sm">
+			<label>Species</label>
+			<input name="system.species" type="text" value="{{system.species}}" />
+
+			<label>Faction</label>
+			<input name="system.faction" type="text" value="{{system.faction}}" />
+
+			<label>Rank</label>
+			<input name="system.rank" type="text" value="{{system.rank}}" />
+
+			<label>Reputation</label>
+			<input name="system.reputation" type="text" value="{{system.reputation}}" />
+		</div>
+	</section>
+</form>

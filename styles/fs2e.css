@@ -1,0 +1,151 @@
+@font-face {
+  font-family: 'p22';
+  src: url('fonts/p22-arts-and-crafts-regular.woff2') format('woff2'), url('fonts/p22-arts-and-crafts-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-size-0: 0;
+  --font-size-8: 0.5rem;
+  --font-size-9: 0.5625rem;
+  --font-size-10: 0.625rem;
+  --font-size-11: 0.6875rem;
+  --font-size-12: 0.75rem;
+  --font-size-13: 0.8125rem;
+  --font-size-14: 0.875rem;
+  --font-size-15: 0.9375rem;
+  --font-size-16: 1rem;
+  --font-size-17: 1.0625rem;
+  --font-size-18: 1.125rem;
+  --font-size-19: 1.1875rem;
+  --font-size-20: 1.25rem;
+  --font-size-21: 1.3125rem;
+  --font-size-22: 1.375rem;
+  --font-size-23: 1.4375rem;
+  --font-size-24: 1.5rem;
+  --font-size-25: 1.5625rem;
+  --font-size-26: 1.625rem;
+  --font-size-27: 1.6875rem;
+  --font-size-28: 1.75rem;
+  --font-size-29: 1.8125rem;
+  --font-size-30: 1.875rem;
+  --font-size-31: 1.9375rem;
+  --font-size-32: 2rem;
+  --font-size-33: 2.0625rem;
+  --font-size-34: 2.125rem;
+  --font-size-35: 2.1875rem;
+  --font-size-36: 2.25rem;
+  --font-size-37: 2.3125rem;
+  --font-size-38: 2.375rem;
+  --font-size-39: 2.4375rem;
+  --font-size-40: 2.5rem;
+  --font-size-41: 2.5625rem;
+  --font-size-42: 2.625rem;
+  --font-size-43: 2.6875rem;
+  --font-size-44: 2.75rem;
+  --font-size-45: 2.8125rem;
+  --font-size-46: 2.875rem;
+  --font-size-47: 2.9375rem;
+  --font-size-48: 3rem;
+  --font-size-49: 3.0625rem;
+  --font-size-50: 3.125rem;
+  --font-size-em: 1em;
+  --font-p22: "p22", Georgia, sans-serif;
+  --color-gold-lt: #e5c6a3;
+  --color-gold-lt-mid: #c5a684;
+  --color-gold-mid: #9f8568;
+  --color-gold-dk-mid: #74604b;
+  --color-gold-dk: #493b2e;
+  --color-grey-lt: #a7a7a7;
+  --color-grey-lt-mid: #5e5c5c;
+  --color-grey-mid: #323437;
+  --color-grey-dk-mid: #1c1f22;
+  --color-grey-dk-mid-80: rgba(28, 31, 34, 0.8);
+  --color-grey-dk: #0f1012;
+  --color-magenta-mid: #950672;
+  --background-space: url("assets/space.png");
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --border-gold-dk-mid: 1px solid var(--color-gold-dk-mid);
+  --border-gold-mid: 1px solid var(--color-gold-mid);
+  --radius-sm: 4px;
+  --radius-pill: 999px;
+  --color-success: #6fbf6f;
+  --color-failure: #d16464;
+  --shadow-panel: 0 0 5px 5px var(--color-grey-dk-mid-80);
+  --fs2e-title-row-height: 1.05em;
+  --fs2e-select-width: 45%;
+}
+/* Window Header */
+.app.window-app .window-content {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+}
+.app.window-app.sheet.item .window-header,
+.app.window-app.sheet.actor .window-header {
+  top: var(--space-8);
+  left: var(--space-6);
+  right: var(--space-16);
+  padding: 0 var(--space-6);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 3;
+  font-size: var(--font-size-0);
+}
+.app.window-app.sheet.item .window-header .fa-solid::before,
+.app.window-app.sheet.actor .window-header .fa-solid::before {
+  font-size: var(--font-size-12);
+  color: var(--color-grey-dk);
+}
+.app.window-app.sheet.item .window-content,
+.app.window-app.sheet.actor .window-content {
+  background: transparent;
+  overflow: auto;
+  position: relative;
+  box-sizing: border-box;
+}
+.app.window-app.sheet.item .window-title {
+  font-family: var(--font-p22) !important;
+}
+.app.window-app.sheet.actor {
+  background-image: url("assets/space.png");
+  background-position: center -30px;
+  background-attachment: scroll;
+  background-size: auto 110%;
+  box-shadow: none;
+}
+.app.window-app.sheet.actor .window-header .fa-solid::before {
+  font-size: var(--font-size-12);
+  color: var(--color-grey-lt);
+}
+.app.window-app.sheet.item {
+  background-image: url("assets/parchment.png");
+  background-position: center -30px;
+  background-attachment: scroll;
+  background-size: 100% auto;
+  box-shadow: none;
+}
+.app.window-app.sheet.item .window-header .fa-solid::before {
+  font-size: var(--font-size-12);
+  color: var(--color-grey-dk);
+}
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #2c3e50;
+}
+.header {
+  color: #e67e22;
+}

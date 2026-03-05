@@ -1,0 +1,640 @@
+{
+  "Actor": {
+    "types": [
+      "character",
+      "npc"
+    ],
+    "templates": {
+      "common": {
+          "data": {
+            "species": "",
+            "planet": "",
+            "rank": "",
+            "faction": "",
+            "calling": "",
+            "reputation": "",
+            "histories": "",
+            "languages": {
+              "manual": {
+                "speak": [],
+                "read": []
+              },
+              "granted": {
+                "speak": [],
+                "read": []
+              },
+              "total": {
+                "speak": [],
+                "read": []
+              }
+            }
+          },
+          "characteristics": {
+            "body": {
+              "strength": {
+                "abbrev": "STR",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "dexterity": {
+                "abbrev": "DEX",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "endurance": {
+                "abbrev": "END",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              }
+            },
+            "mind": {
+              "wits": {
+                "abbrev": "WIT",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "perception": {
+                "abbrev": "PER",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "tech": {
+                "abbrev": "TEC",
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              }
+            },
+            "spirit": {
+              "extrovert": {
+                "abbrev": "EXT",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "introvert": {
+                "abbrev": "INT",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "passion": {
+                "abbrev": "PAS",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "calm": {
+                "abbrev": "CAL",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "faith": {
+                "abbrev": "FTH",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "ego": {
+                "abbrev": "EGO",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              }
+            },
+            "occult": {
+              "psi": {
+                "abbrev": "PSI",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "theurgy": {
+                "abbrev": "THE",
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 0,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              }
+            }
+          },
+          "vitality": {
+            "base": 5,
+            "mod": 0,
+            "value": 5
+          },
+          "wyrd": {
+            "value": 0,
+            "max": 20
+          },
+          "skills": {
+            "natural": {
+              "charm": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "dodge": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "fight": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "impress": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "melee": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "observe": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "shoot": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "sneak": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "vigor": {
+                "base": 3,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              }
+            },
+            "learned": {
+              "academia": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "acrobatics": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "alchemy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "archery": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "beastLore": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "bureaucracy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "disguise": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "empathy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "etiquette": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "focus": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "gambling": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "inquiry": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "knavery": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "lockpicking": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "performance": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "physick": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "remedy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "ride": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "search": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "sleightOfHand": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "stoicBody": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "stoicMind": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "streetwise": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "survival": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "thinkMachine": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "throwing": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "torture": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "tracking": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "xenoEmpathy": {
+                "base": 0,
+                "mod": 0,
+                "temp": 0,
+                "max": 8,
+                "history": 0,
+                "xp": 0,
+                "roll": 0
+              },
+              "artisan": [],
+              "arts": [],
+              "drive": [],
+              "lore": [],
+              "science": [],
+              "social": [],
+              "techRedemption": [],
+              "warfare": []
+            },
+            "modifiers": {
+              "records": []
+            }
+          }
+      }
+    },
+    "character": {
+      "templates": [
+        "common"
+      ]
+    },
+    "npc": {
+      "templates": [
+        "common"
+      ]
+    }
+  },
+  "Item": {
+    "templates": {
+      "common": {
+        "data": {
+          "languages": {
+            "speak": [],
+            "read": []
+          }
+        }
+      }
+    },
+    "types": [
+      "armor",
+      "action",
+      "beneficeAffliction",
+      "blessingCurse",
+      "equipment",
+      "faction",
+      "history",
+      "planet",
+      "species",
+      "weapon"
+    ],
+    "armor": {
+      "templates": [
+        "common"
+      ]
+    },
+    "action": {
+      "templates": [
+        "common"
+      ]
+    },
+    "beneficeAffliction": {
+      "templates": [
+        "common"
+      ]
+    },
+    "blessingCurse": {
+      "templates": [
+        "common"
+      ]
+    },
+    "equipment": {
+      "templates": [
+        "common"
+      ]
+    },
+    "faction": {
+      "templates": [
+        "common"
+      ]
+    },
+    "history": {
+      "templates": [
+        "common"
+      ]
+    },
+    "planet": {
+      "templates": [
+        "common"
+      ]
+    },
+    "species": {
+      "templates": [
+        "common"
+      ]
+    },
+    "weapon": {
+      "templates": [
+        "common"
+      ]
+    }
+  }
+}
+
+
+
