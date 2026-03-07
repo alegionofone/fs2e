@@ -1,0 +1,241 @@
+<form class="fs2e-dice-roller">
+  <header class="fs2e-dialog-header">
+    <h2>{{title}}</h2>
+    <div class="fs2e-subtitle">{{subtitle}}</div>
+  </header>
+
+  <div class="fs2e-roll-mode-toggles">
+    {{#if contestedAvailable}}
+      <div class="fs2e-roll-mode-group fs2e-roll-mode-group-contested">
+        <label class="fs2e-toggle"><input id="fs2e-contested-toggle" type="checkbox" {{#if contestedEnabled}}checked{{/if}} /> Contested Roll</label>
+      </div>
+    {{/if}}
+
+    {{#unless contestedResponder}}
+    <div class="fs2e-roll-mode-group fs2e-roll-mode-group-sustain">
+      <label class="fs2e-toggle"><input id="fs2e-sustain-toggle" type="checkbox" /> Sustained Roll</label>
+      <section class="fs2e-section fs2e-sustain-section" data-section-id="sustain" data-collapsed="0" data-enabled="0">
+        <div class="fs2e-section-heading" data-section-toggle role="button" tabindex="0" aria-expanded="true">Sustained Roll</div>
+        <div class="fs2e-grid-roll-comp">
+          <div class="fs2e-inline-block">
+            <div class="fs2e-inline-title">Task</div>
+            <select id="fs2e-sustain-task" data-diff-select>
+              <option value="6" data-value="6">Simple (6)</option>
+              <option value="9" data-value="9">Complex (9)</option>
+              <option value="12" data-value="12">Involved (12)</option>
+              <option value="18" data-value="18">Obscure (18)</option>
+              <option value="23" data-value="23">Arcane (23)</option>
+            </select>
+          </div>
+
+          <div class="fs2e-eq-field">
+            <div class="fs2e-eq-spacer"></div>
+            <div class="fs2e-eq-row">
+              <span class="fs2e-inline-plus">=</span>
+              <input id="fs2e-sustain-required" class="fs2e-gn-input" type="number" readonly value="6" />
+            </div>
+          </div>
+
+          <div class="fs2e-sustain-sep"></div>
+
+          <div class="fs2e-comp-label">
+            <span class="fs2e-inline-title">Current Successes</span>
+          </div>
+          <div class="fs2e-eq-field fs2e-eq-merge">
+            <div class="fs2e-eq-row">
+              <span class="fs2e-inline-plus">=</span>
+              <input id="fs2e-sustain-current" type="number" value="0" min="0" step="1" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    {{/unless}}
+
+    <div class="fs2e-roll-mode-group fs2e-roll-mode-group-comp">
+      <label class="fs2e-toggle"><input id="fs2e-comp-toggle" type="checkbox" /> Complementary Roll</label>
+      <section class="fs2e-section fs2e-comp-section" data-section-id="comp" data-collapsed="0" data-enabled="0">
+        <div class="fs2e-section-heading" data-section-toggle role="button" tabindex="0" aria-expanded="true">Complementary Roll</div>
+        <div class="fs2e-grid-roll-comp">
+          <div class="fs2e-inline-block">
+            <div class="fs2e-inline-title">Skill Roll</div>
+            <div class="fs2e-inline-field">
+              <select id="fs2e-comp-char">
+                {{#each characteristics}}
+                  <option value="{{this.key}}" data-value="{{this.total}}" {{#if this.selectedComp}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+              </select>
+              <span class="fs2e-inline-plus">+</span>
+              <select id="fs2e-comp-skill">
+                {{#each skills}}
+                  <option value="{{this.key}}" data-value="{{this.total}}">{{this.label}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          <div class="fs2e-eq-field">
+            <div class="fs2e-eq-spacer"></div>
+            <div class="fs2e-eq-row">
+              <span class="fs2e-inline-plus">=</span>
+              <input id="fs2e-comp-char-gn" class="fs2e-gn-input" type="number" readonly value="0" />
+            </div>
+          </div>
+
+          <div class="fs2e-diff-inline">
+            <div class="fs2e-diff-title-row">
+              <span class="fs2e-inline-title fs2e-diff-title-main">Difficulty</span>
+              <span class="fs2e-inline-title fs2e-diff-title-custom">Custom</span>
+            </div>
+            <div class="fs2e-diff-input-row">
+              <select id="fs2e-comp-diff-base" data-diff-select>
+                {{#each difficulties}}
+                  <option value="{{this.value}}">{{this.label}}</option>
+                {{/each}}
+              </select>
+              <span class="fs2e-inline-plus">+</span>
+              <input id="fs2e-comp-diff-custom" type="number" value="0" step="1" />
+            </div>
+          </div>
+
+          <div class="fs2e-eq-field">
+            <div class="fs2e-eq-spacer"></div>
+            <div class="fs2e-eq-row">
+              <span class="fs2e-inline-plus">=</span>
+              <input id="fs2e-comp-diff-gn" class="fs2e-gn-input" type="number" readonly value="0" />
+            </div>
+          </div>
+          <div class="fs2e-comp-label">
+            <span class="fs2e-inline-title">Wound Penalties</span>
+          </div>
+          <div class="fs2e-eq-field fs2e-eq-merge">
+            <div class="fs2e-eq-row">
+              <span class="fs2e-inline-plus">=</span>
+              <input id="fs2e-comp-wound-penalty" class="fs2e-gn-input" type="number" readonly value="0" />
+            </div>
+          </div>
+
+          <div class="fs2e-comp-label">
+            <span class="fs2e-inline-title">Final Goal Number</span>
+          </div>
+          <div class="fs2e-eq-field fs2e-eq-merge">
+            <div class="fs2e-eq-row">
+              <span class="fs2e-inline-plus">=</span>
+              <input id="fs2e-comp-final-tn" class="fs2e-gn-input" type="number" readonly value="0" />
+            </div>
+          </div>
+
+          <div class="fs2e-actions fs2e-span-full">
+            <button type="button" data-action="roll-comp">Roll Complementary</button>
+          </div>
+
+          <div class="fs2e-inline-result fs2e-span-full" id="fs2e-comp-result"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="fs2e-section" data-section-id="main" data-collapsed="0">
+    <div class="fs2e-section-heading" data-section-toggle role="button" tabindex="0" aria-expanded="true">Main Roll</div>
+    <div class="fs2e-grid-roll-main">
+      <div class="fs2e-inline-block">
+        <div class="fs2e-inline-title">Skill Roll</div>
+        <div class="fs2e-inline-field">
+          <select id="fs2e-main-char">
+            {{#each characteristics}}
+              <option value="{{this.key}}" data-value="{{this.total}}" {{#if this.selectedMain}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+          <span class="fs2e-inline-plus">+</span>
+          {{#if contestedResponder}}
+            <select id="fs2e-main-skill">
+              {{#each skills}}
+                <option value="{{this.key}}" data-value="{{this.total}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          {{else}}
+            <input id="fs2e-main-skill-label" class="fs2e-main-skill-display" type="text" readonly value="{{selectedSkillLabel}}" />
+            <input id="fs2e-main-skill-value" type="hidden" value="{{selectedSkillTotal}}" />
+          {{/if}}
+        </div>
+      </div>
+      <div class="fs2e-eq-field">
+        <div class="fs2e-eq-spacer"></div>
+        <div class="fs2e-eq-row">
+          <span class="fs2e-inline-plus">=</span>
+          <input id="fs2e-main-char-gn" class="fs2e-gn-input" type="number" readonly value="0" />
+        </div>
+      </div>
+
+      <div class="fs2e-diff-inline">
+        <div class="fs2e-diff-title-row">
+          <span class="fs2e-inline-title fs2e-diff-title-main">Difficulty</span>
+          <span class="fs2e-inline-title fs2e-diff-title-custom">Custom</span>
+        </div>
+        <div class="fs2e-diff-input-row">
+          <select id="fs2e-main-diff-base" data-diff-select>
+            {{#each difficulties}}
+              <option value="{{this.value}}">{{this.label}}</option>
+            {{/each}}
+          </select>
+          <span class="fs2e-inline-plus">+</span>
+          <input id="fs2e-main-diff-custom" type="number" value="0" step="1" />
+        </div>
+      </div>
+      <div class="fs2e-eq-field">
+        <div class="fs2e-eq-spacer"></div>
+        <div class="fs2e-eq-row">
+          <span class="fs2e-inline-plus">=</span>
+          <input id="fs2e-main-diff-gn" class="fs2e-gn-input" type="number" readonly value="0" />
+        </div>
+      </div>
+
+      <div class="fs2e-actions-block">
+        <div class="fs2e-radio-row">
+          <span class="fs2e-inline-title">Actions</span>
+          <label><input type="radio" name="fs2e-actions" value="1" checked /><span class="fs2e-radio-mod">-0</span></label>
+          <label><input type="radio" name="fs2e-actions" value="2" /><span class="fs2e-radio-mod">-4</span></label>
+          <label><input type="radio" name="fs2e-actions" value="3" /><span class="fs2e-radio-mod">-6</span></label>
+        </div>
+        <div class="fs2e-radio-row">
+          <span class="fs2e-inline-title">Retries</span>
+          <label><input type="radio" name="fs2e-retries" value="0" checked /><span class="fs2e-radio-mod">-0</span></label>
+          <label><input type="radio" name="fs2e-retries" value="1" /><span class="fs2e-radio-mod">-2</span></label>
+          <label><input type="radio" name="fs2e-retries" value="2" /><span class="fs2e-radio-mod">-4</span></label>
+        </div>
+      </div>
+
+      <div class="fs2e-eq-field fs2e-eq-merge fs2e-actions-total">
+        <div class="fs2e-eq-row">
+          <span class="fs2e-inline-plus">=</span>
+          <input id="fs2e-penalty-total" class="fs2e-gn-input" type="number" readonly value="0" />
+        </div>
+      </div>
+
+      <div class="fs2e-comp-label">
+        <span class="fs2e-inline-title">Complementary Skill Victory Points</span>
+      </div>
+      <div class="fs2e-eq-field fs2e-eq-merge fs2e-comp-vp-field">
+        <div class="fs2e-eq-row"><span class="fs2e-inline-plus">=</span><input id="fs2e-comp-vp-total" class="fs2e-gn-input" type="number" readonly value="0" /></div>
+      </div>
+
+      <div class="fs2e-comp-label">
+        <span class="fs2e-inline-title">Wound Penalties</span>
+      </div>
+      <div class="fs2e-eq-field fs2e-eq-merge fs2e-wound-penalty-field">
+        <div class="fs2e-eq-row"><span class="fs2e-inline-plus">=</span><input id="fs2e-wound-penalty" class="fs2e-gn-input" type="number" readonly value="0" /></div>
+      </div>
+
+      <div class="fs2e-comp-label">
+        <span class="fs2e-inline-title">Final Goal Number</span>
+      </div>
+      <div class="fs2e-eq-field fs2e-eq-merge fs2e-final-tn-field">
+        <div class="fs2e-eq-row"><span class="fs2e-inline-plus">=</span><input id="fs2e-final-tn" class="fs2e-gn-input" type="number" readonly value="0" /></div>
+      </div>
+
+    </div>
+    <div class="fs2e-grid-roll-actions">
+      <button type="button" data-action="roll-main">Roll Main</button>
+      <button type="button" data-action="reset">Reset</button>
+    </div>
+  </section>
+</form>

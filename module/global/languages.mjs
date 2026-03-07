@@ -13,7 +13,7 @@ export const collectItemLanguageGrants = (items) => {
   const grantedRead = [];
 
   for (const item of items ?? []) {
-    const itemLanguages = item.system?.languages;
+    const itemLanguages = item.system?.languages ?? item.system?.data?.languages;
     if (!itemLanguages) continue;
 
     grantedSpeak.push(...normalizeLanguageArray(itemLanguages.speak));
@@ -27,7 +27,7 @@ export const collectItemLanguageGrants = (items) => {
 };
 
 export const aggregateActorLanguages = (actor) => {
-  const actorLanguages = actor.system.languages ?? {};
+  const actorLanguages = actor.system?.languages ?? actor.system?.data?.languages ?? {};
   const manual = actorLanguages.manual ?? {};
 
   const manualSpeak = normalizeLanguageArray(manual.speak);

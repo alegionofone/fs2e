@@ -1,0 +1,31 @@
+<form class="fs2e-chargen-choice">
+  <header class="fs2e-dialog-header">
+    <h2>Spirit Assignment</h2>
+  </header>
+  <section class="fs2e-section fs2e-chargen-choice-container">
+    {{#each rows}}
+      <div class="fs2e-chargen-choice-row" data-spirit-pair="{{this.key}}">
+        <label class="fs2e-chargen-choice-side fs2e-chargen-choice-left">
+          <input type="radio" name="{{this.radioName}}" value="{{this.leftValue}}" {{#if this.leftChecked}}checked{{/if}} />
+          <span>{{this.leftLabel}}</span>
+        </label>
+        <span class="fs2e-chargen-choice-slash" aria-hidden="true">/</span>
+        <label class="fs2e-chargen-choice-side fs2e-chargen-choice-right">
+          <span>{{this.rightLabel}}</span>
+          <input type="radio" name="{{this.radioName}}" value="{{this.rightValue}}" {{#if this.rightChecked}}checked{{/if}} />
+        </label>
+      </div>
+    {{/each}}
+    {{#if alwaysPrimaryLabels}}
+      <div class="fs2e-chargen-choice-notes">
+        {{#each alwaysPrimaryLabels}}
+          <div class="fs2e-chargen-choice-note">{{this}} is always assigned as primary</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <div class="fs2e-actions">
+      <button type="button" data-action="apply">Apply</button>
+      <button type="button" data-action="cancel">Cancel</button>
+    </div>
+  </section>
+</form>

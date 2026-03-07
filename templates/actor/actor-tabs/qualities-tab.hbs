@@ -1,0 +1,22 @@
+<div class="container shade fs2e-vitality-wyrd">
+  <div class="fs2e-vw-grid">
+    <div class="fs2e-vw-label fs2e-vw-title-vitality">Vitality</div>
+    <div class="fs2e-vw-track fs2e-vw-track-vitality" aria-label="Vitality Resources" data-track="vitality">
+      {{#each view.resources.vitalityDots}}
+        <span class="fs2e-vw-dot {{#if this.isFilled}}is-filled{{else}}is-inactive{{/if}}" data-index="{{this.index}}"></span>
+      {{/each}}
+    </div>
+    <div class="fs2e-vw-sub fs2e-vw-title-penalties">Wound Penalties</div>
+    <div class="fs2e-vw-penalties fs2e-vw-modifiers" aria-hidden="true">
+      {{#each view.resources.woundPenaltyCells}}
+        <span class="fs2e-vw-penalty {{#if this.hasLabel}}is-labeled{{/if}}" data-index="{{this.index}}" style="grid-column: {{this.gridColumn}};">{{this.label}}</span>
+      {{/each}}
+    </div>
+    <div class="fs2e-vw-label fs2e-vw-title-wyrd">Wyrd</div>
+    <div class="fs2e-vw-track fs2e-vw-track-wyrd" aria-label="Wyrd Resources" data-track="wyrd">
+      {{#each view.resources.wyrdDots}}
+        <span class="fs2e-vw-dot {{#if this.isFilled}}is-filled{{else}}is-inactive{{/if}}" data-index="{{this.index}}"></span>
+      {{/each}}
+    </div>
+  </div>
+</div>

@@ -3,10 +3,167 @@
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">Description</a>
+    <a class="item" data-tab="traits">Traits</a>
   </nav>
 
   <section class="sheet-body">
     {{> "systems/fs2e/templates/items/partials/item-description.hbs" }}
+
+    <div class="tab" data-group="primary" data-tab="traits">
+      <section class="history-traits-section">
+        <div class="history-traits-block">
+          <h3>Characteristics</h3>
+          <div class="history-mod-row">
+            <select class="history-characteristic-select-a">
+              <option value="">Select characteristic</option>
+              {{#each view.characteristicOptions}}
+                <option value="{{this.key}}" {{#if this.disabled}}disabled{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+            <input class="history-amount history-characteristic-amount-a" type="number" value="1" step="1" />
+
+            <span class="history-mod-sep">/</span>
+
+            <select class="history-characteristic-select-b">
+              <option value="">/</option>
+              {{#each view.characteristicOptions}}
+                <option value="{{this.key}}" {{#if this.disabled}}disabled{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+            <input class="history-amount history-characteristic-amount-b" type="number" value="1" step="1" />
+
+            <button type="button" class="history-add-btn add-history-characteristic" aria-label="Add characteristics adjustments">+</button>
+          </div>
+
+          <div class="history-chip-list history-characteristics-list fs2e-tag-list fs2e-tag-surface">
+            {{#each view.characteristicsAdjustments}}
+              <span class="history-chip fs2e-tag-chip"><span class="history-chip-label fs2e-tag-chip-label">{{this.label}} {{this.value}}</span><button type="button" class="history-chip-remove fs2e-tag-chip-remove remove-history-characteristic" data-index="{{@index}}">x</button></span>
+            {{/each}}
+          </div>
+
+          <label class="history-spirit-row">
+            <span class="history-spirit-label">Always Primary</span>
+            <span class="history-spirit-tags fs2e-tag-surface">
+              <input
+                type="text"
+                class="history-tag-menu history-spirit-primary-menu fs2e-tag-input fs2e-tagify-base"
+                value=""
+                placeholder="Select spirit priorities"
+              />
+            </span>
+          </label>
+
+          <input type="hidden" name="system.characteristicsAdjustmentsJson" class="history-characteristics-json" value="{{view.characteristicsAdjustmentsJson}}" />
+          <input type="hidden" name="system.spiritAlwaysPrimaryJson" class="history-spirit-json" value="{{view.spiritAlwaysPrimaryJson}}" />
+        </div>
+
+        <div class="history-traits-block">
+          <h3>Skills</h3>
+          <div class="history-mod-row history-mod-row-skills">
+            <select class="history-skill-select-a">
+              <option value="">Select skill</option>
+              {{#each view.skillOptions}}
+                <option value="{{this.key}}">{{this.label}}</option>
+              {{/each}}
+            </select>
+            <input class="history-amount history-skill-amount-a" type="number" value="1" step="1" />
+
+            <span class="history-mod-sep">/</span>
+
+            <select class="history-skill-select-b">
+              <option value="">/</option>
+              {{#each view.skillOptions}}
+                <option value="{{this.key}}">{{this.label}}</option>
+              {{/each}}
+            </select>
+            <input class="history-amount history-skill-amount-b" type="number" value="1" step="1" />
+
+            <button type="button" class="history-add-btn add-history-skill" aria-label="Add skills adjustments">+</button>
+          </div>
+
+          <div class="history-chip-list history-skills-list fs2e-tag-list fs2e-tag-surface">
+            {{#each view.skillsAdjustments}}
+              <span class="history-chip fs2e-tag-chip"><span class="history-chip-label fs2e-tag-chip-label">{{this.label}} {{this.value}}</span><button type="button" class="history-chip-remove fs2e-tag-chip-remove remove-history-skill" data-index="{{@index}}">x</button></span>
+            {{/each}}
+          </div>
+          <input type="hidden" name="system.skillsAdjustmentsJson" class="history-skills-json" value="{{view.skillsAdjustmentsJson}}" />
+        </div>
+
+        <div class="history-traits-block">
+          <h3>Languages</h3>
+          <div class="history-language-row">
+            <span class="history-language-label">Speak</span>
+            <div class="history-tag-entry history-language-speak-entry fs2e-tag-surface">
+              <div class="history-chip-list history-language-speak-list fs2e-tag-list">
+                {{#each view.languagesSpeak}}
+                  <span class="history-chip fs2e-tag-chip"><span class="history-chip-label fs2e-tag-chip-label">{{this}}</span><button type="button" class="history-chip-remove fs2e-tag-chip-remove remove-history-language-speak" data-index="{{@index}}">x</button></span>
+                {{/each}}
+              </div>
+              <input class="history-language-input history-language-speak-input" type="text" placeholder="Tags" />
+            </div>
+          </div>
+
+          <div class="history-language-row">
+            <span class="history-language-label">Read</span>
+            <div class="history-tag-entry history-language-read-entry fs2e-tag-surface">
+              <div class="history-chip-list history-language-read-list fs2e-tag-list">
+                {{#each view.languagesRead}}
+                  <span class="history-chip fs2e-tag-chip"><span class="history-chip-label fs2e-tag-chip-label">{{this}}</span><button type="button" class="history-chip-remove fs2e-tag-chip-remove remove-history-language-read" data-index="{{@index}}">x</button></span>
+                {{/each}}
+              </div>
+              <input class="history-language-input history-language-read-input" type="text" placeholder="Tags" />
+            </div>
+          </div>
+          <input type="hidden" name="system.languagesSpeakJson" class="history-language-speak-json" value="{{view.languagesSpeakJson}}" />
+          <input type="hidden" name="system.languagesReadJson" class="history-language-read-json" value="{{view.languagesReadJson}}" />
+        </div>
+
+        <div class="history-traits-block">
+          <h3>Bonus Blessings/Curses</h3>
+          <div class="history-traits-controls">
+            <select class="history-bonus-bc-select">
+              <option value="">Select bonus item</option>
+              {{#each view.bonusBlessingCurseOptions}}
+                <option value="{{this.uuid}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+            <button type="button" class="history-add-btn add-history-bonus-bc">Add</button>
+          </div>
+          <div class="history-chip-list history-bonus-bc-list fs2e-tag-list fs2e-tag-surface"></div>
+          <input type="hidden" name="system.bonusBlessingCursesJson" class="history-bonus-bc-json" value="{{view.bonusBlessingCursesJson}}" />
+        </div>
+
+        <div class="history-traits-block">
+          <h3>Bonus Benefices/Afflictions</h3>
+          <div class="history-traits-controls">
+            <select class="history-bonus-ba-select">
+              <option value="">Select bonus item</option>
+              {{#each view.bonusBeneficeAfflictionOptions}}
+                <option value="{{this.uuid}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+            <button type="button" class="history-add-btn add-history-bonus-ba">Add</button>
+          </div>
+          <div class="history-chip-list history-bonus-ba-list fs2e-tag-list fs2e-tag-surface"></div>
+          <input type="hidden" name="system.bonusBeneficeAfflictionsJson" class="history-bonus-ba-json" value="{{view.bonusBeneficeAfflictionsJson}}" />
+        </div>
+
+        <div class="history-traits-block">
+          <h3>Bonus Actions</h3>
+          <div class="history-traits-controls">
+            <select class="history-bonus-action-select">
+              <option value="">Select bonus action</option>
+              {{#each view.bonusActionOptions}}
+                <option value="{{this.uuid}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+            <button type="button" class="history-add-btn add-history-bonus-action">Add</button>
+          </div>
+          <div class="history-chip-list history-bonus-action-list fs2e-tag-list fs2e-tag-surface"></div>
+          <input type="hidden" name="system.bonusActionsJson" class="history-bonus-action-json" value="{{view.bonusActionsJson}}" />
+        </div>
+      </section>
+    </div>
   </section>
 </form>
 

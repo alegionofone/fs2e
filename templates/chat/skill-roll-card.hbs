@@ -1,0 +1,64 @@
+<section class="fs2e-roll-chat-card {{#if success}}is-success{{else}}is-failure{{/if}}">
+  <header class="fs2e-roll-chat-card__header">
+    <div class="fs2e-roll-chat-card__identity">
+      {{#if actorImg}}
+        <img class="fs2e-roll-chat-card__thumb" src="{{actorImg}}" alt="{{actorName}}" />
+      {{/if}}
+      <div class="fs2e-roll-chat-card__who">
+        <h3 class="fs2e-roll-chat-card__title">{{title}}</h3>
+        <div class="fs2e-roll-chat-card__actor">{{actorName}}</div>
+      </div>
+    </div>
+    <div class="fs2e-roll-chat-card__result">{{quality}}</div>
+  </header>
+
+  <div class="fs2e-roll-chat-card__stats">
+    <div class="fs2e-roll-chat-card__stat">
+      <span>Roll</span>
+      <strong>{{roll}}</strong>
+    </div>
+    <div class="fs2e-roll-chat-card__stat">
+      <span>Goal Number</span>
+      <strong>{{gn}}</strong>
+    </div>
+    <div class="fs2e-roll-chat-card__stat">
+      <span>Successes</span>
+      <strong>{{successes}}</strong>
+    </div>
+    <div class="fs2e-roll-chat-card__stat">
+      <span>Victory Points</span>
+      <strong>{{vp}}</strong>
+    </div>
+  </div>
+
+  <details class="fs2e-roll-chat-card__panel" open>
+    <summary>Roll Math</summary>
+    <div class="fs2e-roll-chat-card__rows">
+      {{#each breakdown}}
+        <div class="fs2e-roll-chat-card__row">
+          <span class="fs2e-roll-chat-card__label">{{this.label}}</span>
+          <span class="fs2e-roll-chat-card__value">{{this.value}}</span>
+        </div>
+      {{/each}}
+    </div>
+  </details>
+
+  {{#if complementary}}
+    <div class="fs2e-roll-chat-card__meta">
+      <strong>Complementary:</strong> {{complementary}}
+    </div>
+  {{/if}}
+
+  {{#if sustainEnabled}}
+    <div class="fs2e-roll-chat-card__meta">
+      <strong>Sustain:</strong> {{sustainCurrent}} + {{vp}} = {{sustainTotal}} / {{sustainTask}}
+      {{#if sustainCompleted}}
+        <span class="fs2e-roll-chat-card__badge">Sustained Action Complete</span>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if detailQuality}}
+    <div class="fs2e-roll-chat-card__detail">Quality Band: {{detailQuality}}</div>
+  {{/if}}
+</section>

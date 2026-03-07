@@ -6,27 +6,25 @@
     ],
     "templates": {
       "common": {
-          "data": {
-            "species": "",
-            "planet": "",
-            "rank": "",
-            "faction": "",
-            "calling": "",
-            "reputation": "",
-            "histories": "",
-            "languages": {
-              "manual": {
-                "speak": [],
-                "read": []
-              },
-              "granted": {
-                "speak": [],
-                "read": []
-              },
-              "total": {
-                "speak": [],
-                "read": []
-              }
+          "species": "",
+          "planet": "",
+          "rank": "",
+          "faction": "",
+          "calling": "",
+          "reputation": "",
+          "histories": "",
+          "languages": {
+            "manual": {
+              "speak": [],
+              "read": []
+            },
+            "granted": {
+              "speak": [],
+              "read": []
+            },
+            "total": {
+              "speak": [],
+              "read": []
             }
           },
           "characteristics": {
@@ -309,6 +307,199 @@
                 "xp": 0,
                 "roll": 0
               },
+              "artisan": {
+                "blacksmith": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "carpenter": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "cartographer": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "cook": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "jeweler": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "leatherworker": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "locksmith": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "mason": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "potter": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "tailor": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "weaver": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
+              },
+              "arts": {
+                "calligraphy": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "drawing": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "embroidery": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "illumination": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "musicComposition": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "painting": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "poetry": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "rhetoricWriting": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "sculpting": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "stainedGlass": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
+              },
               "beastLore": {
                 "base": 0,
                 "mod": 0,
@@ -335,6 +526,53 @@
                 "history": 0,
                 "xp": 0,
                 "roll": 0
+              },
+              "drive": {
+                "aircraft": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "beastcraft": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "landcraft": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "spacecraft": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "watercraft": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
               },
               "empathy": {
                 "base": 0,
@@ -399,6 +637,26 @@
                 "xp": 0,
                 "roll": 0
               },
+              "lore": {
+                "jumpweb": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "xeno": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
+              },
               "performance": {
                 "base": 0,
                 "mod": 0,
@@ -435,6 +693,125 @@
                 "xp": 0,
                 "roll": 0
               },
+              "science": {
+                "anthropology": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "archaeology": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "astronomy": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "biology": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "chemistry": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "cybernetics": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "engineering": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "genetics": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "geology": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "meteorology": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "physics": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "terraforming": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "xenoBiology": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
+              },
               "search": {
                 "base": 0,
                 "mod": 0,
@@ -452,6 +829,44 @@
                 "history": 0,
                 "xp": 0,
                 "roll": 0
+              },
+              "social": {
+                "acting": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "debate": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "leadership": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "oratory": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
               },
               "stoicBody": {
                 "base": 0,
@@ -489,6 +904,44 @@
                 "xp": 0,
                 "roll": 0
               },
+              "techRedemption": {
+                "craftRedemption": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "highTechRedemption": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "mechRedemption": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "voltRedemption": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
+              },
               "thinkMachine": {
                 "base": 0,
                 "mod": 0,
@@ -525,6 +978,44 @@
                 "xp": 0,
                 "roll": 0
               },
+              "warfare": {
+                "artillery": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "demolitions": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "gunnery": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                },
+                "militaryTactics": {
+                  "base": 0,
+                  "mod": 0,
+                  "temp": 0,
+                  "max": 8,
+                  "history": 0,
+                  "xp": 0,
+                  "roll": 0
+                }
+              },
               "xenoEmpathy": {
                 "base": 0,
                 "mod": 0,
@@ -533,15 +1024,7 @@
                 "history": 0,
                 "xp": 0,
                 "roll": 0
-              },
-              "artisan": [],
-              "arts": [],
-              "drive": [],
-              "lore": [],
-              "science": [],
-              "social": [],
-              "techRedemption": [],
-              "warfare": []
+              }
             },
             "modifiers": {
               "records": []
@@ -563,11 +1046,14 @@
   "Item": {
     "templates": {
       "common": {
-        "data": {
-          "languages": {
-            "speak": [],
-            "read": []
-          }
+        "tags": [],
+        "effects": {
+          "characteristics": {},
+          "skills": {}
+        },
+        "languages": {
+          "speak": [],
+          "read": []
         }
       }
     },
@@ -611,7 +1097,8 @@
     "faction": {
       "templates": [
         "common"
-      ]
+      ],
+      "faction": ""
     },
     "history": {
       "templates": [
@@ -626,7 +1113,26 @@
     "species": {
       "templates": [
         "common"
-      ]
+      ],
+      "occultEnabled": false,
+      "occultAffinities": [],
+      "spiritAlwaysPrimary": [],
+      "characteristics": {
+        "body": {
+          "strength": { "base": 3, "max": 8 },
+          "dexterity": { "base": 3, "max": 8 },
+          "endurance": { "base": 3, "max": 8 }
+        },
+        "mind": {
+          "wits": { "base": 3, "max": 8 },
+          "perception": { "base": 3, "max": 8 },
+          "tech": { "base": 3, "max": 8 }
+        },
+        "occult": {
+          "psi": { "base": 0, "max": 10 },
+          "theurgy": { "base": 0, "max": 10 }
+        }
+      }
     },
     "weapon": {
       "templates": [

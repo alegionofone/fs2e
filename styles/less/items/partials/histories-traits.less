@@ -1,0 +1,146 @@
+.app.window-app.sheet.item .fs2e-item-sheet {
+  .history-traits-section {
+    display: grid;
+    gap: 12px;
+  }
+
+  .history-traits-block {
+    padding: 0;
+    border: 1px solid var(--color-faint-3);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .history-mod-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 54px auto minmax(0, 1fr) 54px 30px;
+    gap: 6px;
+    align-items: center;
+    margin: 6px 0;
+    padding-right: 4px;
+  }
+
+  .history-mod-row.history-mod-row-skills {
+    grid-template-columns: minmax(0, 1fr) 54px auto minmax(0, 1fr) 54px 30px;
+  }
+
+  .history-mod-row select,
+  .history-mod-row input[type="number"] {
+    width: 100%;
+    height: 26px;
+  }
+
+  .history-mod-row .history-amount {
+    width: 54px;
+    text-align: center;
+  }
+
+  .history-mod-sep {
+    text-align: center;
+    line-height: 1;
+  }
+
+  .history-add-btn {
+    width: 30px;
+    min-width: 30px;
+    height: 26px;
+    padding: 0;
+    line-height: 24px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .history-language-row {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    padding: 6px 0;
+  }
+
+  .history-language-label {
+    padding-top: 6px;
+    font-weight: 600;
+  }
+
+  .history-tag-entry {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    padding: 0;
+    border: 0;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .history-tag-entry .history-chip-list {
+    border-top: 0;
+    min-height: 0;
+    padding: 0;
+    flex: 1 1 auto;
+  }
+
+  .history-language-input {
+    flex: 1 1 120px;
+    min-width: 110px;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--color-gold-lt);
+    margin: 0;
+    height: 22px;
+  }
+
+  .history-spirit-row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .history-spirit-label {
+    padding-top: 6px;
+    font-weight: 600;
+  }
+
+  .history-spirit-tags {
+    min-width: 0;
+  }
+
+  .history-traits-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    margin: 6px 0;
+  }
+
+  .history-traits-controls select {
+    width: 100%;
+    height: 26px;
+  }
+
+  @media (max-width: 720px) {
+    .history-mod-row,
+    .history-mod-row.history-mod-row-skills,
+    .history-traits-controls {
+      grid-template-columns: 1fr;
+    }
+
+    .history-mod-sep {
+      display: none;
+    }
+
+    .history-language-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .history-language-label {
+      padding-top: 0;
+    }
+  }
+}

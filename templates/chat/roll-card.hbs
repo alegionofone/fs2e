@@ -1,0 +1,68 @@
+<section class="fs2e-chat-card">
+  <header class="fs2e-chat-card__header">
+    <div class="fs2e-chat-card__who">
+      {{#if actorImg}}<img class="fs2e-chat-card__thumb" src="{{actorImg}}" alt="{{actorName}}" />{{/if}}
+      {{#if actorName}}
+        <span class="fs2e-chat-card__actor">{{actorName}}</span>
+      {{/if}}
+    </div>
+    <h3>{{title}}</h3>
+  </header>
+
+  <details class="fs2e-chat-card__details">
+    <summary class="fs2e-chat-card__goal">Goal Number: {{gn}}</summary>
+    <div class="fs2e-chat-card__breakdown">
+      {{#each breakdown}}
+        <div class="fs2e-chat-card__row">
+          <span class="label">{{this.label}}</span>
+          <span class="value">{{this.value}}</span>
+        </div>
+      {{/each}}
+    </div>
+  </details>
+
+  <details class="fs2e-chat-card__details">
+    <summary class="fs2e-chat-card__goal">Roll Number: {{rollAdjusted}}</summary>
+    <div class="fs2e-chat-card__breakdown">
+      <div class="fs2e-chat-card__row">
+        <span class="label">Roll Number</span>
+        <span class="value">{{roll}}</span>
+      </div>
+      <div class="fs2e-chat-card__row">
+        <span class="label">Accented Roll</span>
+        <span class="value">{{accent}}</span>
+      </div>
+    </div>
+  </details>
+
+  <div class="fs2e-chat-card__quality {{#if success}}is-success{{else}}is-failure{{/if}}">{{quality}}</div>
+
+  <div class="fs2e-chat-card__summary">
+    <span class="fs2e-chat-card__summary-item {{#if success}}is-success{{else}}is-failure{{/if}}">
+      <i class="fa-solid fa-check-double"></i>{{successes}}
+    </span>
+    <span class="fs2e-chat-card__summary-item {{#if success}}is-success{{else}}is-failure{{/if}}">
+      <i class="fa-solid fa-medal"></i>{{vp}}{{#if sustainEnabled}} ({{sustainTotal}}){{/if}}
+    </span>
+  </div>
+  {{#if sustainCompleted}}
+    <div class="fs2e-chat-card__sustain-success">SUSTAINED ACTION SUCCESS</div>
+  {{/if}}
+
+  {{#unless sustainCompleted}}
+    {{#if showRetry}}
+      {{#if showContinue}}
+        <div class="fs2e-chat-card__actions">
+          <button class="fs2e-chat-card__retry" type="button">Retry</button>
+          <button class="fs2e-chat-card__continue" type="button">Continue</button>
+        </div>
+      {{else}}
+        <button class="fs2e-chat-card__retry" type="button">Retry</button>
+      {{/if}}
+    {{else}}
+      {{#if showContinue}}
+        <button class="fs2e-chat-card__continue" type="button">Continue</button>
+      {{/if}}
+    {{/if}}
+  {{/unless}}
+</section>

@@ -1,0 +1,45 @@
+.fs2e-item-sheet {
+	.sheet-body {
+		display: block;
+	}
+
+	.tab[data-tab="description"] {
+		display: block;
+
+		.editor {
+			display: block;
+			border-radius: var(--radius-sm);
+			overflow: visible;
+			height: auto;
+			max-height: none;
+
+			.editor-menu {
+				padding: var(--space-6) var(--space-8);
+
+				button {
+					color: var(--color-magenta-mid);
+				}
+			}
+
+			.editor-content {
+				min-height: 35px;
+				padding: var(--space-10) var(--space-12);
+				color: var(--color-grey-mid);
+				line-height: 1.2;
+				font-size: var(--font-size-14);
+				height: auto;
+				max-height: none;
+				overflow: visible;
+			}
+
+			&.prosemirror .editor-content.ProseMirror,
+			&.active .editor-content,
+			&.prosemirror.editable .editor-content {
+				min-height: 225px;
+				height: auto;
+				max-height: none;
+				overflow: visible;
+			}
+		}
+	}
+}

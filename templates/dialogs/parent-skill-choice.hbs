@@ -1,0 +1,30 @@
+<form class="fs2e-chargen-choice fs2e-history-choice fs2e-parent-skill-choice">
+  <header class="fs2e-dialog-header">
+    <h2>{{title}}</h2>
+  </header>
+
+  <section class="fs2e-section fs2e-chargen-choice-container">
+    {{#each rows}}
+      <div class="fs2e-history-choice-select-row fs2e-parent-skill-choice-row">
+        <div class="fs2e-parent-skill-choice-options">
+          {{#each this.options}}
+            <label class="fs2e-parent-skill-choice-option">
+              <input type="radio" name="choice-{{../id}}" value="{{this.key}}" {{#if this.selected}}checked{{/if}} />
+              <span>{{this.label}}</span>
+            </label>
+          {{/each}}
+
+          <div class="fs2e-parent-skill-custom-row">
+            <span class="fs2e-parent-skill-custom-label">Custom</span>
+            <input type="text" name="custom-{{this.id}}" placeholder="Custom specialization" />
+          </div>
+        </div>
+      </div>
+    {{/each}}
+
+    <div class="fs2e-actions">
+      <button type="button" data-action="apply">Apply</button>
+      <button type="button" data-action="cancel">Cancel</button>
+    </div>
+  </section>
+</form>

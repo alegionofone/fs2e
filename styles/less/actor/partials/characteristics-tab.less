@@ -1,0 +1,70 @@
+.fs2e.sheet.actor {
+    .fs2e-grid-chars,
+    .fs2e-grid-chars-body,
+    .fs2e-grid-chars-mind,
+    .fs2e-grid-chars-spirit-left,
+    .fs2e-grid-chars-spirit-mid,
+    .fs2e-grid-chars-spirit-right,
+    .fs2e-grid-chars-spirit {
+        display: grid;
+    }
+
+    .fs2e-grid-chars {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-12);
+    }
+
+    .fs2e-grid-chars-body,
+    .fs2e-grid-chars-mind,
+    .fs2e-grid-chars-spirit-left,
+    .fs2e-grid-chars-spirit-mid,
+    .fs2e-grid-chars-spirit-right {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+
+    .fs2e-grid-chars-spirit {
+        grid-template-columns: 1fr auto 1fr;
+        gap: var(--space-12);
+    }
+
+    .characteristics {
+        .fs2e-grid-chars-spirit {
+            grid-template-columns: 1fr auto 1fr;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+
+            .spirit-right & .value {
+                margin-right: auto;
+                text-align: left;
+            }
+
+            .spirit-left & .value {
+                text-align: right;
+            }
+        }
+
+        .spirit {
+            .stat.sep {
+                display: flex;
+                justify-content: center;
+
+                .sep {
+                    display: inline-block;
+                    width: 1ch;
+                    min-width: 0;
+                    text-align: center;
+                }
+            }
+        }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+    }
+}

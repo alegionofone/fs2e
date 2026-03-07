@@ -1,4 +1,3 @@
 <div class="tab" data-group="primary" data-tab="description">
-	<label>Description</label>
-	<textarea name="system.description">{{system.description}}</textarea>
+	{{editor system.description.value target="system.description.value" button=true owner=owner editable=editable engine="prosemirror"}}
 </div>

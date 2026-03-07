@@ -1,0 +1,82 @@
+<section class="characteristics fs2e-grid-chars">
+  {{#each view.characteristics.sections}}
+    <div class="container shade {{this.panelClass}}">
+      <h3>{{this.label}}</h3>
+
+      {{#if this.isSpirit}}
+        <div class="fs2e-grid-chars-spirit">
+          <div class="fs2e-grid-chars-spirit-left spirit-left">
+            {{#each this.pairs}}
+              <label class="stat" data-characteristic="{{this.leftKey}}" data-tooltip="{{this.leftTooltip}}" data-tooltip-class="fs2e-multiline"><span class="name">{{this.leftLabel}}</span><span class="value">{{this.leftTotal}}</span></label>
+            {{/each}}
+          </div>
+
+          <div class="fs2e-grid-chars-spirit-mid spirit-mid" aria-hidden="true">
+            {{#each this.pairs}}
+              <label class="stat sep"><span class="sep">/</span></label>
+            {{/each}}
+          </div>
+
+          <div class="fs2e-grid-chars-spirit-right spirit-right">
+            {{#each this.pairs}}
+              <label class="stat" data-characteristic="{{this.rightKey}}" data-tooltip="{{this.rightTooltip}}" data-tooltip-class="fs2e-multiline"><span class="value">{{this.rightTotal}}</span><span class="name">{{this.rightLabel}}</span></label>
+            {{/each}}
+          </div>
+        </div>
+      {{else}}
+        <div class="{{this.gridClass}}">
+          {{#each this.stats}}
+            <label class="stat" data-characteristic="{{this.key}}" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline"><span class="name">{{this.label}}</span><span class="value">{{this.total}}</span></label>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+  {{/each}}
+</section>
+
+<section class="skills container shade skills-section natural-skills">
+  <h3>Natural Skills</h3>
+  <div class="natural-list">
+    {{#each view.skills.natural}}
+      <label class="stat" data-skill="{{this.key}}" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline" data-default-characteristic="{{this.defaultCharacteristic}}" data-complementary="{{this.complementary}}"><span class="name">{{this.label}}</span><span class="value">{{this.total}}</span></label>
+    {{/each}}
+  </div>
+</section>
+
+<section class="skills container shade skills-section learned-skills">
+  <h3>Learned Skills</h3>
+  <div class="fs2e-grid-skills-learned">
+    {{#each view.skills.learned}}
+      {{#if this.isGroup}}
+        <div class="skills-item skills-group-block">
+          <div class="stat" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline">
+            <span class="name">{{this.label}}</span>
+          </div>
+
+          {{#each this.items}}
+            <label
+              class="stat"
+              data-skill="{{this.key}}"
+              data-tooltip="{{this.tooltip}}"
+              data-tooltip-class="fs2e-multiline"
+              data-default-characteristic="{{this.defaultCharacteristic}}"
+              data-complementary="{{this.complementary}}"
+            >
+              <span class="name">{{this.label}}</span>
+              <span class="value">{{this.total}}</span>
+            </label>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="skills-item {{#unless this.scored}}skills-group-block{{/unless}}">
+          <label class="stat" data-skill="{{this.key}}" data-tooltip="{{this.tooltip}}" data-tooltip-class="fs2e-multiline" data-default-characteristic="{{this.defaultCharacteristic}}" data-complementary="{{this.complementary}}">
+            <span class="name">{{this.label}}</span>
+            {{#if this.scored}}
+              <span class="value">{{this.total}}</span>
+            {{/if}}
+          </label>
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+</section>

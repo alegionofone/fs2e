@@ -3,9 +3,68 @@
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">Description</a>
+    <a class="item" data-tab="effect">Effect</a>
   </nav>
 
   <section class="sheet-body">
     {{> "systems/fs2e/templates/items/partials/item-description.hbs" }}
+
+    <div class="tab" data-group="primary" data-tab="effect">
+      <section class="item-section">
+        <label class="species-form-row">
+          <span class="species-row-label">Always Active</span>
+          <span class="species-row-value">
+            <input name="system.alwaysActive" type="checkbox" {{#if view.alwaysActive}}checked{{/if}} />
+          </span>
+        </label>
+
+        <label class="species-form-row">
+          <span class="species-row-label">Points</span>
+          <span class="species-row-value">
+            <input class="traits-input" name="system.points" type="text" value="{{view.points}}" placeholder="0" />
+          </span>
+        </label>
+
+        <label class="species-form-row">
+          <span class="species-row-label">Amount</span>
+          <span class="species-row-value">
+            <input class="traits-input" name="system.effectLine.amount" type="text" value="{{view.effectLine.amount}}" placeholder="+0" />
+          </span>
+        </label>
+
+        <label class="species-form-row">
+          <span class="species-row-label">Target</span>
+          <span class="species-row-value">
+            <select name="system.effectLine.target">
+              {{#select view.effectLine.target}}
+                <option value=""></option>
+                <optgroup label="Characteristics">
+                  {{#each view.characteristicTargets}}
+                    <option value="{{this.value}}">{{this.label}}</option>
+                  {{/each}}
+                </optgroup>
+                <optgroup label="Skills">
+                  {{#each view.skillTargets}}
+                    <option value="{{this.value}}">{{this.label}}</option>
+                  {{/each}}
+                </optgroup>
+                <optgroup label="Other Traits">
+                  {{#each view.otherTraitTargets}}
+                    <option value="{{this.value}}">{{this.label}}</option>
+                  {{/each}}
+                </optgroup>
+              {{/select}}
+            </select>
+          </span>
+        </label>
+
+        <label class="species-form-row">
+          <span class="species-row-label">Note</span>
+          <span class="species-row-value">
+            <input name="system.effectLine.note" type="text" value="{{view.effectLine.note}}" placeholder="Notes" />
+          </span>
+        </label>
+      </section>
+    </div>
   </section>
 </form>

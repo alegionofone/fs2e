@@ -1,9 +1,11 @@
 .app.window-app.sheet.item {
-    background-image: url("assets/parchment.png");
-	background-position: center -30px;
-	background-attachment: scroll;
-	background-size: 100% auto;
+    background-image: url("assets/top-left-parchment.png"), url("assets/parchment.png");
+    background-position: top left, center -30px;
+    background-repeat: no-repeat, repeat;
+    background-attachment: scroll, scroll;
+    background-size: auto, 100% auto;
 	box-shadow: none;
+    color: var(--color-grey-mid);
 
     .window-header {
         .fa-solid::before {
@@ -11,4 +13,223 @@
             color: var(--color-grey-dk);
         }
     }
+
+    .window-content {
+        overflow-y: visible;
+        color: inherit;
+    }
+
+    h3 {
+        border: 0;
+    }
+
+    .fs2e-item-sheet {
+        height: auto;
+        min-height: 0;
+        color: inherit;
+
+        &, input, textarea, select, button, a {
+            color: inherit;
+        }
+    }
+
+    .fs2e-item-sheet .sheet-body {
+        display: block;
+        flex: 0 0 auto;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .fs2e-item-sheet .sheet-body .tab {
+        display: none;
+        flex: 0 0 auto;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .fs2e-item-sheet .sheet-body .tab.active {
+        display: block;
+    }
+
+    .fs2e-item-sheet .sheet-body .tab:not([data-tab="description"]) {
+        margin-top: calc(0.5em + var(--space-10));
+    }
+
+    // Keep tag controls in the body neutral grey; header styling remains unchanged.
+    .fs2e-item-sheet .sheet-body {
+        .fs2e-tag-surface .tagify .tagify__tag,
+        .tagify.fs2e-tagify-base .tagify__tag,
+        .fs2e-tag-surface .tagify .tagify__tag > div,
+        .tagify.fs2e-tagify-base .tagify__tag > div,
+        .fs2e-tag-surface .tagify .tagify__tag .tagify__tag__removeBtn,
+        .tagify.fs2e-tagify-base .tagify__tag .tagify__tag__removeBtn,
+        .fs2e-tag-chip,
+        .fs2e-tag-chip-label,
+        .fs2e-tag-chip-remove,
+        .fs2e-tag-chip-remove:hover {
+            background: var(--color-grey-lt-mid) !important;
+        }
+    }
+
+    .fs2e-item-sheet .sheet-tabs {
+        font-family: p22, Georgia, sans-serif;
+        font-size: var(--font-size-18);
+        color: inherit;
+
+        .item {
+            color: inherit;
+
+            &:hover,
+            &:focus,
+            &.active {
+                color: var(--color-magenta-mid);
+                text-shadow: 0 0 10px var(--color-magenta-mid);
+            }
+        }
+    }
+
+    .fs2e-item-sheet {
+        .fs2e-tag-surface {
+            width: 100%;
+            min-width: 0;
+            border: 0;
+        }
+
+        .fs2e-tag-input {
+            width: 100%;
+            border: 0;
+            background: transparent;
+        }
+
+        .fs2e-tag-surface .tagify,
+        .tagify.fs2e-tagify-base {
+            box-sizing: border-box;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            background: var(--color-grey-mid-40);
+            min-height: 28px;
+            margin: 0;
+            padding: 0;
+            padding-left: 5px;
+
+            .tagify__input {
+                margin: 0 !important;
+                min-height: 26px;
+                line-height: 26px;
+                color: var(--color-gold-lt);
+            }
+
+            .tagify__tag {
+                display: inline-flex;
+                align-items: center;
+                margin-inline: 0px !important;
+                margin-block: 0px !important;
+                min-height: 26px;
+                height: 26px;
+                line-height: 26px;
+                white-space: nowrap;
+                border-radius: 0;
+                border: var(--border-gold-mid);
+                background: var(--color-magenta-mid);
+                font-size: var(--font-size-12);
+                overflow: hidden;
+
+                > div {
+                    background: var(--color-magenta-mid);
+                    color: var(--color-gold-lt);
+                }
+
+                .tagify__tag__removeBtn {
+                    margin-inline: 0px !important;
+                    height: 100%;
+                    min-height: 100%;
+                    width: 18px;
+                    min-width: 18px;
+                    border: 0;
+                    box-shadow: none;
+                    appearance: none;
+                    -webkit-appearance: none;
+                    border-radius: 0;
+                    background: var(--color-magenta-mid) !important;
+                    color: var(--color-gold-lt);
+
+                    &:hover {
+                        background: var(--color-magenta-mid) !important;
+                        color: var(--color-gold-lt);
+                    }
+                }
+            }
+        }
+
+        .fs2e-tag-list {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0;
+            min-height: 36px;
+            padding: 0;
+            padding: 5px;
+            border: 0;
+            background: var(--color-grey-mid-40);
+        }
+
+        .fs2e-tag-chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 26px;
+            height: 26px;
+            padding: 0;
+            white-space: nowrap;
+            border: var(--border-gold-mid);
+            border-radius: 0;
+            background: var(--color-magenta-mid);
+            color: var(--color-gold-lt);
+            font-size: var(--font-size-12);
+            overflow: hidden;
+        }
+
+        .fs2e-tag-chip-label {
+            display: inline-block;
+            padding: 0 8px;
+            color: var(--color-gold-lt);
+            background: var(--color-magenta-mid);
+        }
+
+        .fs2e-tag-chip-remove {
+            width: 18px;
+            min-width: 18px;
+            height: 100%;
+            min-height: 100%;
+            line-height: 1;
+            padding: 0;
+            margin-inline: 0px;
+            border-radius: 0;
+            border: 0;
+            box-shadow: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background: var(--color-magenta-mid);
+            color: var(--color-gold-lt);
+            font-size: var(--font-size-11);
+
+            &:hover {
+                background: var(--color-magenta-mid);
+                color: var(--color-gold-lt);
+            }
+        }
+    }
+
 }
+
+@import "partials/item-header.less";
+@import "partials/item-description.less";
+@import "partials/species-characteristics.less";
+@import "partials/histories-traits.less";

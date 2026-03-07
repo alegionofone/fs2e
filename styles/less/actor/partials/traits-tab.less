@@ -1,0 +1,53 @@
+.fs2e.sheet.actor {
+    .traits {
+        .traits-section + .traits-section { margin-top: var(--space-12); }
+
+        .traits-section {
+            .traits-table {
+                width: 100%;
+                margin: var(--space-8) 0 0;
+                border-collapse: collapse;
+                border: 0;
+
+                th,
+                td {
+                    padding: var(--space-4) var(--space-6);
+                    text-align: left;
+                    vertical-align: top;
+                    border-top: var(--border-gold-dk-mid);
+                    border-bottom: 0;
+                    font-size: var(--font-size-12);
+                }
+
+                thead th {
+                    color: var(--color-gold-mid);
+                    border-top: 0;
+                }
+
+                tbody td { color: var(--color-gold-lt); }
+
+                .traits-points-cell,
+                .traits-delete-cell,
+                .traits-open-cell {
+                    width: 1%;
+                    white-space: nowrap;
+                    text-align: center;
+                }
+
+                .traits-points-head { text-align: center; }
+
+                &.combat-actions-table {
+                    th,
+                    td {
+                        border-top: 0;
+                        border-bottom: 0;
+                        padding-top: 3px;
+                        padding-bottom: 3px;
+                    }
+
+                    tbody tr:last-child td { border-bottom: 0 !important; }
+                }
+            }
+        }
+    }
+}

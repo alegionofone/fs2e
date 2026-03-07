@@ -1,0 +1,2399 @@
+[
+  {
+    "name": "High Court - al Malik",
+    "type": "history",
+    "img": "systems/fs2e/styles/assets/icons/crest_al-malik.png",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "al-Malik"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "calm",
+          "label": "Calm",
+          "value": 2
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "calm"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish",
+          "Graceful Tongue"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.OqVfXGlnxs9SI72V",
+          "name": "Gracious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.Fogz8PTVJeMhxo6M",
+          "name": "Impetuous"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "al-Malik"
+        ]
+      }
+    }
+  },
+  {
+    "name": "High Court - Decados",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Decados"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "ego",
+          "label": "Ego",
+          "value": 2
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        },
+        {
+          "key": "inquiry",
+          "label": "Inquiry",
+          "value": 1
+        },
+        {
+          "key": "lore.rivalHouse",
+          "label": "Lore: Rival House",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "ego"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.j5Zzth2UWqy0TNyZ",
+          "name": "Suspicious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.xnMPXwPRE0NbD9qG",
+          "name": "Vain"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Decados"
+        ]
+      }
+    }
+  },
+  {
+    "name": "High Court - Hawkwood",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Hawkwood"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 1
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 1
+        },
+        {
+          "key": "choice:calm|1;ego|1",
+          "label": "Calm +1 or Ego +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            },
+            {
+              "key": "ego",
+              "label": "Ego",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        },
+        {
+          "key": "lore.heraldry",
+          "label": "Lore: Heraldry",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.zqOrXRJEK4tXSNEx",
+          "name": "Prideful"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.Ap6GNr85XB07Zpo1",
+          "name": "Unyielding"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Hawkwood"
+        ]
+      }
+    }
+  },
+  {
+    "name": "High Court - Hazat",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Li Halan"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 1
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "passion",
+          "label": "Passion",
+          "value": 2
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "passion"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.qK1x5Vf0p3g4x5vi",
+          "name": "Disciplined"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.OtaQjFf0WzqZuUUG",
+          "name": "Vengeful"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Li Halan"
+        ]
+      }
+    }
+  },
+  {
+    "name": "High Court - Li Halan",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Li Halan"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "choice:passion|1;calm|1",
+          "label": "Passion +1 or Calm +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 1
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "faith",
+          "label": "Faith",
+          "value": 2
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "value": 1
+        },
+        {
+          "key": "lore.theology",
+          "label": "Lore: Theology",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "faith"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish",
+          "Latin"
+        ]
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Li Halan"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Landless - al Malik",
+    "type": "history",
+    "img": "systems/fs2e/styles/assets/icons/crest_al-malik.png",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "al-Malik"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "inquiry",
+          "label": "Inquiry",
+          "value": 1
+        },
+        {
+          "key": "lore.trading",
+          "label": "Lore: Trading",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "calm"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish",
+          "Graceful Tongue"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.OqVfXGlnxs9SI72V",
+          "name": "Gracious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.Fogz8PTVJeMhxo6M",
+          "name": "Impetuous"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "al-Malik"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Landless - Decados",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Decados"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "ego",
+          "label": "Ego",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "observe",
+          "label": "Observe",
+          "value": 1
+        },
+        {
+          "key": "sneak",
+          "label": "Sneak",
+          "value": 1
+        },
+        {
+          "key": "knavery",
+          "label": "Knavery",
+          "value": 2
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "ego"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": []
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.j5Zzth2UWqy0TNyZ",
+          "name": "Suspicious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.xnMPXwPRE0NbD9qG",
+          "name": "Vain"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Decados"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Landless - Hawkwood",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Hawkwood"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 1
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "vigor",
+          "label": "Vigor",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 2
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "extrovert"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": []
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.Ap6GNr85XB07Zpo1",
+          "name": "Unyielding"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.zqOrXRJEK4tXSNEx",
+          "name": "Prideful"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Hawkwood"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Landless - Hazat",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Hazat"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "passion",
+          "label": "Passion",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        },
+        {
+          "key": "shoot",
+          "label": "Shoot",
+          "value": 1
+        },
+        {
+          "key": "vigor",
+          "label": "Vigor",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "passion"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": []
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.qK1x5Vf0p3g4x5vi",
+          "name": "Disciplined"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.OtaQjFf0WzqZuUUG",
+          "name": "Vengeful"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Hazat"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Landless - Li Halan",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Li Halan"
+      ],
+      "description": {
+        "value": "<p>The Youth is raised in a palace, attended to by servants and tutors. She is watched carefully and must ever live up to high expectations. However, she gets to meet foreign visitors and witness famous doings.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "choice:passion|1;calm|1",
+          "label": "Passion +1 or Calm +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 1
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "faith",
+          "label": "Faith",
+          "value": 2
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "focus",
+          "label": "Focus",
+          "value": 1
+        },
+        {
+          "key": "lore.theology",
+          "label": "Lore: Theology",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "observe",
+          "label": "Observe",
+          "value": 1
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "faith"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": []
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.HYp2bULIchudEglz",
+          "name": "Guilty"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.2eo1Dr4Oeh0k9S5B",
+          "name": "Pious"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Li Halan"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Ambassador",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Early Career",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Upon her coming-of-age, the young noble chooses the role she will fulfill for her house. She is officially knighted. (Those nobles who do not pass through this stage, but who become priests or guildmembers instead, do not receive noble rank. While they are still considered royal, they receive none of the benefits or responsibilities of noble station.)</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 2
+        },
+        {
+          "key": "calm",
+          "label": "Calm",
+          "value": 2
+        },
+        {
+          "key": "choice:faith|1;ego|1",
+          "label": "Faith +1 or Ego +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "faith",
+              "label": "Faith",
+              "value": 1
+            },
+            {
+              "key": "ego",
+              "label": "Ego",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "charm",
+          "label": "Charm",
+          "value": 2
+        },
+        {
+          "key": "observe",
+          "label": "Observe",
+          "value": 1
+        },
+        {
+          "key": "sneak",
+          "label": "Sneak",
+          "value": 1
+        },
+        {
+          "key": "arts.rhetoric",
+          "label": "Arts: Rhetoric",
+          "value": 1
+        },
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 2
+        },
+        {
+          "key": "choice:inquiry|2;knavery|2",
+          "label": "Inquiry +2 or Knavery +2",
+          "value": 0,
+          "choice": [
+            {
+              "key": "inquiry",
+              "label": "Inquiry",
+              "value": 2
+            },
+            {
+              "key": "knavery",
+              "label": "Knavery",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "lore.courtRivals",
+          "label": "Lore: Court Rivals",
+          "value": 2
+        },
+        {
+          "key": "choice:social.debate|1;social.oratory|1",
+          "label": "Social: Debate +1 or Social: Oratory +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "social.debate",
+              "label": "Social: Debate",
+              "value": 1
+            },
+            {
+              "key": "social.oratory",
+              "label": "Social: Oratory",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "ride",
+          "label": "Ride",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [
+        {
+          "uuid": "Compendium.fs2e.benefices-afflications.Item.f6A0GDDdNjC1h5AR",
+          "name": "Nobility (Knight)"
+        }
+      ],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Early Career",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Court Duelist",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Early Career",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Upon her coming-of-age, the young noble chooses the role she will fulfill for her house. She is officially knighted. (Those nobles who do not pass through this stage, but who become priests or guildmembers instead, do not receive noble rank. While they are still considered royal, they receive none of the benefits or responsibilities of noble station.)</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 1
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 2
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "choice:passion|2;calm|2",
+          "label": "Passion +2 or Calm +2",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 2
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "dodge",
+          "label": "Dodge",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 2
+        },
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [
+        {
+          "uuid": "Compendium.fs2e.benefices-afflications.Item.f6A0GDDdNjC1h5AR",
+          "name": "Nobility (Knight)"
+        }
+      ],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Early Career",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Dandy",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Apprenticeship",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Born to privilege, a noble’s life is molded from the start — the individual has little choice in his upbringing and career, for it has been planned out by his family. Nonetheless, there are various pastimes and endeavors she can choose to excel at. While most Hawkwood and Hazat gravitate towards military pastimes and al-Malik and Li Halan toward leisure or study, nobles from any house — but especially the Decados — appreciate diplomatic endeavors.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 1
+        },
+        {
+          "key": "choice:passion|1;calm|1",
+          "label": "Passion +1 or Calm +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 1
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "__anySkill__",
+          "label": "Any",
+          "value": 2
+        },
+        {
+          "key": "charm",
+          "label": "Charm",
+          "value": 1
+        },
+        {
+          "key": "observe",
+          "label": "Observe",
+          "value": 1
+        },
+        {
+          "key": "shoot",
+          "label": "Shoot",
+          "value": 1
+        },
+        {
+          "key": "arts.any",
+          "label": "Arts: Any",
+          "value": 1
+        },
+        {
+          "key": "choice:drive.landcraft|1;drive.aircraft|1",
+          "label": "Drive: Landcraft +1 or Drive: Aircraft +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "drive.landcraft",
+              "label": "Drive: Landcraft",
+              "value": 1
+            },
+            {
+              "key": "drive.aircraft",
+              "label": "Drive: Aircraft",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "empathy",
+          "label": "Empathy",
+          "value": 1
+        },
+        {
+          "key": "gambling",
+          "label": "Gambling",
+          "value": 1
+        },
+        {
+          "key": "ride",
+          "label": "Ride",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Apprenticeship",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Diplomat",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Apprenticeship",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Born to privilege, a noble’s life is molded from the start — the individual has little choice in his upbringing and career, for it has been planned out by his family. Nonetheless, there are various pastimes and endeavors she can choose to excel at. While most Hawkwood and Hazat gravitate towards military pastimes and al-Malik and Li Halan toward leisure or study, nobles from any house — but especially the Decados — appreciate diplomatic endeavors.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 1
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 1
+        },
+        {
+          "key": "calm",
+          "label": "Calm",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "charm",
+          "label": "Charm",
+          "value": 2
+        },
+        {
+          "key": "observe",
+          "label": "Observe",
+          "value": 1
+        },
+        {
+          "key": "sneak",
+          "label": "Sneak",
+          "value": 1
+        },
+        {
+          "key": "arts.rhetoric",
+          "label": "Arts: Rhetoric",
+          "value": 1
+        },
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 2
+        },
+        {
+          "key": "choice:inquiry|2;knavery|2",
+          "label": "Inquiry +2 or Knavery +2",
+          "value": 0,
+          "choice": [
+            {
+              "key": "inquiry",
+              "label": "Inquiry",
+              "value": 2
+            },
+            {
+              "key": "knavery",
+              "label": "Knavery",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "choice:social.debate|1;social.oratory|1",
+          "label": "Social: Debate +1 or Social: Oratory +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "social.debate",
+              "label": "Social: Debate",
+              "value": 1
+            },
+            {
+              "key": "social.oratory",
+              "label": "Social: Oratory",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Apprenticeship",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Duelist",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Apprenticeship",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Born to privilege, a noble’s life is molded from the start — the individual has little choice in his upbringing and career, for it has been planned out by his family. Nonetheless, there are various pastimes and endeavors she can choose to excel at. While most Hawkwood and Hazat gravitate towards military pastimes and al-Malik and Li Halan toward leisure or study, nobles from any house — but especially the Decados — appreciate diplomatic endeavors.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 1
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 1
+        },
+        {
+          "key": "choice:passion|1;calm|1",
+          "label": "Passion +1 or Calm +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 1
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "choice:dodge|1;vigor|1",
+          "label": "Dodge +1 or Vigor +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "dodge",
+              "label": "Dodge",
+              "value": 1
+            },
+            {
+              "key": "vigor",
+              "label": "Vigor",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 2
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": [
+        {
+          "uuid": "Compendium.fs2e.actions.Item.ZXtsBG7XNcUpFl6y",
+          "name": "Parry"
+        },
+        {
+          "uuid": "Compendium.fs2e.actions.Item.v8Kt5MDfWKers3GH",
+          "name": "Thrust"
+        },
+        {
+          "uuid": "Compendium.fs2e.actions.Item.BCz6aCUTcPz0Exoq",
+          "name": "Slash"
+        }
+      ]
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Apprenticeship",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Soldier",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Apprenticeship",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Born to privilege, a noble’s life is molded from the start — the individual has little choice in his upbringing and career, for it has been planned out by his family. Nonetheless, there are various pastimes and endeavors she can choose to excel at. While most Hawkwood and Hazat gravitate towards military pastimes and al-Malik and Li Halan toward leisure or study, nobles from any house — but especially the Decados — appreciate diplomatic endeavors.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 2
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "fight",
+          "label": "Fight",
+          "value": 1
+        },
+        {
+          "key": "vigor",
+          "label": "Vigor",
+          "value": 1
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        },
+        {
+          "key": "shoot",
+          "label": "Shoot",
+          "value": 2
+        },
+        {
+          "key": "social.leadership",
+          "label": "Social: Leadership",
+          "value": 3
+        },
+        {
+          "key": "survival",
+          "label": "Survival",
+          "value": 1
+        },
+        {
+          "key": "warfare.militarytactics",
+          "label": "Warfare: Military Tactics",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Apprenticeship",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Soldier Command",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Early Career",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Upon her coming-of-age, the young noble chooses the role she will fulfill for her house. She is officially knighted. (Those nobles who do not pass through this stage, but who become priests or guildmembers instead, do not receive noble rank. While they are still considered royal, they receive none of the benefits or responsibilities of noble station.)</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 2
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 2
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 1
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 1
+        },
+        {
+          "key": "choice:passion|1;calm|1",
+          "label": "Passion +1 or Calm +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 1
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "dodge",
+          "label": "Dodge",
+          "value": 1
+        },
+        {
+          "key": "fight",
+          "label": "Fight",
+          "value": 1
+        },
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "observe",
+          "label": "Observe",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "shoot",
+          "label": "Shoot",
+          "value": 1
+        },
+        {
+          "key": "vigor",
+          "label": "Vigor",
+          "value": 1
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        },
+        {
+          "key": "social.leadership",
+          "label": "Social: Leadership",
+          "value": 1
+        },
+        {
+          "key": "survival",
+          "label": "Survival",
+          "value": 1
+        },
+        {
+          "key": "warfare.militarytactics",
+          "label": "Warfare: Military Tactics",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [
+        {
+          "uuid": "Compendium.fs2e.benefices-afflications.Item.f6A0GDDdNjC1h5AR",
+          "name": "Nobility (Knight)"
+        }
+      ],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Early Career",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Starman",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Apprenticeship",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Born to privilege, a noble’s life is molded from the start — the individual has little choice in his upbringing and career, for it has been planned out by his family. Nonetheless, there are various pastimes and endeavors she can choose to excel at. While most Hawkwood and Hazat gravitate towards military pastimes and al-Malik and Li Halan toward leisure or study, nobles from any house — but especially the Decados — appreciate diplomatic endeavors.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 1
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "shoot",
+          "label": "Shoot",
+          "value": 1
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        },
+        {
+          "key": "social.leadership",
+          "label": "Social: Leadership",
+          "value": 1
+        },
+        {
+          "key": "spacesuit",
+          "label": "Spacesuit",
+          "value": 1
+        },
+        {
+          "key": "thinkMachine",
+          "label": "Think Machine",
+          "value": 1
+        },
+        {
+          "key": "warfare.gunnery",
+          "label": "Warfare: Gunnery",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": []
+      },
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Apprenticeship",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Noble Starman Command",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Early Career",
+        "Noble"
+      ],
+      "description": {
+        "value": "<p>Upon her coming-of-age, the young noble chooses the role she will fulfill for her house. She is officially knighted. (Those nobles who do not pass through this stage, but who become priests or guildmembers instead, do not receive noble rank. While they are still considered royal, they receive none of the benefits or responsibilities of noble station.)</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 2
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 1
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 1
+        },
+        {
+          "key": "choice:passion|2;calm|2",
+          "label": "Passion +2 or Calm +2",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 2
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "shoot",
+          "label": "Shoot",
+          "value": 2
+        },
+        {
+          "key": "drive.spacecraft",
+          "label": "Drive: Spacecraft",
+          "value": 1
+        },
+        {
+          "key": "remedy",
+          "label": "Remedy",
+          "value": 1
+        },
+        {
+          "key": "social.leadership",
+          "label": "Social: Leadership",
+          "value": 2
+        },
+        {
+          "key": "thinkMachine",
+          "label": "Think Machine",
+          "value": 1
+        },
+        {
+          "key": "warfare.gunnery",
+          "label": "Warfare: Gunnery",
+          "value": 1
+        },
+        {
+          "key": "warfare.starfleetTactics",
+          "label": "Warfare: Starfleet Tactics",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.slCCv2VLcRbkXoq4",
+          "name": "Spacesuit"
+        }
+      ],
+      "bonusBeneficeAfflictions": [
+        {
+          "uuid": "Compendium.fs2e.benefices-afflications.Item.f6A0GDDdNjC1h5AR",
+          "name": "Nobility (Knight)"
+        }
+      ],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Early Career",
+          "Noble"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rural Estate - al Malik",
+    "type": "history",
+    "img": "systems/fs2e/styles/assets/icons/crest_al-malik.png",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "al-Malik"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "calm"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish",
+          "Graceful Tongue"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.OqVfXGlnxs9SI72V",
+          "name": "Gracious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.Fogz8PTVJeMhxo6M",
+          "name": "Impetuous"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "al-Malik"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rural Estate - Decados",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Noble",
+        "Decados",
+        "Hawkwood"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "passion",
+          "label": "Passion",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        },
+        {
+          "key": "lore.rivalHouse",
+          "label": "Lore: Rival House",
+          "value": 1
+        },
+        {
+          "key": "knavery",
+          "label": "Knavery",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.j5Zzth2UWqy0TNyZ",
+          "name": "Suspicious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.xnMPXwPRE0NbD9qG",
+          "name": "Vain"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Noble",
+          "Decados",
+          "Hawkwood"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rural Estate - Hawkwood",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Hawkwood"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "strength",
+          "label": "Strength",
+          "value": 2
+        },
+        {
+          "key": "dexterity",
+          "label": "Dexterity",
+          "value": 1
+        },
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "extrovert",
+          "label": "Extrovert",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        },
+        {
+          "key": "lore.fief",
+          "label": "Lore: Fief",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "extrovert"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.Ap6GNr85XB07Zpo1",
+          "name": "Unyielding"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.zqOrXRJEK4tXSNEx",
+          "name": "Prideful"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Hawkwood"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rural Estate - Hazat",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Hazat"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "endurance",
+          "label": "Endurance",
+          "value": 2
+        },
+        {
+          "key": "perception",
+          "label": "Perception",
+          "value": 2
+        },
+        {
+          "key": "passion",
+          "label": "Passion",
+          "value": 1
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "impress",
+          "label": "Impress",
+          "value": 1
+        },
+        {
+          "key": "melee",
+          "label": "Melee",
+          "value": 1
+        },
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "passion"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.qK1x5Vf0p3g4x5vi",
+          "name": "Disciplined"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.OtaQjFf0WzqZuUUG",
+          "name": "Vengeful"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Hazat"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rural Estate - Li Halan",
+    "type": "history",
+    "img": "icons/svg/item-bag.svg",
+    "system": {
+      "tags": [
+        "Upbringing",
+        "Noble",
+        "Li Halan"
+      ],
+      "description": {
+        "value": "<p>The youth is raised in a manor or castle. While it is far from the important doings at high-court, it is still quite a step above the lot of most freemen and peasants. The young noble has tutors, but they must divide their time between teaching and other tasks, leaving the child to find her own way at times.</p>"
+      },
+      "characteristicsAdjustments": [
+        {
+          "key": "wits",
+          "label": "Wits",
+          "value": 1
+        },
+        {
+          "key": "choice:extrovert|1;introvert|1",
+          "label": "Extrovert +1 or Introvert +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "extrovert",
+              "label": "Extrovert",
+              "value": 1
+            },
+            {
+              "key": "introvert",
+              "label": "Introvert",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "key": "choice:passion|1;calm|1",
+          "label": "Passion +1 or Calm +1",
+          "value": 0,
+          "choice": [
+            {
+              "key": "passion",
+              "label": "Passion",
+              "value": 1
+            },
+            {
+              "key": "calm",
+              "label": "Calm",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "skillsAdjustments": [
+        {
+          "key": "etiquette",
+          "label": "Etiquette",
+          "value": 1
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "value": 1
+        },
+        {
+          "key": "lore.theology",
+          "label": "Lore: Theology",
+          "value": 1
+        }
+      ],
+      "spiritAlwaysPrimary": [
+        "faith"
+      ],
+      "languages": {
+        "speak": [
+          "Urthish"
+        ],
+        "read": [
+          "Urthish",
+          "Latin"
+        ]
+      },
+      "bonusBlessingCurses": [
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.2eo1Dr4Oeh0k9S5B",
+          "name": "Pious"
+        },
+        {
+          "uuid": "Compendium.fs2e.blessing-curses.Item.HYp2bULIchudEglz",
+          "name": "Guilty"
+        }
+      ],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
+    },
+    "flags": {
+      "fs2e": {
+        "tags": [
+          "Upbringing",
+          "Noble",
+          "Li Halan"
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,44 @@
+.fs2e-item-sheet {
+	.fs2e-item-header {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-10);
+		margin-bottom: var(--space-10);
+
+		.profile-img {
+			height: 75px;
+			width: 75px;
+			border: 0;
+			box-shadow: none;
+			margin: 0;
+		}
+
+		.sheet-header-meta {
+			display: grid;
+			grid-template-rows: auto auto;
+			align-items: start;
+			width: 100%;
+			min-width: 0;
+		}
+
+		.item-name {
+			margin: 0;
+
+			input {
+				font-family: var(--font-p22);
+				color: var(--color-grey-mid);
+				border: 0;
+				background: transparent;
+				box-shadow: none;
+				height: auto;
+				line-height: normal;
+				margin: 0;
+				width: 100%;
+			}
+		}
+
+		.sheet-tags-slot {
+			min-width: 0;
+		}
+	}
+}

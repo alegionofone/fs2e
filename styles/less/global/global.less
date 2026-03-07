@@ -44,4 +44,35 @@
 			font-family: var(--font-p22) !important;
 		}
 	}
+
+}
+
+/* Navigation */
+nav.sheet-tabs {
+	font-family: var(--font-p22);
+	font-size: var(--font-size-16);
+	font-weight: bold;
+	border: 0;
+
+	[data-tab] {
+		padding: 3px 3px 5px;
+	}
+
+	&.actor {
+		background-color: var(--color-gold-dk-mid);
+
+		[data-tab] {
+			color: var(--color-gold-lt);
+		}
+	}
+}
+
+.tabs.sheet-tabs {
+	margin: 0;
+}
+
+body.game .app .tabs > [data-tab].active,
+nav.tabs [data-tab].active,
+nav.tabs [data-tab]:hover {
+	text-shadow: 0 0 10px var(--color-magenta-md);
 }

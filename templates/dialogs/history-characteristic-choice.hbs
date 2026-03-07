@@ -1,0 +1,34 @@
+<form class="fs2e-chargen-choice fs2e-history-choice">
+  <section class="fs2e-section fs2e-chargen-choice-container">
+    {{#each rows}}
+      {{#if this.isRadio}}
+        <div class="fs2e-chargen-choice-row">
+          <label class="fs2e-chargen-choice-side fs2e-chargen-choice-left">
+            <input type="radio" name="{{this.radioName}}" value="{{this.left.id}}" checked />
+            <span>{{this.left.displayLabel}}</span>
+          </label>
+          <span class="fs2e-chargen-choice-slash" aria-hidden="true">/</span>
+          <label class="fs2e-chargen-choice-side fs2e-chargen-choice-right">
+            <span>{{this.right.displayLabel}}</span>
+            <input type="radio" name="{{this.radioName}}" value="{{this.right.id}}" />
+          </label>
+        </div>
+      {{/if}}
+      {{#if this.isSelect}}
+        <div class="fs2e-history-choice-select-row">
+          <span class="fs2e-history-choice-select-title">{{this.anyLabel}}</span>
+          <select name="historyCharacteristicChoice-{{this.id}}">
+            {{#each this.options}}
+              <option value="{{this.id}}">{{this.displayLabel}}</option>
+            {{/each}}
+          </select>
+        </div>
+      {{/if}}
+    {{/each}}
+
+    <div class="fs2e-actions">
+      <button type="button" data-action="apply">Apply</button>
+      <button type="button" data-action="cancel">Cancel</button>
+    </div>
+  </section>
+</form>

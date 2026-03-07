@@ -1,0 +1,79 @@
+.app.window-app.sheet.item {
+    .species-characteristics-section {
+        display: grid;
+        gap: var(--space-12);
+    }
+
+    .species-characteristics-group {
+        h3 {
+            margin: 0 0 var(--space-6) 0;
+        }
+    }
+
+    .species-occult-heading {
+        .species-occult-toggle-label {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            align-items: center;
+            gap: var(--space-6);
+            cursor: pointer;
+
+            .species-occult-toggle {
+                justify-self: start;
+            }
+        }
+
+        input[type="checkbox"] {
+            margin: 0;
+        }
+    }
+
+    .species-form-row {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        align-items: center;
+        gap: var(--space-8);
+        margin: 0 0 var(--space-6) 0;
+
+        &.is-hidden {
+            display: none;
+        }
+    }
+
+    .species-row-label {
+        color: var(--color-grey-mid);
+        font-size: var(--font-size-13);
+    }
+
+    .species-row-value {
+        min-width: 0;
+    }
+
+    .species-base-max {
+        align-items: center;
+        gap: var(--space-8);
+    }
+
+    .species-base-max .traits-input {
+        width: 40px;
+        text-align: center;
+        border: 1px solid var(--color-grey-mid);
+        border-radius: 0;
+    }
+
+    .species-value-sep {
+        color: var(--color-grey-mid);
+        text-align: center;
+    }
+
+    .species-spirit-tags .species-tag-menu,
+    .species-spirit-tags .species-spirit-primary-menu,
+    .species-spirit-tags .species-occult-menu {
+        width: 100%;
+        border: 0;
+    }
+
+    .species-spirit-tags {
+        min-width: 0;
+    }
+}

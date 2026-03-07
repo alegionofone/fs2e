@@ -1,0 +1,64 @@
+.fs2e.sheet.actor {
+    .fs2e-history-languages {
+        margin-bottom: var(--space-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        color: var(--color-gold-lt);
+    }
+
+    .fs2e-history-languages .traits-heading {
+        font-weight: 600;
+        font-size: var(--font-size-16);
+        text-transform: uppercase;
+        margin: 0;
+        letter-spacing: 0.04em;
+    }
+
+    .fs2e-history-languages .traits-row {
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr);
+        gap: var(--space-6);
+        align-items: flex-start;
+    }
+
+    .fs2e-history-languages .traits-label {
+        color: var(--color-gold-lt);
+        font-size: var(--font-size-12);
+    }
+
+    .fs2e-history-languages .sheet-tags-slot {
+        width: 100%;
+    }
+
+    .tab.biography .biography-grid {
+        h3 {
+            background-color: var(--color-gold-dk);
+            margin: 0 0 var(--space-4) 0;
+            padding: var(--space-2) 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .fs2e-history-row {
+            display: grid;
+            grid-template-columns: 90px minmax(0, 1fr);
+            align-items: center;
+            column-gap: var(--space-8);
+            padding: var(--space-2) 0;
+        }
+
+        .fs2e-history-slot-label,
+        .fs2e-history-slot-value {
+            font-family: inherit;
+            font-size: var(--font-size-12);
+        }
+
+        .fs2e-history-slot-label { color: var(--color-gold-mid); }
+
+        .fs2e-history-slot-value {
+            min-width: 0;
+            color: var(--color-gold-lt);
+        }
+    }
+}

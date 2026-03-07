@@ -50,6 +50,18 @@
       "label": "Actions",
       "path": "packs/actions.db",
       "type": "Item"
+    },
+    {
+      "name": "factions",
+      "label": "Factions",
+      "path": "packs/factions.db",
+      "type": "Item"
+    },
+    {
+      "name": "planets",
+      "label": "Planets",
+      "path": "packs/planets.db",
+      "type": "Item"
     }
   ],
   "relationships": {
