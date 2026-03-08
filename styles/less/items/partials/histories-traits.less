@@ -80,6 +80,33 @@
     height: 26px;
   }
 
+  .history-locked-summary {
+    margin: 6px 0 0 0;
+    line-height: 1.5;
+  }
+
+  .history-locked-row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+    align-items: start;
+  }
+
+  .history-locked-label {
+    font-weight: 600;
+  }
+
+  .history-locked-value {
+    min-width: 0;
+  }
+
+  .history-locked-summary a {
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   @media (max-width: 720px) {
     .history-mod-row,
     .history-mod-row.history-mod-row-skills,
@@ -92,6 +119,11 @@
     }
 
     .history-tag-box-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .history-locked-row {
       grid-template-columns: 1fr;
       gap: 4px;
     }

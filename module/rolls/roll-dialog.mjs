@@ -1,4 +1,5 @@
 import { toNumber } from "../global/derived/shared.mjs";
+import { filterActiveHistoryItems } from "../global/derived/shared.mjs";
 import { createSkillRollChatMessage } from "/systems/fs2e/module/ui/chat/roll-chat-card.mjs";
 import { findTargetOwner, postContestedChat } from "./contested-rolls.mjs";
 import { buildGoalNumber, getActionPenalty, getRetryPenalty, rollCheck } from "./roll-engine.mjs";
@@ -13,14 +14,241 @@ import {
   getSkillTraitByKey,
   getWoundPenalty
 } from "./roll-options.mjs";
+import { formatSkillLabel } from "../global/skills/group-specializations.mjs";
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const escapeHtml = (value) => String(value ?? "")
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll("\"", "&quot;")
+  .replaceAll("'", "&#39;");
 
 const readSelectNumber = (root, selector) => toNumber(root.querySelector(selector)?.selectedOptions?.[0]?.dataset?.value);
 const readInputNumber = (root, selector) => toNumber(root.querySelector(selector)?.value);
 const readCheckedRadioNumber = (root, name, fallback = 0) => {
   const checked = root.querySelector(`input[name='${name}']:checked`);
   return checked ? toNumber(checked.value, fallback) : fallback;
+};
+
+const normalizeBonusEntries = (list = []) => {
+  const out = [];
+  const seen = new Set();
+
+  for (const entry of Array.isArray(list) ? list : []) {
+    const uuid = String(entry?.uuid ?? "").trim();
+    const name = String(entry?.name ?? entry ?? "").trim();
+    if (!uuid && !name) continue;
+    const token = `${uuid.toLowerCase()}::${name.toLowerCase()}`;
+    if (seen.has(token)) continue;
+    seen.add(token);
+    out.push({ uuid, name });
+  }
+
+  return out;
+};
+
+const getNestedArray = (system, path) => {
+  const fromSystem = foundry.utils.getProperty(system, path);
+  if (Array.isArray(fromSystem)) return fromSystem;
+  const fromLegacy = foundry.utils.getProperty(system, `data.${path}`);
+  if (Array.isArray(fromLegacy)) return fromLegacy;
+  return [];
+};
+
+const readBlessingCurseCategory = (item) => {
+  const tags = [
+    ...(Array.isArray(item?.system?.tags) ? item.system.tags : []),
+    ...(Array.isArray(foundry.utils.getProperty(item, "flags.fs2e.tags")) ? foundry.utils.getProperty(item, "flags.fs2e.tags") : [])
+  ]
+    .map((entry) => String(entry ?? "").trim().toLowerCase())
+    .filter(Boolean);
+
+  if (tags.includes("blessing")) return "Blessing";
+  if (tags.includes("curse")) return "Curse";
+  return "";
+};
+
+const formatBlessingCurseTargetLabel = (target) => {
+  const text = String(target ?? "").trim();
+  if (!text) return "";
+
+  const [type, key] = text.split(":");
+  const normalizedType = String(type ?? "").trim().toLowerCase();
+  const normalizedKey = String(key ?? "").trim();
+  if (!normalizedKey) return text;
+
+  if (normalizedType === "characteristic") {
+    return formatCharacteristicLabel(normalizedKey);
+  }
+
+  if (normalizedType === "skill") {
+    const def = getSkillDefinitionForKey(normalizedKey);
+    return String(def?.label ?? formatSkillLabel(normalizedKey)).trim();
+  }
+
+  return text;
+};
+
+const parseBlessingCurseAmount = (value) => {
+  const text = String(value ?? "").trim().replace(/\s+/g, "");
+  if (!text) return 0;
+  const match = text.match(/^([+-]?)(\d{1,2})$/);
+  if (!match) return 0;
+  const sign = match[1] === "-" ? -1 : 1;
+  return sign * Number(match[2]);
+};
+
+const normalizeTraitText = (value) => String(value ?? "")
+  .trim()
+  .toLowerCase()
+  .replace(/[_-]+/g, " ")
+  .replace(/\s+/g, " ");
+
+const buildTraitMatchTokens = ({ type = "", key = "", label = "" } = {}) => {
+  const normalizedType = normalizeTraitText(type);
+  const normalizedKey = normalizeTraitText(key);
+  const normalizedLabel = normalizeTraitText(label);
+  const tokens = new Set();
+
+  if (normalizedKey) {
+    tokens.add(normalizedKey);
+    if (normalizedType) tokens.add(`${normalizedType}:${normalizedKey}`);
+  }
+
+  if (normalizedLabel) {
+    tokens.add(normalizedLabel);
+    if (normalizedType) tokens.add(`${normalizedType}:${normalizedLabel}`);
+  }
+
+  return tokens;
+};
+
+const readBlessingCurseTargetTokens = (target) => {
+  const text = String(target ?? "").trim();
+  if (!text) return new Set();
+
+  const normalizedText = normalizeTraitText(text);
+  const [rawType, ...rawRest] = text.split(":");
+  const normalizedType = normalizeTraitText(rawType);
+  const normalizedRest = normalizeTraitText(rawRest.join(":"));
+  const tokens = new Set([normalizedText]);
+
+  if (normalizedType && normalizedRest) {
+    tokens.add(`${normalizedType}:${normalizedRest}`);
+    tokens.add(normalizedRest);
+
+    if (normalizedType === "characteristic") {
+      tokens.add(normalizeTraitText(formatCharacteristicLabel(normalizedRest)));
+    }
+
+    if (normalizedType === "skill") {
+      const skillDef = getSkillDefinitionForKey(normalizedRest);
+      tokens.add(normalizeTraitText(String(skillDef?.label ?? formatSkillLabel(normalizedRest)).trim()));
+    }
+  }
+
+  return tokens;
+};
+
+const resolveActorBlessingCurseModifiers = async (actor) => {
+  const historyEntries = filterActiveHistoryItems(actor)
+    .filter((item) => item?.type === "history")
+    .flatMap((item) => normalizeBonusEntries([
+      ...getNestedArray(item?.system ?? {}, "bonusBlessingCurses"),
+      ...getNestedArray(item?.system ?? {}, "data.bonusBlessingCurses")
+    ]));
+
+  const actorEntries = normalizeBonusEntries([
+    ...getNestedArray(actor?.system ?? {}, "bonusBlessingCurses"),
+    ...getNestedArray(actor?.system ?? {}, "data.bonusBlessingCurses")
+  ]);
+
+  const entries = normalizeBonusEntries([...historyEntries, ...actorEntries]);
+  const resolved = await Promise.all(entries.map(async (entry) => {
+    const uuid = String(entry?.uuid ?? "").trim();
+    if (!uuid) return null;
+    const item = await fromUuid(uuid).catch(() => null);
+    if (!item || item.type !== "blessingCurse") return null;
+
+    const amount = parseBlessingCurseAmount(item.system?.effectLine?.amount);
+    const target = String(item.system?.effectLine?.target ?? "").trim();
+    if (!target || !amount) return null;
+
+    return {
+      uuid,
+      name: String(item.name ?? entry?.name ?? "").trim(),
+      category: readBlessingCurseCategory(item),
+      alwaysActive: Boolean(item.system?.alwaysActive),
+      amount,
+      amountText: String(item.system?.effectLine?.amount ?? "").trim() || `${amount}`,
+      target,
+      targetLabel: formatBlessingCurseTargetLabel(target)
+    };
+  }));
+
+  const categoryRank = (category) => category === "Blessing" ? 0 : category === "Curse" ? 1 : 2;
+  return resolved
+    .filter((entry) => entry?.name && entry?.target)
+    .sort((a, b) => {
+      const rankDiff = categoryRank(a.category) - categoryRank(b.category);
+      if (rankDiff !== 0) return rankDiff;
+      return a.name.localeCompare(b.name);
+    });
+};
+
+const getApplicableBlessingCurseModifiers = (entries = [], { skillKey = "", characteristicKey = "" } = {}) => {
+  const normalizedSkillKey = String(skillKey ?? "").trim();
+  const normalizedCharacteristicKey = String(characteristicKey ?? "").trim();
+  const characteristicLabel = getCharacteristicOptions({ system: {} }, normalizedCharacteristicKey)
+    .find((entry) => String(entry?.key ?? "").trim() === normalizedCharacteristicKey)?.label
+    ?? formatCharacteristicLabel(normalizedCharacteristicKey);
+  const skillLabel = String(getSkillDefinitionForKey(normalizedSkillKey)?.label ?? formatSkillLabel(normalizedSkillKey)).trim();
+  const skillTokens = buildTraitMatchTokens({ type: "skill", key: normalizedSkillKey, label: skillLabel });
+  const characteristicTokens = buildTraitMatchTokens({
+    type: "characteristic",
+    key: normalizedCharacteristicKey,
+    label: characteristicLabel
+  });
+
+  return entries.filter((entry) => {
+    const targetTokens = readBlessingCurseTargetTokens(entry?.target);
+    return [...targetTokens].some((token) => skillTokens.has(token) || characteristicTokens.has(token));
+  }).map((entry) => ({
+    ...entry,
+    label: `${entry.name}: ${entry.targetLabel} ${entry.amountText}`.trim()
+  }));
+};
+
+const renderBlessingCurseModifierRows = (container, modifiers = [], overrides = {}, scope = "main") => {
+  if (!container) return;
+
+  if (!modifiers.length) {
+    container.innerHTML = "";
+    container.hidden = true;
+    return;
+  }
+
+  container.hidden = false;
+  container.innerHTML = modifiers.map((entry, index) => `
+    <div class="fs2e-comp-label fs2e-bc-modifier-label">
+      <span class="fs2e-inline-title">${escapeHtml(entry.label)}</span>
+    </div>
+    <div class="fs2e-eq-field fs2e-eq-merge fs2e-bc-modifier-field">
+      <div class="fs2e-eq-row">
+        <span class="fs2e-inline-plus">=</span>
+        <input
+          id="fs2e-${scope}-bc-modifier-${index}"
+          class="fs2e-gn-input fs2e-bc-modifier-input"
+          type="number"
+          step="1"
+          data-scope="${escapeHtml(scope)}"
+          data-uuid="${escapeHtml(entry.uuid)}"
+          value="${escapeHtml(Object.prototype.hasOwnProperty.call(overrides, entry.uuid) ? overrides[entry.uuid] : entry.amount)}"
+        />
+      </div>
+    </div>
+  `).join("");
 };
 
 export const rollFromPreset = async ({ actor, preset }) => {
@@ -45,6 +273,11 @@ export const rollFromPreset = async ({ actor, preset }) => {
   const retryPenalty = getRetryPenalty(retries);
   const penaltyTotal = actionPenalty + retryPenalty;
   const woundPenalty = getWoundPenalty(actor);
+  const blessingCurseModifiers = getApplicableBlessingCurseModifiers(
+    await resolveActorBlessingCurseModifiers(actor),
+    { skillKey, characteristicKey }
+  );
+  const blessingCurseTotal = blessingCurseModifiers.reduce((sum, entry) => sum + toNumber(entry.amount), 0);
   const complementaryVp = toNumber(preset.compVp, 0);
   const accentMax = Math.max(0, skillTrait);
   const accent = clamp(toNumber(preset.accent, 0), -accentMax, accentMax);
@@ -54,7 +287,7 @@ export const rollFromPreset = async ({ actor, preset }) => {
     difficulty,
     woundPenalty: woundPenalty + penaltyTotal,
     complementaryVp
-  });
+  }) + blessingCurseTotal;
 
   const result = await rollCheck({ gn, accent });
   const sustainEnabled = !!preset.sustainEnabled;
@@ -69,6 +302,7 @@ export const rollFromPreset = async ({ actor, preset }) => {
     { label: "Multi-action", value: `${actionPenalty}` },
     { label: "Retry", value: `${retryPenalty}` },
     { label: "Wound penalty", value: `${woundPenalty}` },
+    ...blessingCurseModifiers.map((entry) => ({ label: entry.label, value: `${entry.amount}` })),
     { label: "Temp bonus", value: "0" },
     { label: "Accent", value: `${accent}` },
     { label: "Complementary VP", value: `${complementaryVp}` }
@@ -150,6 +384,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
     contestedEnabled: preset?.contestedEnabled ?? contestedAvailable,
     contestedResponder
   });
+  const availableBlessingCurseModifiers = await resolveActorBlessingCurseModifiers(actor);
 
   return new Promise((resolve) => {
     let settled = false;
@@ -170,7 +405,9 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
 
         const state = {
           complementaryVp: 0,
-          complementaryText: ""
+          complementaryText: "",
+          blessingCurseOverrides: {},
+          compBlessingCurseOverrides: {}
         };
 
         const applySectionCollapsedState = () => {
@@ -203,6 +440,14 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
         });
 
         const updatePreview = () => {
+          root.querySelectorAll(".fs2e-bc-modifier-input").forEach((input) => {
+            const uuid = String(input.dataset.uuid ?? "").trim();
+            const scope = String(input.dataset.scope ?? "main").trim();
+            if (!uuid) return;
+            const targetState = scope === "comp" ? state.compBlessingCurseOverrides : state.blessingCurseOverrides;
+            targetState[uuid] = toNumber(input.value, 0);
+          });
+
           const mainSkillSelect = root.querySelector("#fs2e-main-skill");
           const skillValue = mainSkillSelect
             ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.value)
@@ -218,6 +463,23 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const retryPenalty = getRetryPenalty(retries);
           const penaltyTotal = actionPenalty + retryPenalty;
           const woundPenalty = getWoundPenalty(actor);
+          const selectedSkillKey = mainSkillSelect
+            ? String(mainSkillSelect.value ?? "").trim()
+            : String(selectedSkill.key ?? "").trim();
+          const selectedCharacteristicKey = String(root.querySelector("#fs2e-main-char")?.value ?? "").trim();
+          const blessingCurseModifiers = getApplicableBlessingCurseModifiers(availableBlessingCurseModifiers, {
+            skillKey: selectedSkillKey,
+            characteristicKey: selectedCharacteristicKey
+          });
+          const blessingCurseTotal = blessingCurseModifiers.reduce(
+            (sum, entry) => sum + toNumber(
+              Object.prototype.hasOwnProperty.call(state.blessingCurseOverrides, entry.uuid)
+                ? state.blessingCurseOverrides[entry.uuid]
+                : entry.amount,
+              0
+            ),
+            0
+          );
           const mainBaseGn = skillValue + characteristicValue;
 
           const gn = buildGoalNumber({
@@ -226,7 +488,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             difficulty,
             woundPenalty: woundPenalty + penaltyTotal,
             complementaryVp: state.complementaryVp
-          });
+          }) + blessingCurseTotal;
           const accentMax = Math.max(0, skillTrait);
 
           const contestedEnabled = !!root.querySelector("#fs2e-contested-toggle")?.checked;
@@ -252,6 +514,21 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const compSkillValue = readSelectNumber(root, "#fs2e-comp-skill");
           const compCharacteristicValue = readSelectNumber(root, "#fs2e-comp-char");
           const compDifficulty = readInputNumber(root, "#fs2e-comp-diff-base") + readInputNumber(root, "#fs2e-comp-diff-custom");
+          const selectedCompSkillKey = String(root.querySelector("#fs2e-comp-skill")?.value ?? "").trim();
+          const selectedCompCharacteristicKey = String(root.querySelector("#fs2e-comp-char")?.value ?? "").trim();
+          const compBlessingCurseModifiers = getApplicableBlessingCurseModifiers(availableBlessingCurseModifiers, {
+            skillKey: selectedCompSkillKey,
+            characteristicKey: selectedCompCharacteristicKey
+          });
+          const compBlessingCurseTotal = compBlessingCurseModifiers.reduce(
+            (sum, entry) => sum + toNumber(
+              Object.prototype.hasOwnProperty.call(state.compBlessingCurseOverrides, entry.uuid)
+                ? state.compBlessingCurseOverrides[entry.uuid]
+                : entry.amount,
+              0
+            ),
+            0
+          );
           const compBaseGn = compSkillValue + compCharacteristicValue;
           const compGn = buildGoalNumber({
             skillValue: compSkillValue,
@@ -259,7 +536,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             difficulty: compDifficulty,
             woundPenalty,
             complementaryVp: 0
-          });
+          }) + compBlessingCurseTotal;
 
           const mainBaseInput = root.querySelector("#fs2e-main-char-gn");
           const mainWoundInput = root.querySelector("#fs2e-wound-penalty");
@@ -272,16 +549,20 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const compDiffGnInput = root.querySelector("#fs2e-comp-diff-gn");
           const sustainRequiredInput = root.querySelector("#fs2e-sustain-required");
           const penaltyTotalInput = root.querySelector("#fs2e-penalty-total");
+          const blessingCurseContainer = root.querySelector("#fs2e-main-bc-modifiers");
+          const compBlessingCurseContainer = root.querySelector("#fs2e-comp-bc-modifiers");
           const sustainTask = readInputNumber(root, "#fs2e-sustain-task");
 
           if (mainBaseInput) mainBaseInput.value = String(mainBaseGn);
           if (mainWoundInput) mainWoundInput.value = String(woundPenalty);
           if (penaltyTotalInput) penaltyTotalInput.value = String(penaltyTotal);
+          renderBlessingCurseModifierRows(blessingCurseContainer, blessingCurseModifiers, state.blessingCurseOverrides, "main");
           if (mainDiffGnInput) mainDiffGnInput.value = String(difficulty);
           if (compVpInput) compVpInput.value = String(state.complementaryVp);
           if (finalInput) finalInput.value = String(gn);
           if (compBaseInput) compBaseInput.value = String(compBaseGn);
           if (compWoundInput) compWoundInput.value = String(woundPenalty);
+          renderBlessingCurseModifierRows(compBlessingCurseContainer, compBlessingCurseModifiers, state.compBlessingCurseOverrides, "comp");
           if (compDiffGnInput) compDiffGnInput.value = String(compDifficulty);
           if (compFinalInput) compFinalInput.value = String(compGn);
           if (sustainRequiredInput) sustainRequiredInput.value = String(sustainTask);
@@ -297,6 +578,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const characteristicSelect = root.querySelector("#fs2e-main-char");
           const mainSkillSelect = root.querySelector("#fs2e-main-skill");
           const selectedSkillKey = String(mainSkillSelect?.value ?? selectedSkill.key).trim();
+          const skillKeyLocal = selectedSkillKey || selectedSkill.key;
           const selectedSkillDef = getSkillDefinitionForKey(selectedSkillKey) ?? getSkillDefinitionForKey(selectedSkill.key);
           const skillLabel = mainSkillSelect
             ? String(mainSkillSelect.selectedOptions?.[0]?.textContent ?? "").trim()
@@ -317,18 +599,30 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const retryPenalty = getRetryPenalty(retries);
           const penaltyTotal = actionPenalty + retryPenalty;
           const woundPenalty = getWoundPenalty(actor);
+          const blessingCurseModifiers = getApplicableBlessingCurseModifiers(availableBlessingCurseModifiers, {
+            skillKey: skillKeyLocal,
+            characteristicKey
+          }).map((entry) => ({
+            ...entry,
+            appliedValue: toNumber(
+              Object.prototype.hasOwnProperty.call(state.blessingCurseOverrides, entry.uuid)
+                ? state.blessingCurseOverrides[entry.uuid]
+                : entry.amount,
+              0
+            )
+          }));
+          const blessingCurseTotal = blessingCurseModifiers.reduce((sum, entry) => sum + entry.appliedValue, 0);
           const gn = buildGoalNumber({
             skillValue,
             characteristicValue,
             difficulty,
             woundPenalty: woundPenalty + penaltyTotal,
             complementaryVp: state.complementaryVp
-          });
+          }) + blessingCurseTotal;
           const accentMax = Math.max(0, skillTrait);
           const accentValue = toNumber(root.querySelector("#fs2e-accent-value")?.value, 0);
           const accent = clamp(accentValue, -accentMax, accentMax);
 
-          const skillKeyLocal = selectedSkillKey || selectedSkill.key;
           const skillDef = getSkillDefinitionForKey(skillKeyLocal) ?? selectedSkillDef;
           return {
             skillKey: skillKeyLocal,
@@ -342,6 +636,8 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             retryPenalty,
             penaltyTotal,
             woundPenalty,
+            blessingCurseModifiers,
+            blessingCurseTotal,
             accent,
             gn,
             complementary: skillDef.complementary ?? ""
@@ -351,20 +647,39 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
         const readCompRollConfig = () => {
           const skillSelect = root.querySelector("#fs2e-comp-skill");
           const characteristicSelect = root.querySelector("#fs2e-comp-char");
+          const skillKey = String(skillSelect?.value ?? "").trim();
+          const characteristicKey = String(characteristicSelect?.value ?? "").trim();
           const skillLabel = String(skillSelect?.selectedOptions?.[0]?.textContent ?? "").trim();
           const charLabel = String(characteristicSelect?.selectedOptions?.[0]?.textContent ?? "").trim();
           const skillValue = readSelectNumber(root, "#fs2e-comp-skill");
           const characteristicValue = readSelectNumber(root, "#fs2e-comp-char");
           const difficulty = readInputNumber(root, "#fs2e-comp-diff-base") + readInputNumber(root, "#fs2e-comp-diff-custom");
           const woundPenalty = getWoundPenalty(actor);
-          const gn = buildGoalNumber({ skillValue, characteristicValue, difficulty, woundPenalty, complementaryVp: 0 });
+          const blessingCurseModifiers = getApplicableBlessingCurseModifiers(availableBlessingCurseModifiers, {
+            skillKey,
+            characteristicKey
+          }).map((entry) => ({
+            ...entry,
+            appliedValue: toNumber(
+              Object.prototype.hasOwnProperty.call(state.compBlessingCurseOverrides, entry.uuid)
+                ? state.compBlessingCurseOverrides[entry.uuid]
+                : entry.amount,
+              0
+            )
+          }));
+          const blessingCurseTotal = blessingCurseModifiers.reduce((sum, entry) => sum + entry.appliedValue, 0);
+          const gn = buildGoalNumber({ skillValue, characteristicValue, difficulty, woundPenalty, complementaryVp: 0 }) + blessingCurseTotal;
           return {
+            skillKey,
             skillLabel,
+            characteristicKey,
             characteristicLabel: charLabel,
             skillValue,
             characteristicValue,
             difficulty,
             woundPenalty,
+            blessingCurseModifiers,
+            blessingCurseTotal,
             gn
           };
         };
@@ -400,6 +715,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             { label: "Multi-action", value: `${config.actionPenalty}` },
             { label: "Retry", value: `${config.retryPenalty}` },
             { label: "Wound penalty", value: `${config.woundPenalty}` },
+            ...config.blessingCurseModifiers.map((entry) => ({ label: entry.label, value: `${entry.appliedValue}` })),
             { label: "Temp bonus", value: "0" },
             { label: "Accent", value: `${config.accent}` },
             { label: "Complementary VP", value: `${state.complementaryVp}` }

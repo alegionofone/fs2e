@@ -38,6 +38,44 @@ const uniqueByCaseInsensitive = (list = []) => {
 	return out;
 };
 
+const joinWithAnd = (entries = []) => {
+	const parts = entries.map((entry) => String(entry ?? "").trim()).filter(Boolean);
+	if (!parts.length) return "";
+	if (parts.length === 1) return parts[0];
+	if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+	return `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}`;
+};
+
+const uniqueBonusEntries = (list = []) => {
+	const seen = new Set();
+	const out = [];
+	for (const entry of list) {
+		const uuid = String(entry?.uuid ?? "").trim();
+		const name = String(entry?.name ?? "").trim();
+		if (!uuid || !name) continue;
+		const token = uuid.toLowerCase();
+		if (seen.has(token)) continue;
+		seen.add(token);
+		out.push({ uuid, name });
+	}
+	return out;
+};
+
+const uniqueCompendiumTagEntries = (list = []) => {
+	const seen = new Set();
+	const out = [];
+	for (const entry of list) {
+		const uuid = String(entry?.uuid ?? "").trim();
+		const value = String(entry?.value ?? "").trim();
+		if (!uuid || !value) continue;
+		const token = uuid.toLowerCase();
+		if (seen.has(token)) continue;
+		seen.add(token);
+		out.push({ uuid, value });
+	}
+	return out;
+};
+
 const toKeyLabelOptions = (entries = []) => {
 	const seen = new Set();
 	const out = [];
@@ -360,20 +398,97 @@ const effectsToSkillAdjustments = (effects = {}) => Object.entries(toNumberMap(e
 	.map(([path, amount]) => skillPathToAdjustment(path, amount))
 	.filter(Boolean);
 
+const formatSigned = (value) => {
+	const amount = Number(value ?? 0);
+	return amount > 0 ? `+${amount}` : `${amount}`;
+};
+
+const formatCharacteristicAdjustmentSummary = (entry = {}, characteristicLabelByKey = {}) => {
+	const selectedKey = String(entry?.selectedKey ?? "").trim();
+	if (selectedKey) {
+		const selectedValue = Number(entry?.selectedValue ?? entry?.value ?? 0);
+		const selectedLabel = String(entry?.selectedLabel ?? characteristicLabelByKey[selectedKey] ?? selectedKey).trim();
+		return `${selectedLabel} ${formatSigned(selectedValue)}`;
+	}
+
+	const choices = asArray(entry?.choice);
+	if (choices.length >= 2) {
+		const explicitLabel = String(entry?.label ?? "").trim();
+		if (explicitLabel) return explicitLabel;
+		return choices
+			.map((choice) => {
+				const key = String(choice?.key ?? "").trim();
+				const label = String(choice?.label ?? characteristicLabelByKey[key] ?? key).trim();
+				return `${label} ${formatSigned(choice?.value)}`;
+			})
+			.filter(Boolean)
+			.join(" or ");
+	}
+
+	const amount = Number(entry?.value ?? 0);
+	const choiceKeys = asArray(entry?.choiceKeys);
+	if (choiceKeys.length >= 2) {
+		const leftKey = String(choiceKeys[0] ?? "").trim();
+		const rightKey = String(choiceKeys[1] ?? "").trim();
+		const leftLabel = characteristicLabelByKey[leftKey] ?? leftKey;
+		const rightLabel = characteristicLabelByKey[rightKey] ?? rightKey;
+		return `${leftLabel} ${formatSigned(amount)} or ${rightLabel} ${formatSigned(amount)}`;
+	}
+
+	const label = String(entry?.label ?? characteristicLabelByKey[String(entry?.key ?? "").trim()] ?? entry?.key ?? "").trim();
+	return `${label} ${formatSigned(amount)}`;
+};
+
+const formatSkillAdjustmentSummary = (entry = {}, skillLabelByKey = {}) => {
+	const amount = Number(entry?.value ?? 0);
+	const label = String(entry?.label ?? skillLabelByKey[String(entry?.key ?? "").trim()] ?? entry?.key ?? "").trim();
+	return `${label} ${formatSigned(amount)}`;
+};
+
+const resolveLinkedItems = async (entries = []) => {
+	const resolved = await Promise.all(
+		asArray(entries).map(async (entry) => {
+			const uuid = String(entry?.uuid ?? "").trim();
+			const fallbackName = String(entry?.name ?? "").trim();
+			const item = uuid ? await fromUuid(uuid).catch(() => null) : null;
+			const name = String(item?.name ?? fallbackName).trim();
+			if (!name) return null;
+			return {
+				uuid,
+				name,
+				hasUuid: Boolean(uuid)
+			};
+		})
+	);
+	return resolved.filter(Boolean);
+};
+
 const readCharacteristicAdjustments = (system = {}) => {
-	const legacy = asArray(system.characteristicsAdjustments);
+	const legacy = [
+		...asArray(system.characteristicsAdjustments),
+		...asArray(system.data?.characteristicsAdjustments)
+	];
 	if (legacy.length) return legacy;
 
-	const fromEffects = effectsToCharacteristicAdjustments(system.effects?.characteristics ?? {});
+	const fromEffects = effectsToCharacteristicAdjustments({
+		...(system.effects?.characteristics ?? {}),
+		...(system.data?.effects?.characteristics ?? {})
+	});
 	if (fromEffects.length) return fromEffects;
 	return [];
 };
 
 const readSkillAdjustments = (system = {}) => {
-	const legacy = asArray(system.skillsAdjustments);
+	const legacy = [
+		...asArray(system.skillsAdjustments),
+		...asArray(system.data?.skillsAdjustments)
+	];
 	if (legacy.length) return legacy;
 
-	const fromEffects = effectsToSkillAdjustments(system.effects?.skills ?? {});
+	const fromEffects = effectsToSkillAdjustments({
+		...(system.effects?.skills ?? {}),
+		...(system.data?.effects?.skills ?? {})
+	});
 	if (fromEffects.length) return fromEffects;
 	return [];
 };
@@ -382,6 +497,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 	_spiritPrimaryTagify = null;
 	_languageSpeakTagify = null;
 	_languageReadTagify = null;
+	_bonusBlessingCurseTagify = null;
 
 	static get defaultOptions() {
 		return foundry.utils.mergeObject(super.defaultOptions, {
@@ -411,9 +527,27 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			...NATURAL_SKILLS_BANK.map((entry) => ({ key: entry.key, label: entry.label })),
 			...LEARNED_SKILLS_BANK.map((entry) => ({ key: entry.key, label: entry.label }))
 		]);
-		const spiritPrimary = normalizeAlwaysPrimary(system.spiritAlwaysPrimary, { allowLabels: true });
-		const languagesSpeak = uniqueByCaseInsensitive(asArray(system.languages?.speak));
-		const languagesRead = uniqueByCaseInsensitive(asArray(system.languages?.read));
+		const spiritPrimary = normalizeAlwaysPrimary(system.spiritAlwaysPrimary ?? system.data?.spiritAlwaysPrimary, { allowLabels: true });
+		const languagesSpeak = uniqueByCaseInsensitive([
+			...asArray(system.languages?.speak),
+			...asArray(system.data?.languages?.speak)
+		]);
+		const languagesRead = uniqueByCaseInsensitive([
+			...asArray(system.languages?.read),
+			...asArray(system.data?.languages?.read)
+		]);
+		const bonusBlessingCurses = uniqueBonusEntries([
+			...asArray(system.bonusBlessingCurses),
+			...asArray(system.data?.bonusBlessingCurses)
+		]);
+		const bonusBeneficeAfflictions = uniqueBonusEntries([
+			...asArray(system.bonusBeneficeAfflictions),
+			...asArray(system.data?.bonusBeneficeAfflictions)
+		]);
+		const bonusActions = uniqueBonusEntries([
+			...asArray(system.bonusActions),
+			...asArray(system.data?.bonusActions)
+		]);
 
 		const bonusBlessingCurseOptions = await buildCompendiumOptions("fs2e.blessing-curses");
 		const bonusBeneficeAfflictionOptions = await buildCompendiumOptions("fs2e.benefices-afflications");
@@ -434,13 +568,31 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 		data.view.spiritAlwaysPrimaryJson = JSON.stringify(spiritPrimary);
 		data.view.languagesSpeakJson = JSON.stringify(languagesSpeak);
 		data.view.languagesReadJson = JSON.stringify(languagesRead);
-		data.view.bonusBlessingCursesJson = JSON.stringify(asArray(system.bonusBlessingCurses));
-		data.view.bonusBeneficeAfflictionsJson = JSON.stringify(asArray(system.bonusBeneficeAfflictions));
-		data.view.bonusActionsJson = JSON.stringify(asArray(system.bonusActions));
+		data.view.bonusBlessingCursesJson = JSON.stringify(bonusBlessingCurses);
+		data.view.bonusBeneficeAfflictionsJson = JSON.stringify(bonusBeneficeAfflictions);
+		data.view.bonusActionsJson = JSON.stringify(bonusActions);
+		data.view.bonusBlessingCurseOptionsJson = JSON.stringify(bonusBlessingCurseOptions);
+		data.view.bonusBeneficeAfflictionOptionsJson = JSON.stringify(bonusBeneficeAfflictionOptions);
+		data.view.bonusActionOptionsJson = JSON.stringify(bonusActionOptions);
 
 		data.view.bonusBlessingCurseOptions = bonusBlessingCurseOptions;
 		data.view.bonusBeneficeAfflictionOptions = bonusBeneficeAfflictionOptions;
 		data.view.bonusActionOptions = bonusActionOptions;
+		data.view.lockedCharacteristicsSummary = data.view.characteristicsAdjustments
+			.map((entry) => formatCharacteristicAdjustmentSummary(entry, characteristicLabelByKey))
+			.filter(Boolean);
+		data.view.lockedSkillsSummary = data.view.skillsAdjustments
+			.map((entry) => formatSkillAdjustmentSummary(entry, Object.fromEntries(
+				[...NATURAL_SKILLS_BANK, ...LEARNED_SKILLS_BANK].map((entry) => [entry.key, entry.label])
+			)))
+			.filter(Boolean);
+		data.view.lockedSpiritPrimaryText = joinWithAnd(data.view.spiritAlwaysPrimary.map((entry) => entry.label));
+		data.view.lockedLanguagesSpeak = languagesSpeak.join(", ");
+		data.view.lockedLanguagesRead = languagesRead.join(", ");
+		data.view.hasLockedLanguages = Boolean(data.view.lockedLanguagesSpeak || data.view.lockedLanguagesRead);
+		data.view.lockedBlessingCurseItems = await resolveLinkedItems(bonusBlessingCurses);
+		data.view.lockedBeneficeAfflictionItems = await resolveLinkedItems(bonusBeneficeAfflictions);
+		data.view.lockedActionItems = await resolveLinkedItems(bonusActions);
 
 		return data;
 	}
@@ -450,6 +602,14 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 
 		const root = html[0];
 		if (!root) return;
+
+		html.on("click", ".open-history-linked-item", async (event) => {
+			event.preventDefault();
+			const uuid = String(event.currentTarget?.dataset?.uuid ?? "").trim();
+			if (!uuid) return;
+			const item = await fromUuid(uuid).catch(() => null);
+			item?.sheet?.render(true);
+		});
 
 		const parseStateInput = (selector, fallback = []) => parseJsonSafe(root.querySelector(selector)?.value, fallback);
 		const characteristicLabelByKey = Object.fromEntries(
@@ -539,12 +699,40 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 		const spiritLabelByKey = new Map(SPIRIT_PRIMARY_OPTIONS.map((entry) => [entry.key, entry.label]));
 		const spiritKeyByLabel = new Map(SPIRIT_PRIMARY_OPTIONS.map((entry) => [entry.label.toLowerCase(), entry.key]));
 		const spiritOptionByKey = new Map(SPIRIT_PRIMARY_OPTIONS.map((entry) => [entry.key, entry]));
-		const bindTextTagMenu = ({ inputSelector, stateKey, instanceKey, languageKey }) => {
+		const bonusBlessingCurseOptions = parseJsonSafe(root.querySelector(".history-bonus-bc-menu")?.dataset?.options, []);
+		const bonusBlessingCurseOptionByUuid = new Map(
+			asArray(bonusBlessingCurseOptions)
+				.map((entry) => [String(entry?.uuid ?? "").trim(), { uuid: String(entry?.uuid ?? "").trim(), name: String(entry?.name ?? "").trim() }])
+				.filter(([uuid, entry]) => uuid && entry.name)
+		);
+		const bonusBlessingCurseWhitelist = [...bonusBlessingCurseOptionByUuid.values()]
+			.sort((a, b) => a.name.localeCompare(b.name))
+			.map((entry) => ({ value: entry.name, uuid: entry.uuid }));
+		const bonusBeneficeAfflictionOptions = parseJsonSafe(root.querySelector(".history-bonus-ba-menu")?.dataset?.options, []);
+		const bonusBeneficeAfflictionOptionByUuid = new Map(
+			asArray(bonusBeneficeAfflictionOptions)
+				.map((entry) => [String(entry?.uuid ?? "").trim(), { uuid: String(entry?.uuid ?? "").trim(), name: String(entry?.name ?? "").trim() }])
+				.filter(([uuid, entry]) => uuid && entry.name)
+		);
+		const bonusBeneficeAfflictionWhitelist = [...bonusBeneficeAfflictionOptionByUuid.values()]
+			.sort((a, b) => a.name.localeCompare(b.name))
+			.map((entry) => ({ value: entry.name, uuid: entry.uuid }));
+		const bonusActionOptions = parseJsonSafe(root.querySelector(".history-bonus-action-menu")?.dataset?.options, []);
+		const bonusActionOptionByUuid = new Map(
+			asArray(bonusActionOptions)
+				.map((entry) => [String(entry?.uuid ?? "").trim(), { uuid: String(entry?.uuid ?? "").trim(), name: String(entry?.name ?? "").trim() }])
+				.filter(([uuid, entry]) => uuid && entry.name)
+		);
+		const bonusActionWhitelist = [...bonusActionOptionByUuid.values()]
+			.sort((a, b) => a.name.localeCompare(b.name))
+			.map((entry) => ({ value: entry.name, uuid: entry.uuid }));
+		const bindTextTagMenu = ({ inputSelector, stateKey, instanceKey, languageKey, updatePath }) => {
 			const input = root.querySelector(inputSelector);
 			if (!input) return;
 			const languageWhitelist = getLanguageOptions(languageKey);
 
 			this[instanceKey]?.destroy();
+			this._prepareTagifyInput(input);
 			this[instanceKey] = new Tagify(input, {
 				whitelist: languageWhitelist,
 				duplicates: false,
@@ -559,7 +747,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			if (initialTags.length) this[instanceKey].addTags(initialTags, true, true);
 
 			let syncing = false;
-			const commit = () => {
+			const commit = async () => {
 				if (syncing) return;
 				syncing = true;
 				try {
@@ -580,6 +768,75 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 					}
 
 					syncAll();
+					await this.item.update({ [updatePath]: state[stateKey] });
+				} finally {
+					syncing = false;
+				}
+			};
+
+			this[instanceKey].on("change", commit);
+			this[instanceKey].on("add", commit);
+			this[instanceKey].on("remove", commit);
+			this._bindTagifyDropdownInteractions(this[instanceKey]);
+		};
+		const bindCompendiumTagMenu = ({ inputSelector, stateKey, instanceKey, whitelist, optionByUuid, updatePath }) => {
+			const input = root.querySelector(inputSelector);
+			if (!input) return;
+
+			this[instanceKey]?.destroy();
+			this._prepareTagifyInput(input);
+			this[instanceKey] = new Tagify(input, {
+				whitelist,
+				enforceWhitelist: true,
+				duplicates: false,
+				dropdown: {
+					enabled: 0,
+					closeOnSelect: false,
+					maxItems: whitelist.length || 10,
+					searchKeys: ["value"]
+				}
+			});
+
+			const initialTags = uniqueCompendiumTagEntries(asArray(state[stateKey]).map((entry) => ({
+				value: String(entry?.name ?? "").trim(),
+				uuid: String(entry?.uuid ?? "").trim()
+			})).filter((entry) => entry.value && entry.uuid));
+			if (initialTags.length) this[instanceKey].addTags(initialTags, true, true);
+
+			let syncing = false;
+			const commit = async () => {
+				if (syncing) return;
+				syncing = true;
+				try {
+					state[stateKey] = uniqueBonusEntries(
+						(this[instanceKey]?.value ?? [])
+							.map((entry) => {
+								const uuid = String(entry?.uuid ?? "").trim();
+								const value = String(entry?.value ?? "").trim();
+								const mapped = optionByUuid.get(uuid);
+								return {
+									uuid: mapped?.uuid ?? uuid,
+									name: mapped?.name ?? value
+								};
+							})
+							.filter((entry) => entry.uuid && entry.name)
+					);
+
+					const normalizedTags = state[stateKey].map((entry) => ({ value: entry.name, uuid: entry.uuid }));
+					const renderedTags = (this[instanceKey]?.value ?? [])
+						.map((entry) => ({
+							value: String(entry?.value ?? "").trim(),
+							uuid: String(entry?.uuid ?? "").trim()
+						}))
+						.filter((entry) => entry.value && entry.uuid);
+					if (normalizedTags.length !== renderedTags.length
+						|| normalizedTags.some((entry, index) => entry.value !== renderedTags[index]?.value || entry.uuid !== renderedTags[index]?.uuid)) {
+						this[instanceKey]?.removeAllTags();
+						if (normalizedTags.length) this[instanceKey]?.addTags(normalizedTags, true, true);
+					}
+
+					syncAll();
+					await this.item.update({ [updatePath]: state[stateKey] });
 				} finally {
 					syncing = false;
 				}
@@ -611,6 +868,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 
 		if (spiritInput) {
 			this._spiritPrimaryTagify?.destroy();
+			this._prepareTagifyInput(spiritInput);
 			this._spiritPrimaryTagify = new Tagify(spiritInput, {
 				whitelist: SPIRIT_PRIMARY_OPTIONS.map((entry) => entry.label),
 				enforceWhitelist: true,
@@ -629,7 +887,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			syncSpiritWhitelistForSelection(initialKeys);
 
 			let savingSpirit = false;
-			const commitSpiritSelection = () => {
+			const commitSpiritSelection = async () => {
 				if (savingSpirit) return;
 				savingSpirit = true;
 				try {
@@ -644,6 +902,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 					if (nextLabels.length) this._spiritPrimaryTagify.addTags(nextLabels, true, true);
 					syncSpiritWhitelistForSelection(state.spiritAlwaysPrimary);
 					syncAll();
+					await this.item.update({ "system.spiritAlwaysPrimary": state.spiritAlwaysPrimary });
 				} finally {
 					savingSpirit = false;
 				}
@@ -662,13 +921,39 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			inputSelector: ".history-language-speak-menu",
 			stateKey: "languagesSpeak",
 			instanceKey: "_languageSpeakTagify",
-			languageKey: "speak"
+			languageKey: "speak",
+			updatePath: "system.languages.speak"
 		});
 		bindTextTagMenu({
 			inputSelector: ".history-language-read-menu",
 			stateKey: "languagesRead",
 			instanceKey: "_languageReadTagify",
-			languageKey: "read"
+			languageKey: "read",
+			updatePath: "system.languages.read"
+		});
+		bindCompendiumTagMenu({
+			inputSelector: ".history-bonus-bc-menu",
+			stateKey: "bonusBlessingCurses",
+			instanceKey: "_bonusBlessingCurseTagify",
+			whitelist: bonusBlessingCurseWhitelist,
+			optionByUuid: bonusBlessingCurseOptionByUuid,
+			updatePath: "system.bonusBlessingCurses"
+		});
+		bindCompendiumTagMenu({
+			inputSelector: ".history-bonus-ba-menu",
+			stateKey: "bonusBeneficeAfflictions",
+			instanceKey: "_bonusBeneficeAfflictionTagify",
+			whitelist: bonusBeneficeAfflictionWhitelist,
+			optionByUuid: bonusBeneficeAfflictionOptionByUuid,
+			updatePath: "system.bonusBeneficeAfflictions"
+		});
+		bindCompendiumTagMenu({
+			inputSelector: ".history-bonus-action-menu",
+			stateKey: "bonusActions",
+			instanceKey: "_bonusActionTagify",
+			whitelist: bonusActionWhitelist,
+			optionByUuid: bonusActionOptionByUuid,
+			updatePath: "system.bonusActions"
 		});
 
 		const setHidden = (selector, value) => {
@@ -676,6 +961,16 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			if (!el) return;
 			el.value = JSON.stringify(value);
 		};
+
+		const persistCharacteristicAdjustments = async () => this.item.update({
+			"system.effects.characteristics": adjustmentsToCharacteristicEffects(state.characteristicsAdjustments),
+			"system.characteristicsAdjustments": state.characteristicsAdjustments
+		});
+
+		const persistSkillAdjustments = async () => this.item.update({
+			"system.effects.skills": adjustmentsToSkillEffects(state.skillsAdjustments),
+			"system.skillsAdjustments": state.skillsAdjustments
+		});
 
 		const renderChipList = ({ selector, list, toLabel, removeClass }) => {
 			const container = root.querySelector(selector);
@@ -745,29 +1040,11 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 				},
 				removeClass: "remove-history-skill"
 			});
-			renderChipList({
-				selector: ".history-bonus-bc-list",
-				list: state.bonusBlessingCurses,
-				toLabel: (entry) => String(entry?.name ?? "").trim(),
-				removeClass: "remove-history-bonus-bc"
-			});
-			renderChipList({
-				selector: ".history-bonus-ba-list",
-				list: state.bonusBeneficeAfflictions,
-				toLabel: (entry) => String(entry?.name ?? "").trim(),
-				removeClass: "remove-history-bonus-ba"
-			});
-			renderChipList({
-				selector: ".history-bonus-action-list",
-				list: state.bonusActions,
-				toLabel: (entry) => String(entry?.name ?? "").trim(),
-				removeClass: "remove-history-bonus-action"
-			});
 		};
 
 		syncAll();
 
-		root.querySelector(".add-history-characteristic")?.addEventListener("click", () => {
+		root.querySelector(".add-history-characteristic")?.addEventListener("click", async () => {
 			const first = buildCharacteristicSelection({
 				selectSelector: ".history-characteristic-select-a",
 				amountSelector: ".history-characteristic-amount-a"
@@ -812,6 +1089,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			resetCharacteristicInputs();
 
 			syncAll();
+			await persistCharacteristicAdjustments();
 		});
 
 		root.querySelector(".add-history-skill")?.addEventListener("click", async () => {
@@ -876,82 +1154,78 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 
 			const firstAdded = await addSkill({ selectSelector: ".history-skill-select-a", amountSelector: ".history-skill-amount-a" });
 			const secondAdded = await addSkill({ selectSelector: ".history-skill-select-b", amountSelector: ".history-skill-amount-b" });
-			if (firstAdded || secondAdded) syncAll();
+			if (firstAdded || secondAdded) {
+				syncAll();
+				await persistSkillAdjustments();
+			}
 		});
 
-		const addBonusEntry = (selectSelector, stateKey) => {
-			const select = root.querySelector(selectSelector);
-			const uuid = String(select?.value ?? "").trim();
-			if (!uuid) return;
-			const name = String(select?.selectedOptions?.[0]?.textContent ?? "").trim();
-			if (!name) return;
-			const exists = asArray(state[stateKey]).some((entry) => String(entry?.uuid ?? "").trim() === uuid);
-			if (exists) return;
-			state[stateKey].push({ uuid, name });
-			if (select) select.value = "";
-			syncAll();
-		};
-
-		root.querySelector(".add-history-bonus-bc")?.addEventListener("click", () => addBonusEntry(".history-bonus-bc-select", "bonusBlessingCurses"));
-		root.querySelector(".add-history-bonus-ba")?.addEventListener("click", () => addBonusEntry(".history-bonus-ba-select", "bonusBeneficeAfflictions"));
-		root.querySelector(".add-history-bonus-action")?.addEventListener("click", () => addBonusEntry(".history-bonus-action-select", "bonusActions"));
-
-		root.addEventListener("click", (event) => {
+		root.addEventListener("click", async (event) => {
 			const button = event.target?.closest?.("button.history-chip-remove");
 			if (!button) return;
 			const index = Number(button.dataset.index ?? -1);
 			if (!Number.isInteger(index) || index < 0) return;
 
+			let persistChanges = null;
 			if (button.classList.contains("remove-history-characteristic")) {
 				state.characteristicsAdjustments.splice(index, 1);
+				persistChanges = persistCharacteristicAdjustments;
 			}
 			if (button.classList.contains("remove-history-skill")) {
 				state.skillsAdjustments.splice(index, 1);
+				persistChanges = persistSkillAdjustments;
 			}
-			if (button.classList.contains("remove-history-bonus-bc")) {
-				state.bonusBlessingCurses.splice(index, 1);
-			}
-			if (button.classList.contains("remove-history-bonus-ba")) {
-				state.bonusBeneficeAfflictions.splice(index, 1);
-			}
-			if (button.classList.contains("remove-history-bonus-action")) {
-				state.bonusActions.splice(index, 1);
-			}
-
 			syncAll();
+			if (persistChanges) await persistChanges();
 		});
 	}
 
 	async _updateObject(event, formData) {
 		try {
-			const characteristicsAdjustments = parseJsonArray(formData["system.characteristicsAdjustmentsJson"], {
-				fieldLabel: "Characteristics adjustments"
-			});
-			const skillsAdjustments = parseJsonArray(formData["system.skillsAdjustmentsJson"], {
-				fieldLabel: "Skills adjustments"
-			});
-			formData["system.effects.characteristics"] = adjustmentsToCharacteristicEffects(characteristicsAdjustments);
-			formData["system.effects.skills"] = adjustmentsToSkillEffects(skillsAdjustments);
-			formData["system.characteristicsAdjustments"] = characteristicsAdjustments;
-			formData["system.skillsAdjustments"] = skillsAdjustments;
-			formData["system.spiritAlwaysPrimary"] = normalizeAlwaysPrimary(parseJsonArray(formData["system.spiritAlwaysPrimaryJson"], {
-				fieldLabel: "Spirit Always Primary"
-			}), { allowLabels: true });
-			formData["system.languages.speak"] = uniqueByCaseInsensitive(parseJsonArray(formData["system.languagesSpeakJson"], {
-				fieldLabel: "Languages (Speak)"
-			}));
-			formData["system.languages.read"] = uniqueByCaseInsensitive(parseJsonArray(formData["system.languagesReadJson"], {
-				fieldLabel: "Languages (Read)"
-			}));
-			formData["system.bonusBlessingCurses"] = parseJsonArray(formData["system.bonusBlessingCursesJson"], {
-				fieldLabel: "Bonus Blessings/Curses"
-			});
-			formData["system.bonusBeneficeAfflictions"] = parseJsonArray(formData["system.bonusBeneficeAfflictionsJson"], {
-				fieldLabel: "Bonus Benefices/Afflictions"
-			});
-			formData["system.bonusActions"] = parseJsonArray(formData["system.bonusActionsJson"], {
-				fieldLabel: "Bonus Actions"
-			});
+			if (Object.prototype.hasOwnProperty.call(formData, "system.characteristicsAdjustmentsJson")) {
+				const characteristicsAdjustments = parseJsonArray(formData["system.characteristicsAdjustmentsJson"], {
+					fieldLabel: "Characteristics adjustments"
+				});
+				formData["system.effects.characteristics"] = adjustmentsToCharacteristicEffects(characteristicsAdjustments);
+				formData["system.characteristicsAdjustments"] = characteristicsAdjustments;
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.skillsAdjustmentsJson")) {
+				const skillsAdjustments = parseJsonArray(formData["system.skillsAdjustmentsJson"], {
+					fieldLabel: "Skills adjustments"
+				});
+				formData["system.effects.skills"] = adjustmentsToSkillEffects(skillsAdjustments);
+				formData["system.skillsAdjustments"] = skillsAdjustments;
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.spiritAlwaysPrimaryJson")) {
+				formData["system.spiritAlwaysPrimary"] = normalizeAlwaysPrimary(parseJsonArray(formData["system.spiritAlwaysPrimaryJson"], {
+					fieldLabel: "Spirit Always Primary"
+				}), { allowLabels: true });
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.languagesSpeakJson")) {
+				formData["system.languages.speak"] = uniqueByCaseInsensitive(parseJsonArray(formData["system.languagesSpeakJson"], {
+					fieldLabel: "Languages (Speak)"
+				}));
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.languagesReadJson")) {
+				formData["system.languages.read"] = uniqueByCaseInsensitive(parseJsonArray(formData["system.languagesReadJson"], {
+					fieldLabel: "Languages (Read)"
+				}));
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.bonusBlessingCursesJson")) {
+				formData["system.bonusBlessingCurses"] = parseJsonArray(formData["system.bonusBlessingCursesJson"], {
+					fieldLabel: "Bonus Blessings/Curses"
+				});
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.bonusBeneficeAfflictionsJson")) {
+				formData["system.bonusBeneficeAfflictions"] = parseJsonArray(formData["system.bonusBeneficeAfflictionsJson"], {
+					fieldLabel: "Bonus Benefices/Afflictions"
+				});
+			}
+			if (Object.prototype.hasOwnProperty.call(formData, "system.bonusActionsJson")) {
+				formData["system.bonusActions"] = parseJsonArray(formData["system.bonusActionsJson"], {
+					fieldLabel: "Bonus Actions"
+				});
+			}
 		} catch (error) {
 			ui.notifications?.error(String(error?.message ?? error));
 			return;
@@ -976,6 +1250,12 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 		this._languageSpeakTagify = null;
 		this._languageReadTagify?.destroy();
 		this._languageReadTagify = null;
+		this._bonusBlessingCurseTagify?.destroy();
+		this._bonusBlessingCurseTagify = null;
+		this._bonusBeneficeAfflictionTagify?.destroy();
+		this._bonusBeneficeAfflictionTagify = null;
+		this._bonusActionTagify?.destroy();
+		this._bonusActionTagify = null;
 		return super.close(options);
 	}
 }

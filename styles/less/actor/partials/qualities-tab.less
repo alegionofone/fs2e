@@ -7,6 +7,61 @@
         margin-top: var(--space-12);
     }
 
+    .tab.qualities {
+        .traits-section-note {
+            margin: 0 0 var(--space-8);
+            color: var(--color-gold-mid);
+            font-size: var(--font-size-11);
+        }
+
+        .fs2e-bc-table {
+            margin-top: var(--space-4);
+
+            th:first-child,
+            td:first-child {
+                width: 150px;
+                min-width: 150px;
+            }
+
+            tbody tr,
+            tbody tr:nth-child(odd),
+            tbody tr:nth-child(even),
+            tbody td {
+                background: transparent !important;
+            }
+
+            .fs2e-bc-section-row td {
+                color: var(--color-gold-mid);
+                font-size: var(--font-size-12);
+                font-family: inherit;
+                font-weight: 600;
+                display: inline-flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: var(--space-4);
+                padding-top: var(--space-8);
+                padding-bottom: var(--space-4);
+                border-top: 0;
+                cursor: pointer;
+            }
+
+            .fs2e-bc-section-icon::before {
+                content: "\25BE";
+                display: inline-block;
+                font-size: var(--font-size-13);
+                line-height: 1;
+            }
+
+            .fs2e-bc-section-row.is-collapsed .fs2e-bc-section-icon::before {
+                content: "\25B8";
+            }
+
+            .fs2e-bc-item-row td:first-child {
+                padding-left: 21px;
+            }
+        }
+    }
+
     .fs2e-vw-grid {
         display: grid;
         grid-template-columns: minmax(130px, auto) minmax(0, 1fr);
@@ -38,12 +93,15 @@
     .fs2e-lang-value-read { grid-column: 2; grid-row: 2; }
 
     .fs2e-vw-value {
+        display: flex;
+        align-items: center;
         text-align: left;
         justify-self: start;
+        align-self: center;
         width: 100%;
         min-height: 20px;
         color: var(--color-gold-lt);
-        font-family: var(--font-p22);
+        font-family: var(--font-body);
         letter-spacing: 0.02em;
         line-height: 1.2;
         white-space: normal;

@@ -51,6 +51,7 @@
   --font-size-49: 3.0625rem;
   --font-size-50: 3.125rem;
   --font-size-em: 1em;
+  --font-body: "Lato", sans-serif;
   --font-p22: "p22", Georgia, sans-serif;
   --color-gold-lt: #e5c6a3;
   --color-gold-lt-mid: #c5a684;
@@ -547,6 +548,25 @@ nav.tabs [data-tab]:hover {
 .fs2e-chargen-choice .fs2e-span-full {
   grid-column: 1 / -1;
 }
+.fs2e-dice-roller .fs2e-roll-bc-modifiers,
+.fs2e-chargen-choice .fs2e-roll-bc-modifiers {
+  display: contents;
+}
+.fs2e-dice-roller .fs2e-roll-bc-modifiers[hidden],
+.fs2e-chargen-choice .fs2e-roll-bc-modifiers[hidden] {
+  display: none;
+}
+.fs2e-dice-roller .fs2e-bc-modifier-label,
+.fs2e-chargen-choice .fs2e-bc-modifier-label,
+.fs2e-dice-roller .fs2e-bc-modifier-field,
+.fs2e-chargen-choice .fs2e-bc-modifier-field {
+  align-self: center;
+}
+.fs2e-dice-roller .fs2e-bc-modifier-label .fs2e-inline-title,
+.fs2e-chargen-choice .fs2e-bc-modifier-label .fs2e-inline-title {
+  white-space: normal;
+  line-height: 1.2;
+}
 .fs2e-dice-roller .fs2e-grid-roll-actions,
 .fs2e-chargen-choice .fs2e-grid-roll-actions {
   margin-top: var(--space-8);
@@ -1019,6 +1039,7 @@ nav.tabs [data-tab]:hover {
 }
 .fs2e.sheet.actor {
   font-size: var(--font-size-12);
+  font-family: var(--font-body);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1402,6 +1423,51 @@ nav.tabs [data-tab]:hover {
 .fs2e.sheet.actor .tab.qualities .fs2e-languages-summary + .traits-section {
   margin-top: var(--space-12);
 }
+.fs2e.sheet.actor .tab.qualities .traits-section-note {
+  margin: 0 0 var(--space-8);
+  color: var(--color-gold-mid);
+  font-size: var(--font-size-11);
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table {
+  margin-top: var(--space-4);
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table th:first-child,
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table td:first-child {
+  width: 150px;
+  min-width: 150px;
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table tbody tr,
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table tbody tr:nth-child(odd),
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table tbody tr:nth-child(even),
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table tbody td {
+  background: transparent !important;
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table .fs2e-bc-section-row td {
+  color: var(--color-gold-mid);
+  font-size: var(--font-size-12);
+  font-family: inherit;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-4);
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-4);
+  border-top: 0;
+  cursor: pointer;
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table .fs2e-bc-section-icon::before {
+  content: "\25BE";
+  display: inline-block;
+  font-size: var(--font-size-13);
+  line-height: 1;
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table .fs2e-bc-section-row.is-collapsed .fs2e-bc-section-icon::before {
+  content: "\25B8";
+}
+.fs2e.sheet.actor .tab.qualities .fs2e-bc-table .fs2e-bc-item-row td:first-child {
+  padding-left: 21px;
+}
 .fs2e.sheet.actor .fs2e-vw-grid {
   display: grid;
   grid-template-columns: minmax(130px, auto) minmax(0, 1fr);
@@ -1459,12 +1525,15 @@ nav.tabs [data-tab]:hover {
   grid-row: 2;
 }
 .fs2e.sheet.actor .fs2e-vw-value {
+  display: flex;
+  align-items: center;
   text-align: left;
   justify-self: start;
+  align-self: center;
   width: 100%;
   min-height: 20px;
   color: var(--color-gold-lt);
-  font-family: var(--font-p22);
+  font-family: var(--font-body);
   letter-spacing: 0.02em;
   line-height: 1.2;
   white-space: normal;
@@ -1592,11 +1661,19 @@ nav.tabs [data-tab]:hover {
 }
 .app.window-app.sheet.item h3 {
   border: 0;
+  width: 100%;
+  padding-bottom: 1px;
+  border-bottom: 1px solid currentColor;
+  font-size: var(--font-size-15);
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 .app.window-app.sheet.item .fs2e-item-sheet {
   height: auto;
   min-height: 0;
   color: inherit;
+  font-family: var(--font-body);
 }
 .app.window-app.sheet.item .fs2e-item-sheet,
 .app.window-app.sheet.item .fs2e-item-sheet input,
@@ -1724,6 +1801,33 @@ nav.tabs [data-tab]:hover {
 .app.window-app.sheet.item .fs2e-item-sheet .tagify.fs2e-tagify-base .tagify__tag .tagify__tag__removeBtn:hover {
   background: var(--color-magenta-mid) !important;
   color: var(--color-gold-lt);
+}
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-grid {
+  display: grid;
+  grid-template-columns: minmax(32px, 0.45fr) minmax(120px, 1.2fr) minmax(220px, 2.8fr) minmax(32px, 0.45fr);
+  gap: var(--space-6) var(--space-8);
+  align-items: center;
+  margin: 0 0 var(--space-10) 0;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-label {
+  color: var(--color-grey-mid);
+  font-size: var(--font-size-13);
+}
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-input {
+  width: 100%;
+  min-width: 0;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-input-bonus,
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-input-points {
+  text-align: center;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-always-active-row {
+  margin-bottom: 0;
+}
+@media (max-width: 540px) {
+  .app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .app.window-app.sheet.item .fs2e-item-sheet .fs2e-tag-list {
   width: 100%;
@@ -1860,6 +1964,13 @@ nav.tabs [data-tab]:hover {
 .app.window-app.sheet.item .species-characteristics-group h3 {
   margin: 0 0 var(--space-6) 0;
 }
+.app.window-app.sheet.item .species-characteristics-group-locked .species-locked-summary {
+  margin: 0;
+  line-height: 1.5;
+}
+.app.window-app.sheet.item .species-characteristics-group-locked .species-locked-stat-label {
+  font-weight: 700;
+}
 .app.window-app.sheet.item .species-occult-heading .species-occult-toggle-label {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -1869,6 +1980,8 @@ nav.tabs [data-tab]:hover {
 }
 .app.window-app.sheet.item .species-occult-heading .species-occult-toggle-label .species-occult-toggle {
   justify-self: start;
+  width: 12px;
+  height: 12px;
 }
 .app.window-app.sheet.item .species-occult-heading input[type="checkbox"] {
   margin: 0;
@@ -1981,6 +2094,28 @@ nav.tabs [data-tab]:hover {
   width: 100%;
   height: 26px;
 }
+.app.window-app.sheet.item .fs2e-item-sheet .history-locked-summary {
+  margin: 6px 0 0 0;
+  line-height: 1.5;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .history-locked-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 6px;
+  align-items: start;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .history-locked-label {
+  font-weight: 600;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .history-locked-value {
+  min-width: 0;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .history-locked-summary a {
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
 @media (max-width: 720px) {
   .app.window-app.sheet.item .fs2e-item-sheet .history-mod-row,
   .app.window-app.sheet.item .fs2e-item-sheet .history-mod-row.history-mod-row-skills,
@@ -1991,6 +2126,10 @@ nav.tabs [data-tab]:hover {
     display: none;
   }
   .app.window-app.sheet.item .fs2e-item-sheet .history-tag-box-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .app.window-app.sheet.item .fs2e-item-sheet .history-locked-row {
     grid-template-columns: 1fr;
     gap: 4px;
   }

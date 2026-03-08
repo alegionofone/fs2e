@@ -1,3 +1,5 @@
+import { filterActiveHistoryItems } from "./derived/shared.mjs";
+
 export const LANGUAGE_OPTIONS = {
   speak: [
     "Ascorbite",
@@ -76,7 +78,7 @@ export const aggregateActorLanguages = (actor) => {
 
   const manualSpeak = normalizeLanguageArray(manual.speak);
   const manualRead = normalizeLanguageArray(manual.read);
-  const granted = collectItemLanguageGrants(actor.items);
+  const granted = collectItemLanguageGrants(filterActiveHistoryItems(actor));
 
   const total = {
     speak: uniqueLanguages([...manualSpeak, ...granted.speak]),

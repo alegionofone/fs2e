@@ -8,20 +8,42 @@ export class FS2EItemSheet extends ItemSheet {
   _sheetMutationObserver = null;
   _heightSyncScheduled = false;
 
+  _prepareTagifyInput(input) {
+    if (!input) return;
+    const locked = getSheetLockState(this.item).locked;
+    if (locked) return;
+    input.removeAttribute("disabled");
+    input.removeAttribute("readonly");
+  }
+
   _bindTagifyDropdownInteractions(tagify) {
     if (!tagify) return;
 
+    if (!getSheetLockState(this.item).locked) {
+      if (typeof tagify.setDisabled === "function") tagify.setDisabled(false);
+      else if (typeof tagify.setReadonly === "function") tagify.setReadonly(false);
+      else {
+        if (tagify.settings) {
+          tagify.settings.disabled = false;
+          tagify.settings.readonly = false;
+        }
+        if (typeof tagify.setContentEditable === "function") tagify.setContentEditable(true);
+      }
+    }
+
     const showDropdown = () => {
-      const appRoot = this.element?.[0];
-      if (appRoot?.dataset?.sheetLocked === "1") return;
+      if (getSheetLockState(this.item).locked) return;
       const currentValue = String(tagify.input?.raw?.call(tagify) ?? "").trim();
       tagify.dropdown.show(currentValue);
     };
 
-    tagify.DOM.scope?.addEventListener("mousedown", () => {
-      window.setTimeout(showDropdown, 0);
-    });
-    tagify.DOM.scope?.addEventListener("focusin", showDropdown);
+    const deferredShow = () => window.setTimeout(showDropdown, 0);
+
+    tagify.DOM.scope?.addEventListener("mousedown", deferredShow);
+    tagify.DOM.scope?.addEventListener("click", deferredShow);
+    tagify.DOM.scope?.addEventListener("focusin", deferredShow);
+    tagify.DOM.input?.addEventListener("focus", deferredShow);
+    tagify.DOM.input?.addEventListener("click", deferredShow);
     tagify.DOM.input?.addEventListener("input", showDropdown);
   }
 
@@ -165,12 +187,21 @@ export class FS2EItemSheet extends ItemSheet {
     data.itemTagsCsv = this._normalizeTags(this._getStoredTags(data.system)).join(", ");
     data.view = data.view ?? {};
     data.view.sheetLock = getSheetLockState(this.item);
+    data.view.descriptionEditable = Boolean(data.editable) && !data.view.sheetLock.locked;
+    data.view.enrichedDescription = await TextEditor.enrichHTML(data.system.description.value ?? "", {
+      async: true,
+      secrets: this.item.isOwner,
+      relativeTo: this.item
+    });
     return data;
   }
 
   async _updateObject(event, formData) {
-    const tags = this._normalizeTags(formData["system.tags"]);
-    formData["system.tags"] = tags;
+    const hasTags = Object.prototype.hasOwnProperty.call(formData, "system.tags");
+    const tags = hasTags ? this._normalizeTags(formData["system.tags"]) : this._getStoredTags();
+    if (hasTags) {
+      formData["system.tags"] = tags;
+    }
 
     // ProseMirror can occasionally submit without the description field on close;
     // avoid clobbering persisted text when that happens.
@@ -203,6 +234,7 @@ export class FS2EItemSheet extends ItemSheet {
       this._headerTagify?.destroy();
       const whitelist = getTagMenuForItemType(this.item.type);
       const current = this._normalizeTags(this._getStoredTags());
+      this._prepareTagifyInput(input);
 
       this._headerTagify = new Tagify(input, {
         whitelist,
@@ -218,7 +250,37 @@ export class FS2EItemSheet extends ItemSheet {
 
       if (current.length) this._headerTagify.addTags(current, true, true);
       this._bindTagifyDropdownInteractions(this._headerTagify);
+      let syncingHeaderTags = false;
+      const commitHeaderTags = async () => {
+        this._scheduleHeightSyncBurst();
+        if (syncingHeaderTags) return;
+        syncingHeaderTags = true;
+
+        try {
+          const nextTags = this._normalizeTags(
+            (this._headerTagify?.value ?? []).map((entry) => String(entry?.value ?? "").trim())
+          );
+          const renderedTags = (this._headerTagify?.value ?? [])
+            .map((entry) => String(entry?.value ?? "").trim())
+            .filter(Boolean);
+
+          if (nextTags.length !== renderedTags.length
+            || nextTags.some((tag, index) => tag !== renderedTags[index])) {
+            this._headerTagify?.removeAllTags();
+            if (nextTags.length) this._headerTagify?.addTags(nextTags, true, true);
+          }
+
+          const update = { "system.tags": nextTags };
+          if (this.item.type === "faction") update["system.faction"] = nextTags[0] ?? "";
+          await this.item.update(update);
+        } finally {
+          syncingHeaderTags = false;
+        }
+      };
+
       this._headerTagify.on("change", () => this._scheduleHeightSyncBurst());
+      this._headerTagify.on("add", commitHeaderTags);
+      this._headerTagify.on("remove", commitHeaderTags);
     }
   }
 

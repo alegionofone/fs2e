@@ -180,6 +180,13 @@
           "vitality": {
             "base": 5,
             "mod": 0,
+            "temp": 0,
+            "history": 0,
+            "xp": 0,
+            "granted": 0,
+            "total": 5,
+            "roll": 5,
+            "max": 5,
             "value": 5
           },
           "wyrd": {
@@ -1103,7 +1110,13 @@
     "history": {
       "templates": [
         "common"
-      ]
+      ],
+      "characteristicsAdjustments": [],
+      "skillsAdjustments": [],
+      "spiritAlwaysPrimary": [],
+      "bonusBlessingCurses": [],
+      "bonusBeneficeAfflictions": [],
+      "bonusActions": []
     },
     "planet": {
       "templates": [

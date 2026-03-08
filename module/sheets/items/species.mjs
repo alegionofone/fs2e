@@ -44,6 +44,19 @@ const readOccultAffinities = (system) => readSpeciesOccultAffinities(system, { m
 
 const readOccultEnabled = (system) => readSpeciesOccultEnabled(system);
 
+const joinWithCommas = (entries = []) => entries
+	.map((entry) => String(entry ?? "").trim())
+	.filter(Boolean)
+	.join(", ");
+
+const joinWithAnd = (entries = []) => {
+	const parts = entries.map((entry) => String(entry ?? "").trim()).filter(Boolean);
+	if (!parts.length) return "";
+	if (parts.length === 1) return parts[0];
+	if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+	return `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}`;
+};
+
 export class FS2ESpeciesSheet extends FS2EItemSheet {
 	_spiritPrimaryTagify = null;
 	_occultTagify = null;
@@ -67,6 +80,12 @@ export class FS2ESpeciesSheet extends FS2EItemSheet {
 		data.view.occultLabels = OCCULT_OPTIONS.map((entry) => entry.label);
 		data.view.occultAffinities = readOccultAffinities(data.system);
 		data.view.occultEnabled = readOccultEnabled(data.system);
+		data.view.lockedSpiritPrimaryText = joinWithAnd(
+			data.view.spiritAlwaysPrimary.map((key) => SPIRIT_PRIMARY_OPTIONS.find((entry) => entry.key === key)?.label ?? key)
+		);
+		data.view.lockedOccultText = joinWithCommas(
+			data.view.occultAffinities.map((key) => OCCULT_OPTIONS.find((entry) => entry.key === key)?.label ?? key)
+		);
 
 		return data;
 	}
@@ -108,6 +127,7 @@ export class FS2ESpeciesSheet extends FS2EItemSheet {
 
 		if (input) {
 			this._spiritPrimaryTagify?.destroy();
+			this._prepareTagifyInput(input);
 			this._spiritPrimaryTagify = new Tagify(input, {
 				whitelist,
 				enforceWhitelist: true,
@@ -157,6 +177,7 @@ export class FS2ESpeciesSheet extends FS2EItemSheet {
 			if (!occultInput) return;
 			this._occultTagify?.destroy();
 			this._occultTagify = null;
+			this._prepareTagifyInput(occultInput);
 
 			const occultLabelByKey = new Map(OCCULT_OPTIONS.map((entry) => [entry.key, entry.label]));
 			const occultKeyByLabel = new Map(OCCULT_OPTIONS.map((entry) => [entry.label.toLowerCase(), entry.key]));

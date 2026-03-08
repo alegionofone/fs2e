@@ -91,9 +91,62 @@
 			{{> "systems/fs2e/templates/actor/actor-tabs/qualities-tab.hbs"}}
 			<section class="container shade traits-section" data-collapsible-section data-collapsed="0">
 				<h3>Blessings and Curses</h3>
-				<table class="traits-table combat-actions-table">
+				<p class="traits-section-note">These are inherited options only. Their bonuses are not permanently applied here unless they are always active.</p>
+				<table class="traits-table combat-actions-table fs2e-bc-table">
 					<thead><tr><th>Title</th><th class="traits-points-head">Points</th><th>Effect</th><th></th></tr></thead>
-					<tbody><tr class="traits-empty-row"><td colspan="4">Front-end shell only. Backend data wiring pending.</td></tr></tbody>
+					<tbody>
+						{{#if view.blessingCurses.length}}
+							<tr class="fs2e-bc-section-row {{#unless view.blessingCurseSections.blessingsExpanded}}is-collapsed{{/unless}}" data-action="toggle-bc-section" data-section="blessings">
+								<td colspan="4"><span class="fs2e-bc-section-text">Blessings</span><span class="fs2e-bc-section-icon" aria-hidden="true"></span></td>
+							</tr>
+							{{#if view.blessingCurseSections.blessingsExpanded}}
+							{{#if view.blessings.length}}
+								{{#each view.blessings}}
+									<tr class="fs2e-bc-item-row">
+										<td>
+											{{#if this.hasUuid}}
+												<a class="open-bonus-blessing-curse" data-uuid="{{this.uuid}}">{{this.name}}</a>
+											{{else}}
+												{{this.name}}
+											{{/if}}
+										</td>
+										<td class="traits-points-cell">{{#if this.points}}{{this.points}}{{else}}-{{/if}}</td>
+										<td>{{#if this.effect}}{{this.effect}}{{else}}-{{/if}}</td>
+										<td class="traits-open-cell"></td>
+									</tr>
+								{{/each}}
+							{{else}}
+								<tr class="traits-empty-row fs2e-bc-item-row"><td colspan="4">No blessings.</td></tr>
+							{{/if}}
+							{{/if}}
+
+							<tr class="fs2e-bc-section-row {{#unless view.blessingCurseSections.cursesExpanded}}is-collapsed{{/unless}}" data-action="toggle-bc-section" data-section="curses">
+								<td colspan="4"><span class="fs2e-bc-section-text">Curses</span><span class="fs2e-bc-section-icon" aria-hidden="true"></span></td>
+							</tr>
+							{{#if view.blessingCurseSections.cursesExpanded}}
+							{{#if view.curses.length}}
+								{{#each view.curses}}
+									<tr class="fs2e-bc-item-row">
+										<td>
+											{{#if this.hasUuid}}
+												<a class="open-bonus-blessing-curse" data-uuid="{{this.uuid}}">{{this.name}}</a>
+											{{else}}
+												{{this.name}}
+											{{/if}}
+										</td>
+										<td class="traits-points-cell">{{#if this.points}}{{this.points}}{{else}}-{{/if}}</td>
+										<td>{{#if this.effect}}{{this.effect}}{{else}}-{{/if}}</td>
+										<td class="traits-open-cell"></td>
+									</tr>
+								{{/each}}
+							{{else}}
+								<tr class="traits-empty-row fs2e-bc-item-row"><td colspan="4">No curses.</td></tr>
+							{{/if}}
+							{{/if}}
+						{{else}}
+							<tr class="traits-empty-row"><td colspan="4">No blessings or curses.</td></tr>
+						{{/if}}
+					</tbody>
 				</table>
 			</section>
 			<section class="container shade traits-section" data-collapsible-section data-collapsed="0">

@@ -295,11 +295,11 @@ const buildPenaltyCells = (labels = [], length = RESOURCE_TRACK_LENGTH) => {
 };
 
 const buildResourceView = (system) => {
-  const vitalityBase = Math.max(0, Number(system?.vitality?.base ?? 0));
-  const vitalityValueRaw = Number(system?.vitality?.value ?? vitalityBase);
+  const vitalityMax = Math.max(0, Number(system?.vitality?.total ?? system?.vitality?.max ?? ((system?.vitality?.base ?? 0) + (system?.vitality?.mod ?? 0))));
+  const vitalityValueRaw = Number(system?.vitality?.value ?? vitalityMax);
   const vitalityValue = Number.isFinite(vitalityValueRaw)
-    ? Math.max(0, Math.min(vitalityBase, vitalityValueRaw))
-    : vitalityBase;
+    ? Math.max(0, Math.min(vitalityMax, vitalityValueRaw))
+    : vitalityMax;
   const wyrdValue = Math.max(0, Number(system?.wyrd?.value ?? 0));
   return {
     vitalityDots: buildTrackDots(vitalityValue),

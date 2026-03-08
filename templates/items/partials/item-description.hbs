@@ -1,3 +1,9 @@
 <div class="tab" data-group="primary" data-tab="description">
-	{{editor system.description.value target="system.description.value" button=true owner=owner editable=editable engine="prosemirror"}}
+	{{#if view.descriptionEditable}}
+	{{editor system.description.value target="system.description.value" button=true owner=owner editable=true engine="prosemirror"}}
+	{{else}}
+	<div class="editor">
+		<div class="editor-content">{{{view.enrichedDescription}}}</div>
+	</div>
+	{{/if}}
 </div>

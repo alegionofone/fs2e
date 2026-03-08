@@ -1,4 +1,5 @@
-import { aggregateActorDerivedData } from "../../global/derived/index.mjs";
+import { aggregateActorDerivedData, applyAsyncActorVitalityDerivedData } from "../../global/derived/index.mjs";
+import { aggregateActorLanguages } from "../../global/languages.mjs";
 import { CHARACTERISTIC_DEFINITIONS_BY_KEY } from "../../global/characteristics/definitions.mjs";
 import { LEARNED_SKILLS_BANK, NATURAL_SKILLS_BANK, SKILL_DEFINITIONS_BY_KEY } from "../../global/skills/definitions.mjs";
 import {
@@ -36,6 +37,7 @@ const SKILL_EFFECT_PATH_BY_KEY = Object.fromEntries(
 for (const entry of LEARNED_SKILLS_BANK) {
   SKILL_EFFECT_PATH_BY_KEY[entry.key] = `learned.${entry.key}`;
 }
+const SKILL_VALUE_KEYS = ["base", "mod", "temp", "max", "history", "xp", "roll", "granted", "total"];
 
 const canonicalToken = (value) => String(value ?? "")
   .trim()
@@ -120,6 +122,160 @@ const normalizeBonusEntries = (list = []) => {
   }
 
   return out;
+};
+
+const readBlessingCurseCategory = (item) => {
+  const tags = [
+    ...(Array.isArray(item?.system?.tags) ? item.system.tags : []),
+    ...(Array.isArray(foundry.utils.getProperty(item, "flags.fs2e.tags")) ? foundry.utils.getProperty(item, "flags.fs2e.tags") : [])
+  ]
+    .map((entry) => String(entry ?? "").trim())
+    .filter(Boolean);
+
+  if (tags.some((tag) => tag.toLowerCase() === "blessing")) return "Blessing";
+  if (tags.some((tag) => tag.toLowerCase() === "curse")) return "Curse";
+  return "";
+};
+
+const formatBlessingCurseTarget = (target) => {
+  const text = String(target ?? "").trim();
+  if (!text) return "";
+
+  const [type, key] = text.split(":");
+  const normalizedType = String(type ?? "").trim().toLowerCase();
+  const normalizedKey = String(key ?? "").trim();
+
+  if (normalizedType === "characteristic") {
+    return String(CHARACTERISTIC_DEFINITIONS_BY_KEY[normalizedKey]?.label ?? normalizedKey).trim();
+  }
+
+  if (normalizedType === "skill") {
+    return String(SKILL_DEFINITIONS_BY_KEY[normalizedKey]?.label ?? formatSkillLabel(normalizedKey)).trim();
+  }
+
+  return text;
+};
+
+const buildBlessingCurseEffectText = (item) => {
+  const amount = String(item?.system?.effectLine?.amount ?? "").trim();
+  const target = formatBlessingCurseTarget(item?.system?.effectLine?.target);
+  const note = String(item?.system?.effectLine?.note ?? "").trim();
+  return [amount, target, note].filter(Boolean).join(" ");
+};
+
+const parseBlessingCurseAmount = (value) => {
+  const text = String(value ?? "").trim().replace(/\s+/g, "");
+  if (!text) return 0;
+  const match = text.match(/^([+-]?)(\d{1,2})$/);
+  if (!match) return 0;
+  const sign = match[1] === "-" ? -1 : 1;
+  return sign * Number(match[2]);
+};
+
+const targetAffectsVitality = (target) => String(target ?? "")
+  .trim()
+  .toLowerCase()
+  .replace(/[_-]+/g, " ")
+  .replace(/\s+/g, " ")
+  .includes("vitality");
+
+const applySheetVitalityBlessingCurseBonus = async ({ actor, system }) => {
+  const vitality = system?.vitality;
+  if (!vitality || typeof vitality !== "object") return;
+
+  const historyEntries = (actor?.items ?? [])
+    .filter((item) => item?.type === "history")
+    .flatMap((item) => normalizeBonusEntries([
+      ...getNestedArray(item?.system ?? {}, "bonusBlessingCurses"),
+      ...getNestedArray(item?.system ?? {}, "data.bonusBlessingCurses")
+    ]));
+
+  const actorEntries = normalizeBonusEntries([
+    ...getNestedArray(system, "bonusBlessingCurses"),
+    ...getNestedArray(system, "data.bonusBlessingCurses")
+  ]);
+
+  const resolved = await Promise.all(
+    normalizeBonusEntries([...historyEntries, ...actorEntries]).map(async (entry) => {
+      const uuid = String(entry?.uuid ?? "").trim();
+      return uuid ? fromUuid(uuid).catch(() => null) : null;
+    })
+  );
+
+  const granted = resolved.reduce((sum, item) => {
+    if (!item || item.type !== "blessingCurse") return sum;
+    if (!item.system?.alwaysActive) return sum;
+    if (!targetAffectsVitality(item.system?.effectLine?.target)) return sum;
+    return sum + parseBlessingCurseAmount(item.system?.effectLine?.amount);
+  }, 0);
+
+  const nextBase = Math.max(0, Number(vitality.base ?? 0));
+  const previousMax = Math.max(0, Number(vitality.total ?? vitality.max ?? (
+    nextBase
+    + Number(vitality.mod ?? 0)
+    + Number(vitality.temp ?? 0)
+    + Number(vitality.history ?? 0)
+    + Number(vitality.xp ?? 0)
+    + Number(vitality.granted ?? 0)
+  )));
+  const currentValue = Number(vitality.value);
+  const mod = Number(vitality.mod ?? 0);
+  const temp = Number(vitality.temp ?? 0);
+  const history = Number(vitality.history ?? 0);
+  const xp = Number(vitality.xp ?? 0);
+  vitality.granted = granted;
+  vitality.total = Math.max(0, nextBase + mod + temp + history + xp + granted);
+  vitality.max = vitality.total;
+  vitality.roll = vitality.total;
+  const nextValue = Number.isFinite(currentValue)
+    ? Math.max(0, Math.min(vitality.max, vitality.max - Math.max(0, previousMax - currentValue)))
+    : vitality.max;
+  vitality.value = nextValue;
+};
+
+const buildActorBlessingCurseView = async ({ actor, system }) => {
+  const historyEntries = (actor?.items ?? [])
+    .filter((item) => item?.type === "history")
+    .flatMap((item) => normalizeBonusEntries([
+      ...getNestedArray(item?.system ?? {}, "bonusBlessingCurses"),
+      ...getNestedArray(item?.system ?? {}, "data.bonusBlessingCurses")
+    ]));
+
+  const actorEntries = normalizeBonusEntries([
+    ...getNestedArray(system, "bonusBlessingCurses"),
+    ...getNestedArray(system, "data.bonusBlessingCurses")
+  ]);
+
+  const entries = normalizeBonusEntries([...historyEntries, ...actorEntries]);
+
+  const resolved = await Promise.all(entries.map(async (entry) => {
+    const uuid = String(entry?.uuid ?? "").trim();
+    const fallbackName = String(entry?.name ?? "").trim();
+    const item = uuid ? await fromUuid(uuid).catch(() => null) : null;
+    const category = readBlessingCurseCategory(item);
+    return {
+      uuid,
+      name: String(item?.name ?? fallbackName).trim(),
+      category,
+      points: String(item?.system?.points ?? "").trim(),
+      effect: buildBlessingCurseEffectText(item),
+      hasUuid: Boolean(uuid)
+    };
+  }));
+
+  const categoryRank = (category) => {
+    if (category === "Blessing") return 0;
+    if (category === "Curse") return 1;
+    return 2;
+  };
+
+  return resolved
+    .filter((entry) => entry.name)
+    .sort((a, b) => {
+      const rankDiff = categoryRank(a.category) - categoryRank(b.category);
+      if (rankDiff !== 0) return rankDiff;
+      return a.name.localeCompare(b.name);
+    });
 };
 
 const toNumberMap = (value) => {
@@ -941,11 +1097,11 @@ const buildPenaltyCells = (labels = [], length = RESOURCE_TRACK_LENGTH) => {
 };
 
 const buildResourceView = (system) => {
-  const vitalityBase = Math.max(0, Number(system?.vitality?.base ?? 0));
-  const vitalityValueRaw = Number(system?.vitality?.value ?? vitalityBase);
+  const vitalityMax = Math.max(0, Number(system?.vitality?.total ?? system?.vitality?.max ?? ((system?.vitality?.base ?? 0) + (system?.vitality?.mod ?? 0))));
+  const vitalityValueRaw = Number(system?.vitality?.value ?? vitalityMax);
   const vitalityValue = Number.isFinite(vitalityValueRaw)
-    ? Math.max(0, Math.min(vitalityBase, vitalityValueRaw))
-    : vitalityBase;
+    ? Math.max(0, Math.min(vitalityMax, vitalityValueRaw))
+    : vitalityMax;
   const wyrdValue = Math.max(0, Number(system?.wyrd?.value ?? 0));
 
   return {
@@ -1163,6 +1319,11 @@ const buildSkillsView = ({ system, actor }) => {
 };
 
 export class FS2ECharacterSheet extends ActorSheet {
+  _blessingCurseSectionState = {
+    blessings: true,
+    curses: true
+  };
+
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["fs2e", "sheet", "actor", "character"],
@@ -1181,8 +1342,11 @@ export class FS2ECharacterSheet extends ActorSheet {
     const data = await super.getData(options);
     await this._ensureEmbeddedHistoriesForSlots();
     aggregateActorDerivedData(this.actor);
+    await applyAsyncActorVitalityDerivedData(this.actor);
+    aggregateActorLanguages(this.actor);
 
-    data.system = this.actor.system;
+    data.system = foundry.utils.deepClone(this.actor.system);
+    await applySheetVitalityBlessingCurseBonus({ actor: this.actor, system: data.system });
     data.view = data.view ?? {};
     const historySlots = this._readHistorySlots();
     Object.assign(data.view, buildCharacterSheetData({
@@ -1191,6 +1355,13 @@ export class FS2ECharacterSheet extends ActorSheet {
       historySlots,
       sheetLock: getSheetLockState(this.actor)
     }));
+    data.view.blessingCurses = await buildActorBlessingCurseView({ actor: this.actor, system: data.system });
+    data.view.blessings = data.view.blessingCurses.filter((entry) => entry.category === "Blessing");
+    data.view.curses = data.view.blessingCurses.filter((entry) => entry.category === "Curse");
+    data.view.blessingCurseSections = {
+      blessingsExpanded: this._blessingCurseSectionState.blessings !== false,
+      cursesExpanded: this._blessingCurseSectionState.curses !== false
+    };
     return data;
   }
 
@@ -1286,6 +1457,22 @@ export class FS2ECharacterSheet extends ActorSheet {
       if (!uuid) return;
       const history = await fromUuid(uuid);
       history?.sheet?.render(true);
+    });
+
+    html.on("click", ".open-bonus-blessing-curse", async (event) => {
+      event.preventDefault();
+      const uuid = event.currentTarget?.dataset?.uuid;
+      if (!uuid) return;
+      const item = await fromUuid(uuid);
+      item?.sheet?.render(true);
+    });
+
+    html.on("click", "[data-action='toggle-bc-section']", (event) => {
+      event.preventDefault();
+      const section = String(event.currentTarget?.dataset?.section ?? "").trim();
+      if (!section || !Object.prototype.hasOwnProperty.call(this._blessingCurseSectionState, section)) return;
+      this._blessingCurseSectionState[section] = !this._blessingCurseSectionState[section];
+      this.render(false);
     });
 
     html.on("click", ".clear-history", async (event) => {

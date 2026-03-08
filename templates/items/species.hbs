@@ -11,56 +11,85 @@
 
     <div class="tab" data-group="primary" data-tab="characteristics">
       <section class="item-section species-characteristics-section">
-        {{#each view.characteristics}}
-          <div class="species-characteristics-group">
-            <h3>{{this.label}}</h3>
-            {{#each this.stats}}
-              <label class="species-form-row">
-                <span class="species-row-label">{{this.label}}</span>
-                <span class="species-row-value species-base-max">
-                  <input class="traits-input" type="number" name="system.characteristics.{{../key}}.{{this.key}}.base" value="{{this.base}}" min="0" />
-                  <span class="species-value-sep">/</span>
-                  <input class="traits-input" type="number" name="system.characteristics.{{../key}}.{{this.key}}.max" value="{{this.max}}" min="0" />
-                </span>
-              </label>
-            {{/each}}
-          </div>
-        {{/each}}
+        {{#if view.sheetLock.locked}}
+          {{#each view.characteristics}}
+            <div class="species-characteristics-group species-characteristics-group-locked">
+              <h3>{{this.label}}</h3>
+              <p class="species-locked-summary">
+                {{#each this.stats}}
+                  <span class="species-locked-stat-label">{{this.label}}</span>: {{this.base}}/{{this.max}}{{#unless @last}}, {{/unless}}
+                {{/each}}
+              </p>
+            </div>
+          {{/each}}
 
-        <div class="species-characteristics-group species-spirit-group">
-          <h3>Spirit</h3>
-          <label class="species-form-row species-spirit-row">
-            <span class="species-row-label species-row-label-header">Always Primary</span>
-            <span class="species-row-value species-spirit-tags fs2e-tag-surface">
-              <input
-                type="text"
-                class="species-tag-menu species-spirit-primary-menu fs2e-tag-input fs2e-tagify-base"
-                value=""
-                placeholder="Select spirit priorities"
-              />
-            </span>
-          </label>
-        </div>
+          {{#if view.lockedSpiritPrimaryText}}
+            <div class="species-characteristics-group species-characteristics-group-locked">
+              <h3>Spirit</h3>
+              <p class="species-locked-summary">{{view.lockedSpiritPrimaryText}} are always primary</p>
+            </div>
+          {{/if}}
 
-        <div class="species-characteristics-group species-occult-group">
-          <h3 class="species-occult-heading">
-            <label class="species-occult-toggle-label">
-              <span>Occult</span>
-              <input type="checkbox" class="species-occult-toggle" {{#if view.occultEnabled}}checked{{/if}} />
+          {{#if view.occultEnabled}}
+            {{#if view.lockedOccultText}}
+            <div class="species-characteristics-group species-characteristics-group-locked">
+              <h3>Occult</h3>
+              <p class="species-locked-summary"><span class="species-locked-stat-label">{{view.lockedOccultText}}</span>: 1;</p>
+            </div>
+            {{/if}}
+          {{/if}}
+        {{else}}
+          {{#each view.characteristics}}
+            <div class="species-characteristics-group">
+              <h3>{{this.label}}</h3>
+              {{#each this.stats}}
+                <label class="species-form-row">
+                  <span class="species-row-label">{{this.label}}</span>
+                  <span class="species-row-value species-base-max">
+                    <input class="traits-input" type="number" name="system.characteristics.{{../key}}.{{this.key}}.base" value="{{this.base}}" min="0" />
+                    <span class="species-value-sep">/</span>
+                    <input class="traits-input" type="number" name="system.characteristics.{{../key}}.{{this.key}}.max" value="{{this.max}}" min="0" />
+                  </span>
+                </label>
+              {{/each}}
+            </div>
+          {{/each}}
+
+          <div class="species-characteristics-group species-spirit-group">
+            <h3>Spirit</h3>
+            <label class="species-form-row species-spirit-row">
+              <span class="species-row-label species-row-label-header">Always Primary</span>
+              <span class="species-row-value species-spirit-tags fs2e-tag-surface">
+                <input
+                  type="text"
+                  class="species-tag-menu species-spirit-primary-menu fs2e-tag-input fs2e-tagify-base"
+                  value=""
+                  placeholder="Select spirit priorities"
+                />
+              </span>
             </label>
-          </h3>
-          <label class="species-form-row species-occult-row {{#unless view.occultEnabled}}is-hidden{{/unless}}">
-            <span class="species-row-label species-row-label-header">Affinity</span>
-            <span class="species-row-value species-spirit-tags fs2e-tag-surface">
-              <input
-                type="text"
-                class="species-tag-menu species-occult-menu fs2e-tag-input fs2e-tagify-base"
-                value=""
-                placeholder="Select occult path"
-              />
-            </span>
-          </label>
-        </div>
+          </div>
+
+          <div class="species-characteristics-group species-occult-group">
+            <h3 class="species-occult-heading">
+              <label class="species-occult-toggle-label">
+                <span>Occult</span>
+                <input type="checkbox" class="species-occult-toggle" {{#if view.occultEnabled}}checked{{/if}} />
+              </label>
+            </h3>
+            <label class="species-form-row species-occult-row {{#unless view.occultEnabled}}is-hidden{{/unless}}">
+              <span class="species-row-label species-row-label-header">Affinity</span>
+              <span class="species-row-value species-spirit-tags fs2e-tag-surface">
+                <input
+                  type="text"
+                  class="species-tag-menu species-occult-menu fs2e-tag-input fs2e-tagify-base"
+                  value=""
+                  placeholder="Select occult path"
+                />
+              </span>
+            </label>
+          </div>
+        {{/if}}
       </section>
     </div>
   </section>

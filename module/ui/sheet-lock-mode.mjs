@@ -1,5 +1,6 @@
 const MODULE_ID = "fs2e";
 const LOCK_SETTING_KEY = "sheetLockState";
+const LOCK_FLAG_KEY = "sheetLocked";
 const LOCK_BUTTON_CLASS = "fs2e-sheet-lock-toggle";
 const ITEM_TAG_BLOCK_EVENTS = ["click", "mousedown", "keydown"];
 const ITEM_TAG_BLOCK_SELECTOR = [
@@ -39,6 +40,14 @@ export const getSheetLockState = (document) => {
   if (!uuid) return { locked: false, supported: false, uuid: "" };
   const supported = supportsSheetLock(document);
   if (!supported) return { locked: false, supported: false, uuid };
+  const flagValue = document?.getFlag?.(MODULE_ID, LOCK_FLAG_KEY);
+  if (typeof flagValue === "boolean") {
+    return {
+      locked: flagValue,
+      supported,
+      uuid
+    };
+  }
   const map = readLockMap();
   return {
     locked: map[uuid] === true,
@@ -50,6 +59,7 @@ export const getSheetLockState = (document) => {
 const setSheetLockState = async (document, locked) => {
   const uuid = getDocumentUuid(document);
   if (!uuid || !supportsSheetLock(document)) return;
+  await document.setFlag(MODULE_ID, LOCK_FLAG_KEY, !!locked);
   const map = readLockMap();
   if (locked) map[uuid] = true;
   else delete map[uuid];
@@ -131,6 +141,9 @@ const ensureLockButton = (app, locked) => {
     event.stopPropagation();
     const document = getSheetDocument(app);
     if (!supportsSheetLock(document)) return;
+    if (typeof app?.submit === "function") {
+      await app.submit({ preventClose: true }).catch(() => {});
+    }
     await setSheetLockState(document, !locked);
     app.render(true);
   });

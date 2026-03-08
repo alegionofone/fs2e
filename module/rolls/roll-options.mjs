@@ -59,9 +59,9 @@ export const getSkillDefinitionForKey = (skillKey) => {
 
 export const getWoundPenalty = (actor) => {
   const vitality = actor?.system?.vitality;
-  const base = Math.max(0, toNumber(vitality?.base));
-  const value = Math.max(0, toNumber(vitality?.value, base));
-  return -2 * Math.max(0, base - value);
+  const max = Math.max(0, toNumber(vitality?.total, toNumber(vitality?.max, toNumber(vitality?.base) + toNumber(vitality?.mod))));
+  const value = Math.max(0, toNumber(vitality?.value, max));
+  return -2 * Math.max(0, max - value);
 };
 
 export const getCharacteristicOptions = (actor, preferred = "") => {

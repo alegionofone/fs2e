@@ -307,6 +307,24 @@
     grid-column: 1 / -1;
   }
 
+  .fs2e-roll-bc-modifiers {
+    display: contents;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .fs2e-bc-modifier-label,
+  .fs2e-bc-modifier-field {
+    align-self: center;
+  }
+
+  .fs2e-bc-modifier-label .fs2e-inline-title {
+    white-space: normal;
+    line-height: 1.2;
+  }
+
   .fs2e-grid-roll-actions {
     margin-top: var(--space-8);
     display: grid;
