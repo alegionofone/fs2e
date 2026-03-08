@@ -8,6 +8,23 @@ export class FS2EItemSheet extends ItemSheet {
   _sheetMutationObserver = null;
   _heightSyncScheduled = false;
 
+  _bindTagifyDropdownInteractions(tagify) {
+    if (!tagify) return;
+
+    const showDropdown = () => {
+      const appRoot = this.element?.[0];
+      if (appRoot?.dataset?.sheetLocked === "1") return;
+      const currentValue = String(tagify.input?.raw?.call(tagify) ?? "").trim();
+      tagify.dropdown.show(currentValue);
+    };
+
+    tagify.DOM.scope?.addEventListener("mousedown", () => {
+      window.setTimeout(showDropdown, 0);
+    });
+    tagify.DOM.scope?.addEventListener("focusin", showDropdown);
+    tagify.DOM.input?.addEventListener("input", showDropdown);
+  }
+
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["fs2e", "sheet", "item"],
@@ -200,6 +217,7 @@ export class FS2EItemSheet extends ItemSheet {
       });
 
       if (current.length) this._headerTagify.addTags(current, true, true);
+      this._bindTagifyDropdownInteractions(this._headerTagify);
       this._headerTagify.on("change", () => this._scheduleHeightSyncBurst());
     }
   }

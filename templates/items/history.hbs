@@ -41,9 +41,9 @@
             {{/each}}
           </div>
 
-          <label class="history-spirit-row">
-            <span class="history-spirit-label">Always Primary</span>
-            <span class="history-spirit-tags fs2e-tag-surface">
+          <label class="history-tag-box-row">
+            <span class="history-tag-box-label">Always Primary</span>
+            <span class="history-tag-box-surface fs2e-tag-surface">
               <input
                 type="text"
                 class="history-tag-menu history-spirit-primary-menu fs2e-tag-input fs2e-tagify-base"
@@ -91,29 +91,29 @@
 
         <div class="history-traits-block">
           <h3>Languages</h3>
-          <div class="history-language-row">
-            <span class="history-language-label">Speak</span>
-            <div class="history-tag-entry history-language-speak-entry fs2e-tag-surface">
-              <div class="history-chip-list history-language-speak-list fs2e-tag-list">
-                {{#each view.languagesSpeak}}
-                  <span class="history-chip fs2e-tag-chip"><span class="history-chip-label fs2e-tag-chip-label">{{this}}</span><button type="button" class="history-chip-remove fs2e-tag-chip-remove remove-history-language-speak" data-index="{{@index}}">x</button></span>
-                {{/each}}
-              </div>
-              <input class="history-language-input history-language-speak-input" type="text" placeholder="Tags" />
-            </div>
-          </div>
+          <label class="history-tag-box-row">
+            <span class="history-tag-box-label">Speak</span>
+            <span class="history-tag-box-surface fs2e-tag-surface">
+              <input
+                type="text"
+                class="history-tag-menu history-language-speak-menu fs2e-tag-input fs2e-tagify-base"
+                value=""
+                placeholder="Add spoken languages"
+              />
+            </span>
+          </label>
 
-          <div class="history-language-row">
-            <span class="history-language-label">Read</span>
-            <div class="history-tag-entry history-language-read-entry fs2e-tag-surface">
-              <div class="history-chip-list history-language-read-list fs2e-tag-list">
-                {{#each view.languagesRead}}
-                  <span class="history-chip fs2e-tag-chip"><span class="history-chip-label fs2e-tag-chip-label">{{this}}</span><button type="button" class="history-chip-remove fs2e-tag-chip-remove remove-history-language-read" data-index="{{@index}}">x</button></span>
-                {{/each}}
-              </div>
-              <input class="history-language-input history-language-read-input" type="text" placeholder="Tags" />
-            </div>
-          </div>
+          <label class="history-tag-box-row">
+            <span class="history-tag-box-label">Read</span>
+            <span class="history-tag-box-surface fs2e-tag-surface">
+              <input
+                type="text"
+                class="history-tag-menu history-language-read-menu fs2e-tag-input fs2e-tagify-base"
+                value=""
+                placeholder="Add written languages"
+              />
+            </span>
+          </label>
           <input type="hidden" name="system.languagesSpeakJson" class="history-language-speak-json" value="{{view.languagesSpeakJson}}" />
           <input type="hidden" name="system.languagesReadJson" class="history-language-read-json" value="{{view.languagesReadJson}}" />
         </div>

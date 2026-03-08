@@ -1,21 +1,6 @@
 import { aggregateActorCharacteristicEffects } from "./characteristics.mjs";
 import { aggregateActorSkillEffects } from "./skills.mjs";
-
-const toNumber = (value, fallback = 0) => {
-  const num = Number(value);
-  return Number.isFinite(num) ? num : fallback;
-};
-
-const statTotal = (stat) => {
-  if (!stat || typeof stat !== "object") return 0;
-
-  const explicit = Number(stat.total);
-  if (Number.isFinite(explicit)) return explicit;
-
-  return ["base", "mod", "temp", "history", "xp", "granted"]
-    .map((key) => toNumber(stat[key]))
-    .reduce((acc, value) => acc + value, 0);
-};
+import { getStatTotal, toNumber } from "./shared.mjs";
 
 const deriveVitality = (actor) => {
   const system = actor?.system;
@@ -25,7 +10,7 @@ const deriveVitality = (actor) => {
   if (!vitality || typeof vitality !== "object") return;
 
   const endurance = system?.characteristics?.body?.endurance;
-  const enduranceTotal = Math.max(0, statTotal(endurance));
+  const enduranceTotal = Math.max(0, getStatTotal(endurance));
   const nextBase = Math.max(0, 5 + enduranceTotal);
 
   const previousBase = Math.max(0, toNumber(vitality.base, nextBase));

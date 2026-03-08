@@ -1,3 +1,41 @@
+export const LANGUAGE_OPTIONS = {
+  speak: [
+    "Ascorbite",
+    "Etyri",
+    "Gannock",
+    "Graceful Tongue",
+    "Hironem",
+    "Kurgan",
+    "Latin",
+    "Obun",
+    "Oro'ym",
+    "Scraver Cant",
+    "Shantor",
+    "Ukar",
+    "Urthish",
+    "Vau",
+    "Vorox",
+    "Vuldrok"
+  ],
+  read: [
+    "Ascorbite",
+    "Etyri",
+    "Gannock",
+    "Hironem",
+    "Kurgan",
+    "Latin",
+    "Obun",
+    "Oro'ym",
+    "Shantor",
+    "Ukar",
+    "Urthish",
+    "Urthtech",
+    "Vau",
+    "Vorox",
+    "Vuldrok"
+  ]
+};
+
 const normalizeLanguageArray = (value) => {
   if (!Array.isArray(value)) return [];
 
@@ -7,6 +45,12 @@ const normalizeLanguageArray = (value) => {
 };
 
 const uniqueLanguages = (value) => Array.from(new Set(value));
+
+export const getLanguageOptions = (key = "speak") => uniqueLanguages(
+  (LANGUAGE_OPTIONS[String(key ?? "").trim().toLowerCase()] ?? [])
+    .map((entry) => String(entry ?? "").trim())
+    .filter(Boolean)
+);
 
 export const collectItemLanguageGrants = (items) => {
   const grantedSpeak = [];

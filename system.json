@@ -24,43 +24,43 @@
     {
       "name": "species",
       "label": "Species",
-      "path": "packs/species.db",
+      "path": "packs/species",
       "type": "Item"
     },
     {
       "name": "histories",
       "label": "Histories",
-      "path": "packs/histories.db",
+      "path": "packs/histories",
       "type": "Item"
     },
     {
       "name": "blessing-curses",
       "label": "Blessings and Curses",
-      "path": "packs/blessing-curses.db",
+      "path": "packs/blessing-curses",
       "type": "Item"
     },
     {
       "name": "benefices-afflications",
       "label": "Benefices and Afflications",
-      "path": "packs/benefices-afflications.db",
+      "path": "packs/benefices-afflications",
       "type": "Item"
     },
     {
       "name": "actions",
       "label": "Actions",
-      "path": "packs/actions.db",
+      "path": "packs/actions",
       "type": "Item"
     },
     {
       "name": "factions",
       "label": "Factions",
-      "path": "packs/factions.db",
+      "path": "packs/factions",
       "type": "Item"
     },
     {
       "name": "planets",
       "label": "Planets",
-      "path": "packs/planets.db",
+      "path": "packs/planets",
       "type": "Item"
     }
   ],

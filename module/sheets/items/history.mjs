@@ -1,4 +1,5 @@
 import Tagify from "../../ui/tagify/index.mjs";
+import { getLanguageOptions } from "../../global/languages.mjs";
 import { FS2EItemSheet } from "./base-item-sheet.mjs";
 import { CHARACTERISTIC_DEFINITIONS } from "../../global/characteristics/definitions.mjs";
 import { LEARNED_SKILLS_BANK, NATURAL_SKILLS_BANK } from "../../global/skills/definitions.mjs";
@@ -84,11 +85,6 @@ const parseJsonArray = (value, { fieldLabel }) => {
 	}
 	return parsed;
 };
-
-const splitTokens = (value) => String(value ?? "")
-	.split(",")
-	.map((entry) => entry.trim())
-	.filter(Boolean);
 
 const CHARACTERISTIC_PATH_BY_KEY = {
 	strength: "body.strength",
@@ -384,6 +380,8 @@ const readSkillAdjustments = (system = {}) => {
 
 export class FS2EHistorySheet extends FS2EItemSheet {
 	_spiritPrimaryTagify = null;
+	_languageSpeakTagify = null;
+	_languageReadTagify = null;
 
 	static get defaultOptions() {
 		return foundry.utils.mergeObject(super.defaultOptions, {
@@ -541,6 +539,57 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 		const spiritLabelByKey = new Map(SPIRIT_PRIMARY_OPTIONS.map((entry) => [entry.key, entry.label]));
 		const spiritKeyByLabel = new Map(SPIRIT_PRIMARY_OPTIONS.map((entry) => [entry.label.toLowerCase(), entry.key]));
 		const spiritOptionByKey = new Map(SPIRIT_PRIMARY_OPTIONS.map((entry) => [entry.key, entry]));
+		const bindTextTagMenu = ({ inputSelector, stateKey, instanceKey, languageKey }) => {
+			const input = root.querySelector(inputSelector);
+			if (!input) return;
+			const languageWhitelist = getLanguageOptions(languageKey);
+
+			this[instanceKey]?.destroy();
+			this[instanceKey] = new Tagify(input, {
+				whitelist: languageWhitelist,
+				duplicates: false,
+				dropdown: {
+					enabled: 0,
+					closeOnSelect: false,
+					maxItems: languageWhitelist.length || 10
+				}
+			});
+
+			const initialTags = uniqueByCaseInsensitive(asArray(state[stateKey]).map((entry) => String(entry ?? "").trim()).filter(Boolean));
+			if (initialTags.length) this[instanceKey].addTags(initialTags, true, true);
+
+			let syncing = false;
+			const commit = () => {
+				if (syncing) return;
+				syncing = true;
+				try {
+					state[stateKey] = uniqueByCaseInsensitive(
+						(this[instanceKey]?.value ?? [])
+							.map((entry) => String(entry?.value ?? "").trim())
+							.filter(Boolean)
+					);
+
+					const normalizedTags = state[stateKey];
+					const renderedTags = (this[instanceKey]?.value ?? [])
+						.map((entry) => String(entry?.value ?? "").trim())
+						.filter(Boolean);
+					if (normalizedTags.length !== renderedTags.length
+						|| normalizedTags.some((tag, index) => tag !== renderedTags[index])) {
+						this[instanceKey]?.removeAllTags();
+						if (normalizedTags.length) this[instanceKey]?.addTags(normalizedTags, true, true);
+					}
+
+					syncAll();
+				} finally {
+					syncing = false;
+				}
+			};
+
+			this[instanceKey].on("change", commit);
+			this[instanceKey].on("add", commit);
+			this[instanceKey].on("remove", commit);
+			this._bindTagifyDropdownInteractions(this[instanceKey]);
+		};
 
 		const syncSpiritWhitelistForSelection = (selectedKeys = []) => {
 			if (!this._spiritPrimaryTagify) return;
@@ -576,6 +625,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			const initialKeys = normalizeAlwaysPrimary(state.spiritAlwaysPrimary, { allowLabels: true });
 			const initialLabels = initialKeys.map((key) => spiritLabelByKey.get(key)).filter(Boolean);
 			if (initialLabels.length) this._spiritPrimaryTagify.addTags(initialLabels, true, true);
+			this._bindTagifyDropdownInteractions(this._spiritPrimaryTagify);
 			syncSpiritWhitelistForSelection(initialKeys);
 
 			let savingSpirit = false;
@@ -607,6 +657,19 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 				syncSpiritWhitelistForSelection(state.spiritAlwaysPrimary);
 			});
 		}
+
+		bindTextTagMenu({
+			inputSelector: ".history-language-speak-menu",
+			stateKey: "languagesSpeak",
+			instanceKey: "_languageSpeakTagify",
+			languageKey: "speak"
+		});
+		bindTextTagMenu({
+			inputSelector: ".history-language-read-menu",
+			stateKey: "languagesRead",
+			instanceKey: "_languageReadTagify",
+			languageKey: "read"
+		});
 
 		const setHidden = (selector, value) => {
 			const el = root.querySelector(selector);
@@ -681,18 +744,6 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 					return `${label} ${amount > 0 ? `+${amount}` : amount}`;
 				},
 				removeClass: "remove-history-skill"
-			});
-			renderChipList({
-				selector: ".history-language-speak-list",
-				list: state.languagesSpeak,
-				toLabel: (entry) => String(entry ?? "").trim(),
-				removeClass: "remove-history-language-speak"
-			});
-			renderChipList({
-				selector: ".history-language-read-list",
-				list: state.languagesRead,
-				toLabel: (entry) => String(entry ?? "").trim(),
-				removeClass: "remove-history-language-read"
 			});
 			renderChipList({
 				selector: ".history-bonus-bc-list",
@@ -828,29 +879,6 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			if (firstAdded || secondAdded) syncAll();
 		});
 
-		const bindLanguageInput = ({ inputSelector, key }) => {
-			const input = root.querySelector(inputSelector);
-			if (!input) return;
-
-			const commit = () => {
-				const tokens = splitTokens(input.value);
-				if (!tokens.length) return;
-				state[key] = uniqueByCaseInsensitive([...state[key], ...tokens]);
-				input.value = "";
-				syncAll();
-			};
-
-			input.addEventListener("keydown", (event) => {
-				if (event.key !== "Enter" && event.key !== ",") return;
-				event.preventDefault();
-				commit();
-			});
-			input.addEventListener("blur", commit);
-		};
-
-		bindLanguageInput({ inputSelector: ".history-language-speak-input", key: "languagesSpeak" });
-		bindLanguageInput({ inputSelector: ".history-language-read-input", key: "languagesRead" });
-
 		const addBonusEntry = (selectSelector, stateKey) => {
 			const select = root.querySelector(selectSelector);
 			const uuid = String(select?.value ?? "").trim();
@@ -879,12 +907,6 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			}
 			if (button.classList.contains("remove-history-skill")) {
 				state.skillsAdjustments.splice(index, 1);
-			}
-			if (button.classList.contains("remove-history-language-speak")) {
-				state.languagesSpeak.splice(index, 1);
-			}
-			if (button.classList.contains("remove-history-language-read")) {
-				state.languagesRead.splice(index, 1);
 			}
 			if (button.classList.contains("remove-history-bonus-bc")) {
 				state.bonusBlessingCurses.splice(index, 1);
@@ -950,6 +972,10 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 	async close(options = {}) {
 		this._spiritPrimaryTagify?.destroy();
 		this._spiritPrimaryTagify = null;
+		this._languageSpeakTagify?.destroy();
+		this._languageSpeakTagify = null;
+		this._languageReadTagify?.destroy();
+		this._languageReadTagify = null;
 		return super.close(options);
 	}
 }

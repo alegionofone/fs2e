@@ -1,4 +1,4 @@
-const toNumber = (value, fallback = 0) => {
+export const toNumber = (value, fallback = 0) => {
   const num = Number(value);
   return Number.isFinite(num) ? num : fallback;
 };
@@ -21,6 +21,21 @@ export const computeStatTotal = (stat, granted = 0) => {
   return base + mod + temp + history + xp + toNumber(granted);
 };
 
+export const getStatTotal = (stat) => {
+  if (!stat || typeof stat !== "object" || Array.isArray(stat)) return 0;
+
+  const explicit = Number(stat.total);
+  if (Number.isFinite(explicit)) return explicit;
+
+  return computeStatTotal(stat, stat.granted);
+};
+
+export const computeTraitTotal = (stat) => (
+  toNumber(stat?.base)
+  + toNumber(stat?.history)
+  + toNumber(stat?.xp)
+);
+
 export const applyDerivedFields = (stat, granted = 0) => {
   const total = computeStatTotal(stat, granted);
   const max = toNumber(stat.max);
@@ -41,4 +56,24 @@ export const toNumberMap = (input) => {
   }
 
   return out;
+};
+
+export const readActiveHistoryItemIds = (actor) => {
+  const raw = actor?.getFlag?.("fs2e", "historySlots");
+  if (!Array.isArray(raw)) return new Set();
+
+  return new Set(
+    raw
+      .map((entry) => String(entry?.id ?? "").trim())
+      .filter(Boolean)
+  );
+};
+
+export const filterActiveHistoryItems = (actor) => {
+  const activeHistoryItemIds = readActiveHistoryItemIds(actor);
+  return (actor?.items ?? []).filter((item) => {
+    if (item?.type !== "history") return true;
+    if (!activeHistoryItemIds.size) return false;
+    return activeHistoryItemIds.has(String(item?.id ?? "").trim());
+  });
 };

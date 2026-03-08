@@ -1,5 +1,5 @@
 import { collectItemEffectTotals } from "./effects.mjs";
-import { applyDerivedFields, isStatRecord } from "./shared.mjs";
+import { applyDerivedFields, filterActiveHistoryItems, isStatRecord } from "./shared.mjs";
 import { LEARNED_SKILLS_BANK, NATURAL_SKILLS_BANK } from "../skills/definitions.mjs";
 
 const SKILL_PATH_BY_KEY = Object.fromEntries(
@@ -102,15 +102,6 @@ const collectHistorySkillTotals = (items) => {
   return totals;
 };
 
-const readActiveHistoryItemIds = (actor) => {
-  const raw = actor?.getFlag?.("fs2e", "historySlots");
-  if (!Array.isArray(raw)) return new Set();
-  const ids = raw
-    .map((entry) => String(entry?.id ?? "").trim())
-    .filter(Boolean);
-  return new Set(ids);
-};
-
 const walkSkillTree = (node, path, grantedTotals, historyTotals) => {
   if (!node || typeof node !== "object" || Array.isArray(node)) return;
 
@@ -129,12 +120,7 @@ const walkSkillTree = (node, path, grantedTotals, historyTotals) => {
 export const aggregateActorSkillEffects = (actor) => {
   const skills = actor?.system?.skills;
   if (!skills || typeof skills !== "object") return;
-  const activeHistoryItemIds = readActiveHistoryItemIds(actor);
-  const filteredItems = (actor.items ?? []).filter((item) => {
-    if (item?.type !== "history") return true;
-    if (!activeHistoryItemIds.size) return false;
-    return activeHistoryItemIds.has(String(item?.id ?? "").trim());
-  });
+  const filteredItems = filterActiveHistoryItems(actor);
 
   const grantedTotals = collectItemEffectTotals(filteredItems, "skills", {
     filter: (item) => item?.type !== "history"

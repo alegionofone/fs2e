@@ -50,50 +50,7 @@
     white-space: nowrap;
   }
 
-  .history-language-row {
-    display: grid;
-    grid-template-columns: 100px minmax(0, 1fr);
-    align-items: start;
-    gap: 10px;
-    padding: 6px 0;
-  }
-
-  .history-language-label {
-    padding-top: 6px;
-    font-weight: 600;
-  }
-
-  .history-tag-entry {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    min-height: 28px;
-    padding: 0;
-    border: 0;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .history-tag-entry .history-chip-list {
-    border-top: 0;
-    min-height: 0;
-    padding: 0;
-    flex: 1 1 auto;
-  }
-
-  .history-language-input {
-    flex: 1 1 120px;
-    min-width: 110px;
-    border: 0;
-    box-shadow: none;
-    background: transparent;
-    color: var(--color-gold-lt);
-    margin: 0;
-    height: 22px;
-  }
-
-  .history-spirit-row {
+  .history-tag-box-row {
     display: grid;
     grid-template-columns: 120px minmax(0, 1fr);
     align-items: start;
@@ -101,12 +58,12 @@
     margin-top: 6px;
   }
 
-  .history-spirit-label {
+  .history-tag-box-label {
     padding-top: 6px;
     font-weight: 600;
   }
 
-  .history-spirit-tags {
+  .history-tag-box-surface {
     min-width: 0;
   }
 
@@ -134,12 +91,12 @@
       display: none;
     }
 
-    .history-language-row {
+    .history-tag-box-row {
       grid-template-columns: 1fr;
       gap: 4px;
     }
 
-    .history-language-label {
+    .history-tag-box-label {
       padding-top: 0;
     }
   }

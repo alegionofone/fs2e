@@ -1,5 +1,5 @@
 import { collectItemEffectTotals } from "./effects.mjs";
-import { applyDerivedFields, isStatRecord } from "./shared.mjs";
+import { applyDerivedFields, filterActiveHistoryItems, isStatRecord } from "./shared.mjs";
 import { SPIRIT_OPPOSITE, normalizeAlwaysPrimary } from "../spirit.mjs";
 import {
   SPECIES_OCCULT_AFFINITY_KEYS,
@@ -88,15 +88,6 @@ const collectHistoryCharacteristicTotals = (items) => {
   return totals;
 };
 
-const readActiveHistoryItemIds = (actor) => {
-  const raw = actor?.getFlag?.("fs2e", "historySlots");
-  if (!Array.isArray(raw)) return new Set();
-  const ids = raw
-    .map((entry) => String(entry?.id ?? "").trim())
-    .filter(Boolean);
-  return new Set(ids);
-};
-
 const applySpeciesBaseMax = (characteristics, speciesItem) => {
   const speciesCharacteristics = speciesItem?.system?.characteristics;
   if (!speciesCharacteristics || typeof speciesCharacteristics !== "object") return;
@@ -175,12 +166,7 @@ const applyHistorySpiritPrimaryBase = (characteristics, historyItems) => {
 export const aggregateActorCharacteristicEffects = (actor) => {
   const characteristics = actor?.system?.characteristics;
   if (!characteristics || typeof characteristics !== "object") return;
-  const activeHistoryItemIds = readActiveHistoryItemIds(actor);
-  const filteredItems = (actor.items ?? []).filter((item) => {
-    if (item?.type !== "history") return true;
-    if (!activeHistoryItemIds.size) return false;
-    return activeHistoryItemIds.has(String(item?.id ?? "").trim());
-  });
+  const filteredItems = filterActiveHistoryItems(actor);
 
   const speciesItem = (filteredItems ?? []).find((item) => item?.type === "species");
   if (speciesItem) {

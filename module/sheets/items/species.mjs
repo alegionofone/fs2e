@@ -120,6 +120,7 @@ export class FS2ESpeciesSheet extends FS2EItemSheet {
 			});
 
 			if (initialLabels.length) this._spiritPrimaryTagify.addTags(initialLabels, true, true);
+			this._bindTagifyDropdownInteractions(this._spiritPrimaryTagify);
 			syncWhitelistForSelection(initialKeys);
 
 			let saving = false;
@@ -176,6 +177,7 @@ export class FS2ESpeciesSheet extends FS2EItemSheet {
 			});
 
 			if (initialOccultLabels.length) this._occultTagify.addTags(initialOccultLabels, true, true);
+			this._bindTagifyDropdownInteractions(this._occultTagify);
 
 			let savingOccult = false;
 			this._occultTagify.on("change", async () => {
