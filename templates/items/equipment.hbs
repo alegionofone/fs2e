@@ -1,4 +1,4 @@
-<form class="{{cssClass}} fs2e-item-sheet" autocomplete="off">
+<form class="{{cssClass}} fs2e-item-sheet {{#if view.sheetLock.locked}}fs2e-sheet-locked{{/if}}" autocomplete="off">
   {{> "systems/fs2e/templates/items/partials/item-header.hbs" }}
 
   <nav class="sheet-tabs tabs" data-group="primary">

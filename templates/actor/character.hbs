@@ -1,4 +1,4 @@
-<form class="{{cssClass}} fs2e sheet actor character actor-sheet" autocomplete="off">
+<form class="{{cssClass}} fs2e sheet actor character actor-sheet {{#if view.sheetLock.locked}}fs2e-sheet-locked{{/if}}" autocomplete="off">
 	<header class="sheet-header fs2e-grid-sheet-header">
 		<img class="profile" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
 
@@ -143,11 +143,6 @@
 
 		<div class="tab biography" data-group="primary" data-tab="biography">
 			<div class="container shade biography-grid grid cols-1 gap-sm">
-				<section class="fs2e-history-languages traits-block">
-					<div class="traits-heading">Languages</div>
-					<div class="traits-row fs2e-history-language-row"><span class="traits-label">Speak</span><span class="sheet-tags-slot language-tags-slot"><fs2e-tagify-tags class="fs2e-tags actor-language-speak-tagify"></fs2e-tagify-tags></span></div>
-					<div class="traits-row fs2e-history-language-row"><span class="traits-label">Read</span><span class="sheet-tags-slot language-tags-slot"><fs2e-tagify-tags class="fs2e-tags actor-language-read-tagify"></fs2e-tagify-tags></span></div>
-				</section>
 				<h3>History</h3>
 				{{#each view.histories}}
 					<label class="field fs2e-history-row" data-drop-history data-history-slot="{{this.idx}}">

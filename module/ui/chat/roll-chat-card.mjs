@@ -13,14 +13,15 @@ export const createSkillRollChatMessage = async ({
   const qualityText = result.critFailure
     ? "Critical Failure"
     : (result.critSuccess ? "Critical Success" : (result.success ? "Success" : "Failure"));
+  const accentValue = Number(result?.accent ?? 0);
 
   const content = await renderTemplate("systems/fs2e/templates/chat/roll-card.hbs", {
     title,
     actorName: actor?.name ?? "",
     actorImg: actor?.img ?? "",
     roll: result.die,
-    rollAdjusted: result.die,
-    accent: 0,
+    rollAdjusted: result.adjustedRoll ?? result.die,
+    accent: accentValue,
     gn,
     quality: result.quality ?? qualityText,
     success: !!result.success,

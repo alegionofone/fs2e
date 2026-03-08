@@ -1,5 +1,6 @@
 import Tagify from "../../ui/tagify/index.mjs";
 import { getTagMenuForItemType } from "../../ui/tagify/tag-menus.mjs";
+import { getSheetLockState } from "../../ui/sheet-lock-mode.mjs";
 
 export class FS2EItemSheet extends ItemSheet {
   _headerTagify = null;
@@ -145,6 +146,8 @@ export class FS2EItemSheet extends ItemSheet {
     }
     data.tagMenu = getTagMenuForItemType(this.item.type);
     data.itemTagsCsv = this._normalizeTags(this._getStoredTags(data.system)).join(", ");
+    data.view = data.view ?? {};
+    data.view.sheetLock = getSheetLockState(this.item);
     return data;
   }
 

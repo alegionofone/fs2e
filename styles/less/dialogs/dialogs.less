@@ -290,10 +290,11 @@
   }
 
   .fs2e-actions-block {
+    display: flex;
     grid-column: 1;
     grid-row: span 2;
     flex-direction: column;
-    gap: var(--space-12);
+    gap: var(--space-8);
   }
 
   .fs2e-actions-total {
@@ -310,6 +311,7 @@
     margin-top: var(--space-8);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
     gap: var(--space-8);
 
     button {
@@ -318,6 +320,8 @@
       background: var(--color-grey-mid);
       color: var(--color-gold-lt);
       cursor: pointer;
+      width: 100%;
+      min-width: 0;
     }
   }
 
@@ -345,6 +349,10 @@
 
     .fs2e-inline-title {
       min-height: 0;
+      display: inline-flex;
+      align-items: center;
+      align-self: center;
+      line-height: 1;
     }
   }
 
@@ -404,6 +412,51 @@
     padding-left: 0;
     padding-right: 0;
     width: var(--fs2e-select-width);
+  }
+
+  .fs2e-main-accent-block {
+    margin-top: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .fs2e-main-accent-sep {
+    height: 1px;
+    background: var(--color-gold-dk-mid);
+  }
+
+  .fs2e-main-accent-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-8);
+  }
+
+  .fs2e-main-accent-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-6);
+    margin-left: auto;
+  }
+
+  .fs2e-main-accent-control .fs2e-gn-input {
+    width: 2.5rem;
+    min-width: 2.5rem;
+    text-align: center;
+  }
+
+  .fs2e-accent-btn {
+    border: var(--border-gold-mid);
+    background: var(--color-grey-mid);
+    color: var(--color-gold-lt);
+    cursor: pointer;
+    width: var(--space-24);
+    height: var(--space-24);
+    line-height: 1;
+    padding: 0;
+    min-width: var(--space-24);
   }
 }
 

@@ -68,7 +68,7 @@
               <span class="fs2e-inline-plus">+</span>
               <select id="fs2e-comp-skill">
                 {{#each skills}}
-                  <option value="{{this.key}}" data-value="{{this.total}}">{{this.label}}</option>
+                  <option value="{{this.key}}" data-value="{{this.total}}" data-trait="{{this.trait}}">{{this.label}}</option>
                 {{/each}}
               </select>
             </div>
@@ -149,12 +149,13 @@
           {{#if contestedResponder}}
             <select id="fs2e-main-skill">
               {{#each skills}}
-                <option value="{{this.key}}" data-value="{{this.total}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+                <option value="{{this.key}}" data-value="{{this.total}}" data-trait="{{this.trait}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
               {{/each}}
             </select>
           {{else}}
             <input id="fs2e-main-skill-label" class="fs2e-main-skill-display" type="text" readonly value="{{selectedSkillLabel}}" />
             <input id="fs2e-main-skill-value" type="hidden" value="{{selectedSkillTotal}}" />
+            <input id="fs2e-main-skill-trait" type="hidden" value="{{selectedSkillTrait}}" />
           {{/if}}
         </div>
       </div>
@@ -232,6 +233,17 @@
         <div class="fs2e-eq-row"><span class="fs2e-inline-plus">=</span><input id="fs2e-final-tn" class="fs2e-gn-input" type="number" readonly value="0" /></div>
       </div>
 
+    </div>
+    <div class="fs2e-main-accent-block">
+      <div class="fs2e-main-accent-sep"></div>
+      <div class="fs2e-main-accent-row">
+        <span class="fs2e-inline-title">Accented Roll</span>
+        <div class="fs2e-main-accent-control">
+          <button type="button" class="fs2e-accent-btn" data-accent-step="-1">&lt;</button>
+          <input id="fs2e-accent-value" class="fs2e-gn-input" type="number" readonly value="0" />
+          <button type="button" class="fs2e-accent-btn" data-accent-step="1">&gt;</button>
+        </div>
+      </div>
     </div>
     <div class="fs2e-grid-roll-actions">
       <button type="button" data-action="roll-main">Roll Main</button>

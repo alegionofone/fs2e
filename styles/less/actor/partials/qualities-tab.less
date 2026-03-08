@@ -1,7 +1,11 @@
 .fs2e.sheet.actor {
     .fs2e-vitality-wyrd { margin-top: var(--space-10); }
 
-    .tab.qualities .fs2e-vitality-wyrd + .traits-section {
+    .tab.qualities .fs2e-vitality-wyrd + .fs2e-languages-summary {
+        margin-top: var(--space-8);
+    }
+
+    .tab.qualities .fs2e-languages-summary + .traits-section {
         margin-top: var(--space-12);
     }
 
@@ -21,6 +25,20 @@
     .fs2e-vw-title-wyrd { grid-column: 1; grid-row: 3; }
     .fs2e-vw-track-wyrd { grid-column: 2; grid-row: 3; }
 
+    .fs2e-language-grid {
+        display: grid;
+        grid-template-columns: minmax(130px, auto) minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        grid-auto-flow: row;
+        align-items: center;
+        gap: var(--space-8);
+    }
+
+    .fs2e-lang-title-speak { grid-column: 1; grid-row: 1; }
+    .fs2e-lang-value-speak { grid-column: 2; grid-row: 1; }
+    .fs2e-lang-title-read { grid-column: 1; grid-row: 2; }
+    .fs2e-lang-value-read { grid-column: 2; grid-row: 2; }
+
     .fs2e-vw-label,
     .fs2e-vw-sub {
         text-align: left;
@@ -39,6 +57,18 @@
         line-height: 1;
         margin-top: var(--space-1);
         letter-spacing: 0.03em;
+    }
+
+    .fs2e-vw-value {
+        text-align: left;
+        justify-self: start;
+        width: 100%;
+        min-height: 20px;
+        color: var(--color-gold-lt);
+        font-family: var(--font-p22);
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+        white-space: normal;
     }
 
     .fs2e-vw-row-gap { margin-top: 0; }
@@ -86,6 +116,11 @@
 
     @media (max-width: 480px) {
         .fs2e-vw-grid {
+            grid-template-columns: 1fr;
+            row-gap: var(--space-4);
+        }
+
+        .fs2e-language-grid {
             grid-template-columns: 1fr;
             row-gap: var(--space-4);
         }

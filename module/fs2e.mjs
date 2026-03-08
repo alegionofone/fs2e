@@ -8,17 +8,20 @@ import { registerActorSheets } from "./sheets/actor/register-actor-sheets.mjs";
 import { registerItemSheets } from "./sheets/items/register-item-sheets.mjs";
 import { preloadHandlebarsTemplates } from "./sheets/preload-templates.mjs";
 import { openSkillRollDialog, rollFromPreset } from "./ui/dice-roller.mjs";
+import { registerSheetLockMode } from "./ui/sheet-lock-mode.mjs";
 
 Hooks.once("init", async () => {
   console.log("fs2e system | Initializing Fading Suns 2e system");
   await preloadHandlebarsTemplates();
   registerActorSheets();
   registerItemSheets();
+  registerSheetLockMode();
 
   game.fs2e = game.fs2e ?? {};
   game.fs2e.ui = {
     Tagify,
-    ProseMirror
+    ProseMirror,
+    registerSheetLockMode
   };
 });
 

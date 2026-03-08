@@ -51,6 +51,8 @@ const toNumber = (value, fallback = 0) => {
   return Number.isFinite(num) ? num : fallback;
 };
 
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
 const formatCharacteristicLabel = (key) => {
   const token = String(key ?? "").trim();
   if (!token) return "";
@@ -86,6 +88,10 @@ const statTotal = (stat) => {
     .map((key) => toNumber(stat?.[key]))
     .reduce((acc, value) => acc + value, 0);
 };
+
+const statTrait = (stat) => ["base", "history", "xp"]
+  .map((key) => toNumber(stat?.[key]))
+  .reduce((acc, value) => acc + value, 0);
 
 const getWoundPenalty = (actor) => {
   const vitality = actor?.system?.vitality;
@@ -131,6 +137,7 @@ const getSkillOptions = (actor, selectedSkillKey = "") => {
         key,
         label: def.label ?? key,
         total: statTotal(stat),
+        trait: statTrait(stat),
         complementary: def.complementary ?? "",
         defaultCharacteristic: def.defaultCharacteristic ?? "",
         selected: false
@@ -146,6 +153,7 @@ const getSkillOptions = (actor, selectedSkillKey = "") => {
           key,
           label: def.label ?? formatSkillLabel(key),
           total: statTotal(value),
+          trait: statTrait(value),
           complementary: def.complementary ?? "",
           defaultCharacteristic: def.defaultCharacteristic ?? "",
           selected: false
@@ -163,6 +171,7 @@ const getSkillOptions = (actor, selectedSkillKey = "") => {
           key: optionKey,
           label: explicitDisplay || `${formatSkillLabel(key)}: ${formatSkillLabel(childKey)}`,
           total: statTotal(childValue),
+          trait: statTrait(childValue),
           complementary: parentDef.complementary ?? "",
           defaultCharacteristic: parentDef.defaultCharacteristic ?? "",
           selected: false
@@ -184,28 +193,54 @@ const getSkillOptions = (actor, selectedSkillKey = "") => {
   return options;
 };
 
-const getVpOutcome = (successes, goalNumber, critSuccess) => {
+const getBaseVpOutcome = (successes) => {
+  const band = QUALITY_BANDS.find((entry) => successes >= entry.min && successes <= entry.max);
+  if (band) return { vp: band.vp, quality: band.label };
+  if (successes >= 21) {
+    const vp = 6 + Math.ceil((successes - 20) / 3);
+    return { vp, quality: "Virtuoso" };
+  }
+  return { vp: 0, quality: "Failure" };
+};
+
+const getAccentedVpOutcome = (successes, accent = 0) => {
+  if (!successes || successes <= 0) return { vp: 0, quality: "Failure" };
+  if (accent > 0) {
+    const vp = Math.max(1, Math.floor((successes + 1) / 2));
+    return { vp, quality: "Accented (+)" };
+  }
+  if (accent < 0) {
+    const vp = Math.max(1, Math.floor((successes + 3) / 4));
+    return { vp, quality: "Accented (-)" };
+  }
+  return getBaseVpOutcome(successes);
+};
+
+const getVpOutcome = (successes, goalNumber, critSuccess, accent = 0) => {
   if (!successes || successes <= 0) return { vp: 0, quality: "Failure" };
 
-  const band = QUALITY_BANDS.find((entry) => successes >= entry.min && successes <= entry.max);
-  const baseVp = band ? band.vp : (successes >= 21 ? 6 + Math.ceil((successes - 20) / 3) : 0);
-  const quality = band?.label ?? "Virtuoso";
+  const baseResult = getAccentedVpOutcome(successes, accent);
+  const baseVp = Number(baseResult.vp ?? 0);
+  const quality = baseResult.quality ?? "Failure";
   const extendedBonus = goalNumber > 20 ? Math.floor((goalNumber - 21) / 3) + 1 : 0;
   const total = critSuccess ? (baseVp + extendedBonus) * 2 : (baseVp + extendedBonus);
 
   return { vp: total, quality: critSuccess ? "Critical Success" : quality };
 };
 
-const rollCheck = async ({ gn }) => {
+const rollCheck = async ({ gn, accent = 0 }) => {
   const roll = await (new Roll("1d20")).roll({ async: true });
   const die = toNumber(roll.total);
-  const critSuccess = die === gn;
-  const critFailure = die === 20 && die > gn;
-  const success = die <= gn;
-  const successes = success ? Math.max(1, die) : 0;
-  const vpResult = getVpOutcome(successes, gn, critSuccess);
+  const adjustedRoll = die + accent;
+  const critSuccess = adjustedRoll === gn;
+  const critFailure = die === 20 && adjustedRoll > gn;
+  const success = adjustedRoll <= gn;
+  const successes = success ? Math.max(1, adjustedRoll) : 0;
+  const vpResult = getVpOutcome(successes, gn, critSuccess, accent);
   return {
     die,
+    adjustedRoll,
+    accent,
     critSuccess,
     critFailure,
     success,
@@ -221,6 +256,8 @@ const findTargetOwner = (actor) => {
 };
 
 const postContestedChat = async ({ attacker, attackerResult, defender, defenderResult }) => {
+  const attackerAccent = toNumber(attackerResult?.accent, 0);
+  const defenderAccent = toNumber(defenderResult?.accent, 0);
   const attackerEffective = attackerResult.critSuccess
     ? (attackerResult.successes ?? 0) * 2
     : (attackerResult.successes ?? 0);
@@ -231,7 +268,7 @@ const postContestedChat = async ({ attacker, attackerResult, defender, defenderR
   const netSuccesses = attackerEffective - defenderEffective;
   const success = netSuccesses > 0;
   const outcome = success
-    ? getVpOutcome(netSuccesses, attackerResult.gn ?? 0, !!attackerResult.critSuccess)
+    ? getVpOutcome(netSuccesses, attackerResult.gn ?? 0, !!attackerResult.critSuccess, attackerResult.accent ?? 0)
     : { vp: 0, quality: "Failure" };
 
   const html = await renderTemplate("systems/fs2e/templates/chat/contested-card.hbs", {
@@ -241,7 +278,7 @@ const postContestedChat = async ({ attacker, attackerResult, defender, defenderR
       actorImg: attacker?.img ?? "",
       roll: attackerResult.roll,
       rollAdjusted: attackerResult.rollAdjusted,
-      accent: attackerResult.accent ?? 0,
+      accent: attackerAccent,
       gn: attackerResult.gn,
       breakdown: attackerResult.breakdown ?? []
     },
@@ -251,7 +288,7 @@ const postContestedChat = async ({ attacker, attackerResult, defender, defenderR
       actorImg: defender?.img ?? "",
       roll: defenderResult.roll,
       rollAdjusted: defenderResult.rollAdjusted,
-      accent: defenderResult.accent ?? 0,
+      accent: defenderAccent,
       gn: defenderResult.gn,
       breakdown: defenderResult.breakdown ?? []
     },
@@ -290,6 +327,13 @@ const getSkillTotalByKey = (actor, skillKey) => {
   return skill ? toNumber(skill.total) : 0;
 };
 
+const getSkillTraitByKey = (actor, skillKey) => {
+  const token = String(skillKey ?? "").trim();
+  if (!token) return 0;
+  const skill = getSkillOptions(actor, token).find((entry) => entry.key === token);
+  return skill ? toNumber(skill.trait) : 0;
+};
+
 const getCharacteristicTotalByKey = (actor, characteristicKey) => {
   const token = String(characteristicKey ?? "").trim();
   if (!token) return 0;
@@ -305,6 +349,7 @@ export const rollFromPreset = async ({ actor, preset }) => {
   if (!skillKey || !characteristicKey) return null;
 
   const skillValue = getSkillTotalByKey(actor, skillKey);
+  const skillTrait = getSkillTraitByKey(actor, skillKey);
   const characteristicValue = getCharacteristicTotalByKey(actor, characteristicKey);
   const skillDef = getSkillDefinitionForKey(skillKey);
   const skillLabel = getSkillOptions(actor, skillKey).find((entry) => entry.key === skillKey)?.label ?? skillDef.label ?? formatSkillLabel(skillKey);
@@ -319,6 +364,8 @@ export const rollFromPreset = async ({ actor, preset }) => {
   const penaltyTotal = actionPenalty + retryPenalty;
   const woundPenalty = getWoundPenalty(actor);
   const complementaryVp = toNumber(preset.compVp, 0);
+  const accentMax = Math.max(0, skillTrait);
+  const accent = clamp(toNumber(preset.accent, 0), -accentMax, accentMax);
   const gn = buildGoalNumber({
     skillValue,
     characteristicValue,
@@ -327,7 +374,7 @@ export const rollFromPreset = async ({ actor, preset }) => {
     complementaryVp
   });
 
-  const result = await rollCheck({ gn });
+  const result = await rollCheck({ gn, accent });
   const sustainEnabled = !!preset.sustainEnabled;
   const sustainTask = Math.max(0, toNumber(preset.sustainTask));
   const sustainCurrent = Math.max(0, toNumber(preset.sustainCurrent));
@@ -341,6 +388,7 @@ export const rollFromPreset = async ({ actor, preset }) => {
     { label: "Retry", value: `${retryPenalty}` },
     { label: "Wound penalty", value: `${woundPenalty}` },
     { label: "Temp bonus", value: "0" },
+    { label: "Accent", value: `${accent}` },
     { label: "Complementary VP", value: `${complementaryVp}` }
   ];
 
@@ -366,6 +414,7 @@ export const rollFromPreset = async ({ actor, preset }) => {
       customDiff,
       actions,
       retries,
+      accent,
       compVp: complementaryVp,
       sustainEnabled,
       sustainTask,
@@ -411,6 +460,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
     subtitle: selectedSkill.complementary ? `Complementary: ${selectedSkill.complementary}` : "",
     selectedSkillLabel: selectedSkill.label,
     selectedSkillTotal: selectedSkill.total,
+    selectedSkillTrait: selectedSkill.trait,
     skills,
     characteristics,
     difficulties: DIFFICULTY_OPTIONS,
@@ -475,6 +525,9 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const skillValue = mainSkillSelect
             ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.value)
             : readInputNumber(root, "#fs2e-main-skill-value");
+          const skillTrait = mainSkillSelect
+            ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.trait)
+            : readInputNumber(root, "#fs2e-main-skill-trait");
           const characteristicValue = readSelectNumber(root, "#fs2e-main-char");
           const difficulty = readInputNumber(root, "#fs2e-main-diff-base") + readInputNumber(root, "#fs2e-main-diff-custom");
           const actions = readCheckedRadioNumber(root, "fs2e-actions", 1);
@@ -492,6 +545,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             woundPenalty: woundPenalty + penaltyTotal,
             complementaryVp: state.complementaryVp
           });
+          const accentMax = Math.max(0, skillTrait);
 
           const contestedEnabled = !!root.querySelector("#fs2e-contested-toggle")?.checked;
           const compEnabled = !!root.querySelector("#fs2e-comp-toggle")?.checked;
@@ -549,6 +603,12 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           if (compDiffGnInput) compDiffGnInput.value = String(compDifficulty);
           if (compFinalInput) compFinalInput.value = String(compGn);
           if (sustainRequiredInput) sustainRequiredInput.value = String(sustainTask);
+
+          const accentInput = root.querySelector("#fs2e-accent-value");
+          if (accentInput) {
+            const accentValue = toNumber(accentInput.value, 0);
+            accentInput.value = String(clamp(accentValue, -accentMax, accentMax));
+          }
         };
 
         const readMainRollConfig = () => {
@@ -564,6 +624,9 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const skillValue = mainSkillSelect
             ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.value)
             : readInputNumber(root, "#fs2e-main-skill-value");
+          const skillTrait = mainSkillSelect
+            ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.trait)
+            : readInputNumber(root, "#fs2e-main-skill-trait");
           const characteristicValue = readSelectNumber(root, "#fs2e-main-char");
           const difficulty = readInputNumber(root, "#fs2e-main-diff-base") + readInputNumber(root, "#fs2e-main-diff-custom");
           const actions = readCheckedRadioNumber(root, "fs2e-actions", 1);
@@ -579,6 +642,9 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             woundPenalty: woundPenalty + penaltyTotal,
             complementaryVp: state.complementaryVp
           });
+          const accentMax = Math.max(0, skillTrait);
+          const accentValue = toNumber(root.querySelector("#fs2e-accent-value")?.value, 0);
+          const accent = clamp(accentValue, -accentMax, accentMax);
 
           const skillKeyLocal = selectedSkillKey || selectedSkill.key;
           const skillDef = getSkillDefinitionForKey(skillKeyLocal) ?? selectedSkillDef;
@@ -594,6 +660,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             retryPenalty,
             penaltyTotal,
             woundPenalty,
+            accent,
             gn,
             complementary: skillDef.complementary ?? ""
           };
@@ -625,7 +692,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           if (!root.querySelector("#fs2e-comp-toggle")?.checked) return;
 
           const config = readCompRollConfig();
-          const result = await rollCheck({ gn: config.gn });
+          const result = await rollCheck({ gn: config.gn, accent: 0 });
           state.complementaryVp = result.vp;
           state.complementaryText = `${config.skillLabel}: d20 ${result.die} vs ${config.gn}, VP ${result.vp} (${result.quality})`;
           const resultNode = root.querySelector("#fs2e-comp-result");
@@ -636,7 +703,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
         root.querySelector("[data-action='roll-main']")?.addEventListener("click", async (event) => {
           event.preventDefault();
           const config = readMainRollConfig();
-          const result = await rollCheck({ gn: config.gn });
+          const result = await rollCheck({ gn: config.gn, accent: config.accent });
 
           const contestedEnabled = !!root.querySelector("#fs2e-contested-toggle")?.checked;
           const sustainEnabled = !contestedEnabled && !!root.querySelector("#fs2e-sustain-toggle")?.checked;
@@ -652,6 +719,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             { label: "Retry", value: `${config.retryPenalty}` },
             { label: "Wound penalty", value: `${config.woundPenalty}` },
             { label: "Temp bonus", value: "0" },
+            { label: "Accent", value: `${config.accent}` },
             { label: "Complementary VP", value: `${state.complementaryVp}` }
           ];
 
@@ -675,8 +743,8 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
               skillLabel: config.skillLabel,
               gn: config.gn,
               roll: result.die,
-              rollAdjusted: result.die,
-              accent: 0,
+              rollAdjusted: result.adjustedRoll,
+              accent: config.accent,
               success: result.success,
               critSuccess: result.critSuccess,
               critFailure: result.critFailure,
@@ -746,8 +814,8 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
                   skillLabel: config.skillLabel,
                   gn: config.gn,
                   roll: result.die,
-                  rollAdjusted: result.die,
-                  accent: 0,
+                  rollAdjusted: result.adjustedRoll,
+                  accent: config.accent,
                   success: result.success,
                   critSuccess: result.critSuccess,
                   critFailure: result.critFailure,
@@ -770,6 +838,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
             customDiff: readInputNumber(root, "#fs2e-main-diff-custom"),
             actions: readCheckedRadioNumber(root, "fs2e-actions", 1),
             retries: readCheckedRadioNumber(root, "fs2e-retries", 0),
+            accent: config.accent,
             compVp: state.complementaryVp,
             contestedEnabled,
             sustainEnabled,
@@ -820,10 +889,33 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
 
           const actionDefault = root.querySelector("input[name='fs2e-actions'][value='1']");
           const retryDefault = root.querySelector("input[name='fs2e-retries'][value='0']");
+          const accentInput = root.querySelector("#fs2e-accent-value");
           if (actionDefault) actionDefault.checked = true;
           if (retryDefault) retryDefault.checked = true;
+          if (accentInput) accentInput.value = "0";
 
           updatePreview();
+        });
+
+        root.querySelectorAll(".fs2e-accent-btn").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            const input = root.querySelector("#fs2e-accent-value");
+            if (!input) return;
+
+            const step = toNumber(event.currentTarget?.dataset?.accentStep, 0);
+            const mainSkillSelect = root.querySelector("#fs2e-main-skill");
+            const skillValue = mainSkillSelect
+              ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.value)
+              : readInputNumber(root, "#fs2e-main-skill-value");
+            const skillTrait = mainSkillSelect
+              ? toNumber(mainSkillSelect.selectedOptions?.[0]?.dataset?.trait)
+              : readInputNumber(root, "#fs2e-main-skill-trait");
+            const accentMax = Math.max(0, skillTrait);
+            const current = toNumber(input.value, 0);
+            input.value = String(clamp(current + step, -accentMax, accentMax));
+            updatePreview();
+          });
         });
 
         root.querySelector("[data-action='cancel']")?.addEventListener("click", (event) => {

@@ -10,6 +10,7 @@ import {
 } from "../../global/skills/group-specializations.mjs";
 import { openSkillRollDialog } from "../../ui/dice-roller.mjs";
 import { promptSpeciesSpiritChoice } from "../../ui/dialogs/species-spirit-choice.mjs";
+import { getSheetLockState } from "../../ui/sheet-lock-mode.mjs";
 
 const CHARACTERISTICS_BANK = [
   {
@@ -895,7 +896,22 @@ const escapeHtml = (value) => String(value ?? "")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#39;");
 
-const buildSkillTooltipHtml = ({ desc, complementary }) => {
+const toTooltipStatBreakdown = (stat) => {
+  if (!stat || typeof stat !== "object" || Array.isArray(stat)) return "";
+  const base = Number(stat?.base ?? 0);
+  const history = Number(stat?.history ?? 0);
+  const xp = Number(stat?.xp ?? 0);
+  const mod = Number(stat?.mod ?? 0);
+  const temp = Number(stat?.temp ?? 0);
+  const trait = (Number.isFinite(base) ? base : 0)
+    + (Number.isFinite(history) ? history : 0)
+    + (Number.isFinite(xp) ? xp : 0);
+  const modValue = Number.isFinite(mod) ? mod : 0;
+  const tempValue = Number.isFinite(temp) ? temp : 0;
+  return `Trait: ${trait}<br />Mod: ${modValue}<br />Temp: ${tempValue}`;
+};
+
+const buildSkillTextTooltipHtml = ({ desc, complementary }) => {
   const description = String(desc ?? "").trim();
   const comp = String(complementary ?? "").trim();
   if (!description && !comp) return "";
@@ -918,9 +934,9 @@ const buildSkillTooltipHtml = ({ desc, complementary }) => {
   return parts.join("");
 };
 
-const buildCharacteristicTooltipHtml = (key) => {
+const buildCharacteristicTextTooltipHtml = (key) => {
   const desc = CHARACTERISTIC_DEFINITIONS_BY_KEY[key]?.desc ?? "";
-  return buildSkillTooltipHtml({ desc, complementary: "" });
+  return buildSkillTextTooltipHtml({ desc, complementary: "" });
 };
 
 const hasSkillScore = (entry) => {
@@ -1011,12 +1027,14 @@ const toSkillViewEntry = ({ system, key, label, scored, totalPath }) => {
   const definition = SKILL_DEFINITIONS_BY_KEY[key] ?? {};
   const desc = definition.desc ?? "";
   const complementary = definition.complementary ?? "";
+  const stat = scored ? foundry.utils.getProperty(system, totalPath) : null;
   return {
     key,
     label: label ?? definition.label ?? formatSkillLabel(key),
     desc,
     complementary,
-    tooltip: buildSkillTooltipHtml({ desc, complementary }),
+    tooltipDesc: buildSkillTextTooltipHtml({ desc, complementary }),
+    tooltipStats: toTooltipStatBreakdown(stat),
     defaultCharacteristic: definition.defaultCharacteristic ?? "",
     scored,
     total: scored ? getStatTotal(system, totalPath) : null
@@ -1032,12 +1050,17 @@ const buildCharacteristicsView = (system) => ({
         panelClass: section.panelClass,
         gridClass: section.gridClass,
         isSpirit: false,
-        stats: section.stats.map((entry) => ({
-          key: entry.key,
-          label: entry.label,
-          tooltip: buildCharacteristicTooltipHtml(entry.key),
-          total: getStatTotal(system, `characteristics.${section.key}.${entry.key}`)
-        }))
+        stats: section.stats.map((entry) => {
+          const path = `characteristics.${section.key}.${entry.key}`;
+          const stat = foundry.utils.getProperty(system, path);
+          return {
+            key: entry.key,
+            label: entry.label,
+            tooltipDesc: buildCharacteristicTextTooltipHtml(entry.key),
+            tooltipStats: toTooltipStatBreakdown(stat),
+            total: getStatTotal(system, path)
+          };
+        })
       };
     }
 
@@ -1046,16 +1069,22 @@ const buildCharacteristicsView = (system) => ({
       label: section.label,
       panelClass: section.panelClass,
       isSpirit: true,
-      pairs: section.pairs.map((entry) => ({
-        leftKey: entry.leftKey,
-        leftLabel: entry.leftLabel,
-        leftTooltip: buildCharacteristicTooltipHtml(entry.leftKey),
-        leftTotal: getStatTotal(system, `characteristics.spirit.${entry.leftKey}`),
-        rightKey: entry.rightKey,
-        rightLabel: entry.rightLabel,
-        rightTooltip: buildCharacteristicTooltipHtml(entry.rightKey),
-        rightTotal: getStatTotal(system, `characteristics.spirit.${entry.rightKey}`)
-      }))
+      pairs: section.pairs.map((entry) => {
+        const leftPath = `characteristics.spirit.${entry.leftKey}`;
+        const rightPath = `characteristics.spirit.${entry.rightKey}`;
+        return {
+          leftKey: entry.leftKey,
+          leftLabel: entry.leftLabel,
+          leftTooltipDesc: buildCharacteristicTextTooltipHtml(entry.leftKey),
+          leftTooltipStats: toTooltipStatBreakdown(foundry.utils.getProperty(system, leftPath)),
+          leftTotal: getStatTotal(system, leftPath),
+          rightKey: entry.rightKey,
+          rightLabel: entry.rightLabel,
+          rightTooltipDesc: buildCharacteristicTextTooltipHtml(entry.rightKey),
+          rightTooltipStats: toTooltipStatBreakdown(foundry.utils.getProperty(system, rightPath)),
+          rightTotal: getStatTotal(system, rightPath)
+        };
+      })
     };
   })
 });
@@ -1110,10 +1139,11 @@ const buildSkillsView = ({ system, actor }) => {
                 label: childLabel,
                 desc: entry.desc ?? "",
                 complementary: entry.complementary ?? "",
-                tooltip: buildSkillTooltipHtml({
+                tooltipDesc: buildSkillTextTooltipHtml({
                   desc: entry.desc ?? "",
                   complementary: entry.complementary ?? ""
                 }),
+                tooltipStats: toTooltipStatBreakdown(foundry.utils.getProperty(system, path)),
                 defaultCharacteristic: entry.defaultCharacteristic ?? "",
                 scored: true,
                 total: getStatTotal(system, path)
@@ -1125,7 +1155,8 @@ const buildSkillsView = ({ system, actor }) => {
             label: entry.label,
             desc: entry.desc ?? "",
             complementary: entry.complementary ?? "",
-            tooltip: buildSkillTooltipHtml({ desc: entry.desc ?? "", complementary: entry.complementary ?? "" }),
+            tooltipDesc: buildSkillTextTooltipHtml({ desc: entry.desc ?? "", complementary: entry.complementary ?? "" }),
+            tooltipStats: "",
             defaultCharacteristic: entry.defaultCharacteristic ?? "",
             scored: false,
             isGroup: true,
@@ -1162,7 +1193,8 @@ const buildSkillsView = ({ system, actor }) => {
                 label: childLabel,
                 desc: "",
                 complementary: "",
-                tooltip: "",
+                tooltipDesc: "",
+                tooltipStats: toTooltipStatBreakdown(foundry.utils.getProperty(system, path)),
                 defaultCharacteristic: "",
                 scored: true,
                 total: getStatTotal(system, path)
@@ -1173,7 +1205,8 @@ const buildSkillsView = ({ system, actor }) => {
             label: formatSkillLabel(key),
             desc: "",
             complementary: "",
-            tooltip: "",
+            tooltipDesc: "",
+            tooltipStats: "",
             defaultCharacteristic: "",
             scored: false,
             isGroup: true,
@@ -1253,6 +1286,21 @@ export class FS2ECharacterSheet extends ActorSheet {
     data.view.resources = buildResourceView(data.system);
     data.view.characteristics = buildCharacteristicsView(data.system);
     data.view.skills = buildSkillsView({ system: data.system, actor: this.actor });
+    const languageSpeak = uniqueCaseInsensitive([
+      ...normalizeStringList(foundry.utils.getProperty(data.system, "languages.speak")),
+      ...normalizeStringList(foundry.utils.getProperty(data.system, "data.languages.speak"))
+    ]);
+    const languageRead = uniqueCaseInsensitive([
+      ...normalizeStringList(foundry.utils.getProperty(data.system, "languages.read")),
+      ...normalizeStringList(foundry.utils.getProperty(data.system, "data.languages.read"))
+    ]);
+    data.view.languages = {
+      speak: languageSpeak,
+      read: languageRead,
+      speakCsv: languageSpeak.join(", "),
+      readCsv: languageRead.join(", ")
+    };
+    data.view.sheetLock = getSheetLockState(this.actor);
     return data;
   }
 

@@ -1,0 +1,118 @@
+.app.window-app {
+    &.sheet.item,
+    &.sheet.actor {
+        .window-header {
+            .fs2e-sheet-lock-toggle {
+                margin-right: auto;
+                width: 24px;
+                height: 14px;
+                border-radius: 999px;
+                padding: 1.5px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: flex-end;
+                text-decoration: none;
+                transition: background-color 120ms ease, border-color 120ms ease;
+
+                &.is-locked {
+                    justify-content: flex-start;
+                }
+
+                .fa-solid {
+                    width: 11px;
+                    height: 11px;
+                    border-radius: 50%;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 7px;
+                    line-height: 1;
+                }
+
+                .fa-solid::before {
+                    font-size: 7px;
+                }
+            }
+        }
+    }
+
+    &.sheet.actor {
+        .window-header {
+            .fs2e-sheet-lock-toggle {
+                background: var(--color-gold-mid);
+                border: 1px solid var(--color-gold-mid);
+
+                &.is-locked {
+                    background: var(--color-grey-mid);
+                    border-color: var(--color-grey-mid);
+                }
+
+                .fa-solid {
+                    background: var(--color-gold-dk);
+                    color: var(--color-grey-dk);
+                }
+
+                .fa-solid::before {
+                    color: var(--color-gold-lt);
+                }
+
+                &.is-locked .fa-solid {
+                    background: var(--color-grey-lt);
+                }
+
+                &.is-locked .fa-solid::before {
+                    color: var(--color-grey-dk);
+                }
+            }
+        }
+    }
+
+    &.sheet.item {
+        .window-header {
+            .fs2e-sheet-lock-toggle {
+                background: var(--color-gold-mid);
+                border: 1px solid var(--color-gold-mid);
+
+                &.is-locked {
+                    background: var(--color-grey-lt);
+                    border-color: var(--color-grey-lt);
+                }
+
+                .fa-solid {
+                    background: var(--color-gold-dk);
+                    color: var(--color-grey-lt);
+                }
+
+                .fa-solid::before {
+                    color: var(--color-gold-lt);
+                }
+
+                &.is-locked .fa-solid {
+                    background: var(--color-grey-dk);
+                }
+
+                &.is-locked .fa-solid::before {
+                    color: var(--color-grey-lt);
+                }
+            }
+        }
+    }
+}
+
+.app.window-app.sheet.item {
+    .sheet-tags-slot {
+        .fs2e-tag-surface .tagify,
+        .tagify.fs2e-tagify-base {
+            background: var(--color-grey-mid-40) !important;
+        }
+    }
+
+    &.fs2e-sheet-locked {
+        .sheet-tags-slot {
+            .fs2e-tag-surface .tagify,
+            .tagify.fs2e-tagify-base {
+                background: var(--color-grey-lt-40) !important;
+            }
+        }
+    }
+}
