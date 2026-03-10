@@ -66,7 +66,16 @@
         display: inline-block;
         flex: 0 0 auto;
 
-        &.is-filled { background: var(--color-gold-lt); }
+        &.is-filled {
+            background: var(--color-gold-lt);
+            border-color: var(--color-gold-lt);
+        }
+
+        &.is-available {
+            border-color: var(--color-gold-lt);
+            opacity: 1;
+        }
+
         &.is-inactive { opacity: 0.25; }
     }
 

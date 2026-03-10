@@ -4,7 +4,8 @@
     background-repeat: no-repeat, repeat;
     background-attachment: scroll, scroll;
     background-size: auto, 100% auto;
-	box-shadow: none;
+    border: 1px solid var(--color-grey-dk);
+	box-shadow: 0 0 18px var(--color-grey-dk-70);
     color: var(--color-grey-mid);
 
     .window-header {
@@ -266,6 +267,52 @@
             &:hover {
                 background: var(--color-magenta-mid);
                 color: var(--color-gold-lt);
+            }
+        }
+    }
+
+    &.action {
+        .fs2e-action-sheet-grid {
+            padding-top: var(--space-6);
+        }
+
+        .fs2e-action-row {
+            display: grid;
+            grid-template-columns: minmax(64px, 78px) minmax(0, 1fr) repeat(3, minmax(72px, 88px));
+            gap: var(--space-10);
+            align-items: end;
+        }
+
+        .fs2e-action-cell {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            min-width: 0;
+        }
+
+        .fs2e-action-head {
+            font-family: var(--font-p22);
+            color: var(--color-grey-mid);
+            letter-spacing: 0.03em;
+            line-height: 1;
+        }
+
+        .fs2e-action-roll-fields {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            gap: var(--space-8);
+            align-items: center;
+        }
+
+        .fs2e-action-plus {
+            color: var(--color-grey-mid);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        @media (max-width: 640px) {
+            .fs2e-action-row {
+                grid-template-columns: 1fr;
             }
         }
     }

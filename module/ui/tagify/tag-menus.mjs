@@ -2,6 +2,15 @@ const DEFAULT_TAG_MENU = [];
 
 export const TAG_MENUS_BY_ITEM_TYPE = {
   action: [
+    "Combat",
+    "Basic",
+    "Fencing",
+    "Martial Arts",
+    "Shield",
+    "Firearms",
+    "Normal",
+    "Theurgic",
+    "Psychic",
     "Attack",
     "Defend",
     "Social",

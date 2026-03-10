@@ -1081,11 +1081,20 @@
         "common"
       ]
     },
-    "action": {
-      "templates": [
-        "common"
-      ]
-    },
+      "action": {
+        "templates": [
+          "common"
+        ],
+        "chart": "",
+        "level": "",
+        "characteristic": "",
+        "skill": "",
+        "roll": "",
+        "init": "",
+        "goal": "",
+        "dmg": "",
+        "effect": ""
+      },
       "beneficeAffliction": {
         "templates": [
           "common"

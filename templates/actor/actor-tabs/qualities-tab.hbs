@@ -3,7 +3,7 @@
     <div class="fs2e-vw-label fs2e-vw-title-vitality">Vitality</div>
     <div class="fs2e-vw-track fs2e-vw-track-vitality" aria-label="Vitality Resources" data-track="vitality">
       {{#each view.resources.vitalityDots}}
-        <span class="fs2e-vw-dot {{#if this.isFilled}}is-filled{{else}}is-inactive{{/if}}" data-index="{{this.index}}"></span>
+        <span class="fs2e-vw-dot{{#if this.isFilled}} is-filled{{/if}}{{#if this.isAvailable}} is-available{{/if}}{{#if this.isInactive}} is-inactive{{/if}}" data-index="{{this.index}}"></span>
       {{/each}}
     </div>
     <div class="fs2e-vw-sub fs2e-vw-title-penalties">Wound Penalties</div>
@@ -15,7 +15,7 @@
     <div class="fs2e-vw-label fs2e-vw-title-wyrd">Wyrd</div>
     <div class="fs2e-vw-track fs2e-vw-track-wyrd" aria-label="Wyrd Resources" data-track="wyrd">
       {{#each view.resources.wyrdDots}}
-        <span class="fs2e-vw-dot {{#if this.isFilled}}is-filled{{else}}is-inactive{{/if}}" data-index="{{this.index}}"></span>
+        <span class="fs2e-vw-dot{{#if this.isFilled}} is-filled{{/if}}{{#if this.isAvailable}} is-available{{/if}}{{#if this.isInactive}} is-inactive{{/if}}" data-index="{{this.index}}"></span>
       {{/each}}
     </div>
   </div>

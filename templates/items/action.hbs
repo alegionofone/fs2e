@@ -10,69 +10,51 @@
     {{> "systems/fs2e/templates/items/partials/item-description.hbs" }}
 
     <div class="tab" data-group="primary" data-tab="action">
-      <section class="item-section">
-        <label class="species-form-row">
-          <span class="species-row-label">Level</span>
-          <span class="species-row-value">
+      <section class="item-section fs2e-action-sheet-grid">
+        <div class="fs2e-action-row">
+          <label class="fs2e-action-cell fs2e-action-cell-level">
+            <span class="fs2e-action-head">Level</span>
             <input class="traits-input" name="system.level" type="number" step="1" value="{{view.level}}" />
-          </span>
-        </label>
+          </label>
 
-        <label class="species-form-row">
-          <span class="species-row-label">Characteristic</span>
-          <span class="species-row-value">
-            <select name="system.characteristic">
-              {{#select view.characteristic}}
-                <option value=""></option>
-                {{#each view.characteristics}}
-                  <option value="{{this.key}}">{{this.label}}</option>
-                {{/each}}
-              {{/select}}
-            </select>
-          </span>
-        </label>
+          <div class="fs2e-action-cell fs2e-action-cell-roll">
+            <span class="fs2e-action-head">Characteristic</span>
+            <div class="fs2e-action-roll-fields">
+              <select name="system.characteristic">
+                {{#select view.characteristic}}
+                  <option value=""></option>
+                  {{#each view.characteristics}}
+                    <option value="{{this.key}}">{{this.label}}</option>
+                  {{/each}}
+                {{/select}}
+              </select>
+              <span class="fs2e-action-plus">+</span>
+              <select name="system.skill">
+                {{#select view.skill}}
+                  <option value=""></option>
+                  {{#each view.skills}}
+                    <option value="{{this.key}}">{{this.label}}</option>
+                  {{/each}}
+                {{/select}}
+              </select>
+            </div>
+          </div>
 
-        <label class="species-form-row">
-          <span class="species-row-label">Skill</span>
-          <span class="species-row-value">
-            <select name="system.skill">
-              {{#select view.skill}}
-                <option value=""></option>
-                {{#each view.skills}}
-                  <option value="{{this.key}}">{{this.label}}</option>
-                {{/each}}
-              {{/select}}
-            </select>
-          </span>
-        </label>
+          <label class="fs2e-action-cell fs2e-action-cell-compact">
+            <span class="fs2e-action-head">Initiative</span>
+            <input class="traits-input" name="system.init" type="text" value="{{view.init}}" />
+          </label>
 
-        <label class="species-form-row">
-          <span class="species-row-label">Initiative</span>
-          <span class="species-row-value">
-            <input class="traits-input" name="system.init" type="number" step="1" value="{{view.init}}" />
-          </span>
-        </label>
+          <label class="fs2e-action-cell fs2e-action-cell-compact">
+            <span class="fs2e-action-head">Goal</span>
+            <input class="traits-input" name="system.goal" type="text" value="{{view.goal}}" />
+          </label>
 
-        <label class="species-form-row">
-          <span class="species-row-label">Goal</span>
-          <span class="species-row-value">
-            <input class="traits-input" name="system.goal" type="number" step="1" value="{{view.goal}}" />
-          </span>
-        </label>
-
-        <label class="species-form-row">
-          <span class="species-row-label">Damage</span>
-          <span class="species-row-value">
+          <label class="fs2e-action-cell fs2e-action-cell-compact">
+            <span class="fs2e-action-head">Damage</span>
             <input class="traits-input" name="system.dmg" type="number" step="1" value="{{view.dmg}}" />
-          </span>
-        </label>
-
-        <label class="species-form-row">
-          <span class="species-row-label">Effect</span>
-          <span class="species-row-value">
-            <textarea name="system.effect" rows="3">{{view.effect}}</textarea>
-          </span>
-        </label>
+          </label>
+        </div>
       </section>
     </div>
   </section>

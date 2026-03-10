@@ -1,12 +1,16 @@
 import Tagify from "../../ui/tagify/index.mjs";
 import { getTagMenuForItemType } from "../../ui/tagify/tag-menus.mjs";
-import { getSheetLockState } from "../../ui/sheet-lock-mode.mjs";
+import { getSheetLockState, setSheetForcedLockedFromActor } from "../../ui/sheet-lock-mode.mjs";
 
 export class FS2EItemSheet extends ItemSheet {
   _headerTagify = null;
   _sheetResizeObserver = null;
   _sheetMutationObserver = null;
   _heightSyncScheduled = false;
+
+  _getSheetLockState() {
+    return getSheetLockState(this.item, { app: this });
+  }
 
   _prepareTagifyInput(input) {
     if (!input) return;
@@ -201,7 +205,7 @@ export class FS2EItemSheet extends ItemSheet {
     data.tagMenu = getTagMenuForItemType(this.item.type);
     data.itemTagsCsv = this._normalizeTags(this._getStoredTags(data.system)).join(", ");
     data.view = data.view ?? {};
-    data.view.sheetLock = getSheetLockState(this.item);
+    data.view.sheetLock = this._getSheetLockState();
     data.view.descriptionEditable = Boolean(data.editable) && !data.view.sheetLock.locked;
     data.view.enrichedDescription = await TextEditor.enrichHTML(data.system.description.value ?? "", {
       async: true,
@@ -241,7 +245,7 @@ export class FS2EItemSheet extends ItemSheet {
     html.on("click", ".sheet-tabs .item", () => this._scheduleHeightSyncBurst());
     html.on("input keyup paste", ".editor-content", () => this._scheduleHeightSyncBurst());
 
-    if (this.isEditable && !getSheetLockState(this.item).locked) {
+    if (this.isEditable && !this._getSheetLockState().locked) {
       html.on("click", ".profile-img[data-edit='img']", async (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -257,7 +261,7 @@ export class FS2EItemSheet extends ItemSheet {
       this._headerTagify?.destroy();
       const whitelist = getTagMenuForItemType(this.item.type);
       const current = this._normalizeTags(this._getStoredTags());
-      const sheetLocked = getSheetLockState(this.item).locked === true;
+      const sheetLocked = this._getSheetLockState().locked === true;
       this._prepareTagifyInput(input);
 
       this._headerTagify = new Tagify(input, {
@@ -310,6 +314,7 @@ export class FS2EItemSheet extends ItemSheet {
   }
 
   async close(options = {}) {
+    setSheetForcedLockedFromActor(this, false);
     this._headerTagify?.destroy();
     this._headerTagify = null;
     this._disconnectHeightObservers();

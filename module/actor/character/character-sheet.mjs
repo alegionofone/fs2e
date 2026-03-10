@@ -9,14 +9,24 @@ import {
   normalizeSkillKey
 } from "../../global/skills/group-specializations.mjs";
 import { openSkillRollDialog } from "../../rolls/roll-dialog.mjs";
+import {
+  formatCharacteristicLabel,
+  getCharacteristicTotalByKey,
+  getSkillDefinitionForKey,
+  getSkillTotalByKey
+} from "../../rolls/roll-options.mjs";
 import { promptSpeciesSpiritChoice } from "../../ui/dialogs/species-spirit-choice.mjs";
-import { getSheetLockState } from "../../ui/sheet-lock-mode.mjs";
+import { getSheetLockState, setSheetForcedLockedFromActor } from "../../ui/sheet-lock-mode.mjs";
 import {
   buildCharacterSheetData,
   HISTORY_SLOT_LABELS,
   normalizeStringList,
   uniqueCaseInsensitive
 } from "./character-sheet-data.mjs";
+
+const FS2E_SHEET_LOCK_FLAG_KEY = "sheetLocked";
+const FS2E_SOURCE_ITEM_UUID_FLAG_KEY = "sourceItemUuid";
+
 const CHARACTERISTIC_EFFECT_PATH_BY_KEY = {
   strength: "body.strength",
   dexterity: "body.dexterity",
@@ -38,6 +48,22 @@ for (const entry of LEARNED_SKILLS_BANK) {
   SKILL_EFFECT_PATH_BY_KEY[entry.key] = `learned.${entry.key}`;
 }
 const SKILL_VALUE_KEYS = ["base", "mod", "temp", "max", "history", "xp", "roll", "granted", "total"];
+const ACTION_COMBAT_TAG = "combat";
+const ACTION_COMBAT_SUBTYPE_DEFINITIONS = [
+  { key: "basic", label: "Basic Actions", tokenSet: new Set(["basic", "fight"]) },
+  { key: "fencing", label: "Fencing", tokenSet: new Set(["fencing"]) },
+  { key: "martial", label: "Martial Arts", tokenSet: new Set(["martialarts", "martial"]) },
+  { key: "shield", label: "Shield", tokenSet: new Set(["shield"]) },
+  { key: "firearms", label: "Firearms", tokenSet: new Set(["firearms", "firearm"]) }
+];
+const ACTION_COMBAT_SUBTYPE_BY_KEY = new Map(ACTION_COMBAT_SUBTYPE_DEFINITIONS.map((entry) => [entry.key, entry]));
+const ACTION_NONCOMBAT_TYPE_BY_TOKEN = new Map([
+  ["normal", "Normal"],
+  ["theurgic", "Theurgic"],
+  ["psychic", "Psychic"],
+  ["theurgy", "Theurgic"],
+  ["psi", "Psychic"]
+]);
 
 const canonicalToken = (value) => String(value ?? "")
   .trim()
@@ -124,6 +150,273 @@ const normalizeBonusEntries = (list = []) => {
   return out;
 };
 
+const readActionField = (item, key) => String(
+  foundry.utils.getProperty(item, `system.${key}`)
+  ?? foundry.utils.getProperty(item, `system.action.${key}`)
+  ?? foundry.utils.getProperty(item, `system.system.${key}`)
+  ?? foundry.utils.getProperty(item, `system.system.action.${key}`)
+  ?? ""
+).trim();
+
+const readActionTags = (item) => uniqueCaseInsensitive([
+  ...normalizeStringList(item?.system?.tags),
+  ...normalizeStringList(foundry.utils.getProperty(item, "flags.fs2e.tags"))
+]);
+
+const readActionSourceRefs = (item) => uniqueCaseInsensitive([
+  String(item?.uuid ?? "").trim(),
+  String(item?.getFlag?.("fs2e", FS2E_SOURCE_ITEM_UUID_FLAG_KEY) ?? "").trim()
+]).map((entry) => canonicalToken(entry)).filter(Boolean);
+
+const normalizeActionCategory = (value) => {
+  const token = canonicalToken(value);
+  if (!token) return "";
+  if (["combat", "basic", "basicfight", "fight"].includes(token)) return "combat";
+  if (["fencing"].includes(token)) return "fencing";
+  if (["martial", "martialarts"].includes(token)) return "martial";
+  if (["shield"].includes(token)) return "shield";
+  if (["firearm", "firearms"].includes(token)) return "firearms";
+  if (["normal"].includes(token)) return "normal";
+  if (["theurgic", "theurgy"].includes(token)) return "theurgic";
+  if (["psychic", "psi"].includes(token)) return "psychic";
+  return "";
+};
+
+const resolveActionSkillLabel = (value) => {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  const direct = getSkillDefinitionForKey(raw);
+  if (String(direct?.label ?? "").trim()) return String(direct.label).trim();
+  if (raw.includes(".")) {
+    const [groupKey, childKey] = raw.split(".");
+    const groupLabel = String(getSkillDefinitionForKey(groupKey)?.label ?? formatSkillLabel(groupKey)).trim();
+    const childLabel = formatSkillLabel(childKey);
+    return [groupLabel, childLabel].filter(Boolean).join(": ");
+  }
+  return formatSkillLabel(raw);
+};
+
+const buildActionRollText = (item) => {
+  const characteristicKey = readActionField(item, "characteristic");
+  const skillKey = readActionField(item, "skill");
+  const characteristicLabel = characteristicKey ? formatCharacteristicLabel(characteristicKey) : "";
+  const skillLabel = resolveActionSkillLabel(skillKey);
+  if (characteristicLabel || skillLabel) {
+    return [characteristicLabel, skillLabel].filter(Boolean).join(" + ");
+  }
+  return readActionField(item, "roll");
+};
+
+const formatSignedActionValue = (value) => {
+  const text = String(value ?? "").trim();
+  if (!text) return "";
+  const amount = Number(text);
+  if (!Number.isFinite(amount)) return text;
+  return amount > 0 ? `+${amount}` : `${amount}`;
+};
+
+const buildActionGoalText = ({ actor, item }) => {
+  const goalRaw = readActionField(item, "goal");
+  if (!goalRaw) return "";
+  const characteristicKey = readActionField(item, "characteristic");
+  const skillKey = readActionField(item, "skill");
+  const goalModifier = Number(goalRaw);
+  if (!Number.isFinite(goalModifier) || !characteristicKey || !skillKey || !actor) return goalRaw;
+  return String(getCharacteristicTotalByKey(actor, characteristicKey) + getSkillTotalByKey(actor, skillKey) + goalModifier);
+};
+
+const resolveActionCategory = (item) => {
+  const tagTokens = new Set(readActionTags(item).map((tag) => canonicalToken(tag)).filter(Boolean));
+  const chartKey = normalizeActionCategory(readActionField(item, "chart"));
+
+  for (const subtype of ACTION_COMBAT_SUBTYPE_DEFINITIONS) {
+    if ([...subtype.tokenSet].some((token) => tagTokens.has(token)) || chartKey === subtype.key) {
+      return { isCombat: true, combatGroupKey: subtype.key, combatGroupLabel: subtype.label, typeLabel: "Combat" };
+    }
+  }
+
+  if (tagTokens.has(ACTION_COMBAT_TAG) || chartKey === "combat") {
+    return { isCombat: true, combatGroupKey: "basic", combatGroupLabel: "Basic Actions", typeLabel: "Combat" };
+  }
+
+  for (const [token, label] of ACTION_NONCOMBAT_TYPE_BY_TOKEN.entries()) {
+    if (tagTokens.has(token) || chartKey === token) {
+      return { isCombat: false, combatGroupKey: "", combatGroupLabel: "", typeLabel: label };
+    }
+  }
+
+  return { isCombat: false, combatGroupKey: "", combatGroupLabel: "", typeLabel: "" };
+};
+
+const buildActorActionRow = ({ actor, item, canDelete = false, inherited = false }) => {
+  const category = resolveActionCategory(item);
+  const skillKey = readActionField(item, "skill");
+  const characteristicKey = readActionField(item, "characteristic");
+  return {
+    id: String(item?.id ?? "").trim(),
+    uuid: String(item?.uuid ?? "").trim(),
+    title: String(item?.name ?? "").trim() || "Action",
+    level: readActionField(item, "level"),
+    roll: buildActionRollText(item),
+    goal: buildActionGoalText({ actor, item }),
+    init: formatSignedActionValue(readActionField(item, "init")),
+    dmg: formatSignedActionValue(readActionField(item, "dmg")),
+    effect: readActionField(item, "effect"),
+    skillKey,
+    characteristicKey,
+    rollable: Boolean(skillKey),
+    canDelete,
+    inherited,
+    typeLabel: category.typeLabel,
+    isCombat: category.isCombat,
+    combatGroupKey: category.combatGroupKey,
+    combatGroupLabel: category.combatGroupLabel
+  };
+};
+
+const buildActionFallbackRow = ({ entry, inherited = true }) => ({
+  id: "",
+  uuid: String(entry?.uuid ?? "").trim(),
+  title: String(entry?.name ?? entry?.uuid ?? "").trim() || "Action",
+  level: "",
+  roll: "",
+  goal: "",
+  init: "",
+  dmg: "",
+  effect: "",
+  skillKey: "",
+  characteristicKey: "",
+  rollable: false,
+  canDelete: false,
+  inherited,
+  typeLabel: "",
+  isCombat: false,
+  combatGroupKey: "",
+  combatGroupLabel: ""
+});
+
+const buildActorActionView = async ({ actor, system }) => {
+  const embeddedRows = [];
+  const seenRefs = new Set();
+
+  for (const item of actor?.items ?? []) {
+    if (item?.type !== "action") continue;
+    const row = buildActorActionRow({ actor, item, canDelete: true, inherited: false });
+    embeddedRows.push(row);
+    for (const ref of readActionSourceRefs(item)) seenRefs.add(ref);
+  }
+
+  const historyEntries = (actor?.items ?? [])
+    .filter((item) => item?.type === "history")
+    .flatMap((item) => normalizeBonusEntries([
+      ...getNestedArray(item?.system ?? {}, "bonusActions"),
+      ...getNestedArray(item?.system ?? {}, "data.bonusActions")
+    ]));
+
+  const actorEntries = normalizeBonusEntries([
+    ...getNestedArray(system, "bonusActions"),
+    ...getNestedArray(system, "data.bonusActions")
+  ]);
+
+  const inheritedRows = [];
+  for (const entry of normalizeBonusEntries([...historyEntries, ...actorEntries])) {
+    const uuid = String(entry?.uuid ?? "").trim();
+    const token = canonicalToken(uuid);
+    if (token && seenRefs.has(token)) continue;
+
+    const doc = uuid ? await fromUuid(uuid).catch(() => null) : null;
+    if (doc?.documentName === "Item" && doc?.type === "action") {
+      inheritedRows.push(buildActorActionRow({ actor, item: doc, canDelete: false, inherited: true }));
+      if (token) seenRefs.add(token);
+      continue;
+    }
+
+    inheritedRows.push(buildActionFallbackRow({ entry, inherited: true }));
+    if (token) seenRefs.add(token);
+  }
+
+  const allRows = [...embeddedRows, ...inheritedRows].sort((a, b) => a.title.localeCompare(b.title));
+  const combatRows = allRows.filter((row) => row.isCombat);
+  const normalRows = allRows.filter((row) => !row.isCombat);
+  const basicRows = combatRows.filter((row) => row.combatGroupKey === "basic");
+  const subtypeGroups = ACTION_COMBAT_SUBTYPE_DEFINITIONS
+    .filter((entry) => entry.key !== "basic")
+    .map((entry) => ({
+      key: entry.key,
+      label: entry.label,
+      rows: combatRows.filter((row) => row.combatGroupKey === entry.key)
+    }))
+    .filter((entry) => entry.rows.length);
+
+  return {
+    combat: {
+      basicRows,
+      subtypeGroups,
+      hasAny: combatRows.length > 0
+    },
+    normal: {
+      rows: normalRows,
+      hasAny: normalRows.length > 0
+    }
+  };
+};
+
+const readExplicitSheetLockFlag = (document) => {
+  const value = document?.getFlag?.("fs2e", FS2E_SHEET_LOCK_FLAG_KEY);
+  return typeof value === "boolean" ? value : null;
+};
+
+const readEmbeddedSourceItemUuid = (item) => String(
+  item?.getFlag?.("fs2e", FS2E_SOURCE_ITEM_UUID_FLAG_KEY)
+  ?? item?.getFlag?.("fs2e", "historySourceUuid")
+  ?? ""
+).trim();
+
+const applySourceItemMetadata = (createData, sourceDoc, extraFlags = {}) => {
+  if (!createData || typeof createData !== "object") return createData;
+
+  createData.flags = createData.flags ?? {};
+  createData.flags.fs2e = {
+    ...(createData.flags.fs2e ?? {}),
+    ...extraFlags
+  };
+
+  const sourceUuid = String(sourceDoc?.uuid ?? "").trim();
+  if (sourceUuid) {
+    createData.flags.fs2e[FS2E_SOURCE_ITEM_UUID_FLAG_KEY] = sourceUuid;
+  }
+
+  const explicitLock = readExplicitSheetLockFlag(sourceDoc);
+  if (explicitLock !== null) {
+    createData.flags.fs2e[FS2E_SHEET_LOCK_FLAG_KEY] = explicitLock;
+  }
+
+  return createData;
+};
+
+const syncEmbeddedItemLockFromSource = async (embeddedItem, sourceDoc = null) => {
+  if (!embeddedItem?.setFlag) return;
+
+  const resolvedSource = sourceDoc ?? (() => {
+    const sourceUuid = readEmbeddedSourceItemUuid(embeddedItem);
+    return sourceUuid ? fromUuid(sourceUuid).catch(() => null) : null;
+  })();
+
+  const sourceItem = await Promise.resolve(resolvedSource);
+  const explicitLock = readExplicitSheetLockFlag(sourceItem);
+  if (explicitLock === null) return;
+
+  if (readExplicitSheetLockFlag(embeddedItem) === explicitLock) return;
+  await embeddedItem.setFlag("fs2e", FS2E_SHEET_LOCK_FLAG_KEY, explicitLock);
+};
+
+const renderItemSheetFromActor = async (document) => {
+  const sheet = document?.sheet ?? null;
+  if (!sheet) return;
+  setSheetForcedLockedFromActor(sheet, true);
+  sheet.render(true);
+};
+
 const readBlessingCurseCategory = (item) => {
   const tags = [
     ...(Array.isArray(item?.system?.tags) ? item.system.tags : []),
@@ -134,6 +427,19 @@ const readBlessingCurseCategory = (item) => {
 
   if (tags.some((tag) => tag.toLowerCase() === "blessing")) return "Blessing";
   if (tags.some((tag) => tag.toLowerCase() === "curse")) return "Curse";
+  return "";
+};
+
+const readBeneficeAfflictionCategory = (item) => {
+  const tags = [
+    ...(Array.isArray(item?.system?.tags) ? item.system.tags : []),
+    ...(Array.isArray(foundry.utils.getProperty(item, "flags.fs2e.tags")) ? foundry.utils.getProperty(item, "flags.fs2e.tags") : [])
+  ]
+    .map((entry) => String(entry ?? "").trim())
+    .filter(Boolean);
+
+  if (tags.some((tag) => tag.toLowerCase() === "benefice")) return "Benefice";
+  if (tags.some((tag) => tag.toLowerCase() === "affliction")) return "Affliction";
   return "";
 };
 
@@ -162,6 +468,8 @@ const buildBlessingCurseEffectText = (item) => {
   const note = String(item?.system?.effectLine?.note ?? "").trim();
   return [amount, target, note].filter(Boolean).join(" ");
 };
+
+const buildBeneficeAfflictionEffectText = (item) => String(item?.system?.effectLine?.note ?? "").trim();
 
 const parseBlessingCurseAmount = (value) => {
   const text = String(value ?? "").trim().replace(/\s+/g, "");
@@ -266,6 +574,51 @@ const buildActorBlessingCurseView = async ({ actor, system }) => {
   const categoryRank = (category) => {
     if (category === "Blessing") return 0;
     if (category === "Curse") return 1;
+    return 2;
+  };
+
+  return resolved
+    .filter((entry) => entry.name)
+    .sort((a, b) => {
+      const rankDiff = categoryRank(a.category) - categoryRank(b.category);
+      if (rankDiff !== 0) return rankDiff;
+      return a.name.localeCompare(b.name);
+    });
+};
+
+const buildActorBeneficeAfflictionView = async ({ actor, system }) => {
+  const historyEntries = (actor?.items ?? [])
+    .filter((item) => item?.type === "history")
+    .flatMap((item) => normalizeBonusEntries([
+      ...getNestedArray(item?.system ?? {}, "bonusBeneficeAfflictions"),
+      ...getNestedArray(item?.system ?? {}, "data.bonusBeneficeAfflictions")
+    ]));
+
+  const actorEntries = normalizeBonusEntries([
+    ...getNestedArray(system, "bonusBeneficeAfflictions"),
+    ...getNestedArray(system, "data.bonusBeneficeAfflictions")
+  ]);
+
+  const entries = normalizeBonusEntries([...historyEntries, ...actorEntries]);
+
+  const resolved = await Promise.all(entries.map(async (entry) => {
+    const uuid = String(entry?.uuid ?? "").trim();
+    const fallbackName = String(entry?.name ?? "").trim();
+    const item = uuid ? await fromUuid(uuid).catch(() => null) : null;
+    const category = readBeneficeAfflictionCategory(item);
+    return {
+      uuid,
+      name: String(item?.name ?? fallbackName).trim(),
+      category,
+      points: String(item?.system?.points ?? "").trim(),
+      effect: buildBeneficeAfflictionEffectText(item),
+      hasUuid: Boolean(uuid)
+    };
+  }));
+
+  const categoryRank = (category) => {
+    if (category === "Benefice") return 0;
+    if (category === "Affliction") return 1;
     return 2;
   };
 
@@ -519,11 +872,14 @@ const promptParentSkillChoices = async ({ itemName, rows = [] }) => {
   const rowsForTemplate = rows.map((row) => {
     const defaultKey = String(row?.defaultKey ?? "").trim().toLowerCase();
     const customValue = String(row?.customValue ?? "").trim();
+    const hasCustomValue = customValue.length > 0;
     const options = (Array.isArray(row?.options) ? row.options : []).map((option, idx) => {
       const optionKey = String(option?.key ?? "").trim().toLowerCase();
       return {
         ...option,
-        selected: defaultKey
+        selected: hasCustomValue
+          ? false
+          : defaultKey
           ? optionKey === defaultKey
           : idx === 0
       };
@@ -1083,12 +1439,14 @@ const clampToTrack = (value, length = RESOURCE_TRACK_LENGTH) => {
   return Math.max(0, Math.min(length, Math.floor(num)));
 };
 
-const buildTrackDots = (filled, length = RESOURCE_TRACK_LENGTH) => {
-  const activeCount = clampToTrack(filled, length);
+const buildTrackDots = ({ current = 0, max = 0 } = {}, length = RESOURCE_TRACK_LENGTH) => {
+  const currentCount = clampToTrack(current, length);
+  const maxCount = clampToTrack(max, length);
   return Array.from({ length }, (_, index) => ({
     index,
-    isFilled: index < activeCount,
-    isInactive: index >= activeCount
+    isFilled: index < currentCount,
+    isAvailable: index >= currentCount && index < maxCount,
+    isInactive: index >= maxCount
   }));
 };
 
@@ -1107,11 +1465,12 @@ const buildResourceView = (system) => {
   const vitalityValue = Number.isFinite(vitalityValueRaw)
     ? Math.max(0, Math.min(vitalityMax, vitalityValueRaw))
     : vitalityMax;
+  const wyrdMax = Math.max(0, Number(system?.wyrd?.max ?? 0));
   const wyrdValue = Math.max(0, Number(system?.wyrd?.value ?? 0));
 
   return {
-    vitalityDots: buildTrackDots(vitalityValue),
-    wyrdDots: buildTrackDots(wyrdValue),
+    vitalityDots: buildTrackDots({ current: vitalityValue, max: vitalityMax }),
+    wyrdDots: buildTrackDots({ current: wyrdValue, max: wyrdMax }),
     woundPenaltyCells: buildPenaltyCells(WOUND_PENALTY_VALUES, RESOURCE_TRACK_LENGTH)
   };
 };
@@ -1326,7 +1685,9 @@ const buildSkillsView = ({ system, actor }) => {
 export class FS2ECharacterSheet extends ActorSheet {
   _blessingCurseSectionState = {
     blessings: true,
-    curses: true
+    curses: true,
+    benefices: true,
+    afflictions: true
   };
 
   static get defaultOptions() {
@@ -1343,12 +1704,32 @@ export class FS2ECharacterSheet extends ActorSheet {
     return "systems/fs2e/templates/actor/character.hbs";
   }
 
+  async _ensureInitialVitalityAtMax() {
+    const initialized = this.actor.getFlag?.("fs2e", "vitalityInitialized") === true;
+    if (initialized) return;
+
+    const vitality = this.actor.system?.vitality;
+    const max = Math.max(0, Number(vitality?.max ?? vitality?.total ?? 0));
+    if (!Number.isFinite(max) || max <= 0) return;
+
+    const current = Number(vitality?.value);
+    if (current !== max) {
+      await this.actor.update({ "system.vitality.value": max });
+    }
+
+    await this.actor.setFlag("fs2e", "vitalityInitialized", true);
+  }
+
   async getData(options = {}) {
     const data = await super.getData(options);
     await this._ensureEmbeddedHistoriesForSlots();
+    await this._syncEmbeddedReferenceItemLocks();
     aggregateActorDerivedData(this.actor);
     await applyAsyncActorVitalityDerivedData(this.actor);
     aggregateActorLanguages(this.actor);
+    await this._ensureInitialVitalityAtMax();
+    aggregateActorDerivedData(this.actor);
+    await applyAsyncActorVitalityDerivedData(this.actor);
 
     data.system = foundry.utils.deepClone(this.actor.system);
     await applySheetVitalityBlessingCurseBonus({ actor: this.actor, system: data.system });
@@ -1363,12 +1744,20 @@ export class FS2ECharacterSheet extends ActorSheet {
     data.view.blessingCurses = await buildActorBlessingCurseView({ actor: this.actor, system: data.system });
     data.view.blessings = data.view.blessingCurses.filter((entry) => entry.category === "Blessing");
     data.view.curses = data.view.blessingCurses.filter((entry) => entry.category === "Curse");
+    data.view.beneficeAfflictions = await buildActorBeneficeAfflictionView({ actor: this.actor, system: data.system });
+    data.view.benefices = data.view.beneficeAfflictions.filter((entry) => entry.category === "Benefice");
+    data.view.afflictions = data.view.beneficeAfflictions.filter((entry) => entry.category === "Affliction");
     data.view.blessingCurseSections = {
       blessingsExpanded: this._blessingCurseSectionState.blessings !== false,
       cursesExpanded: this._blessingCurseSectionState.curses !== false
     };
-    return data;
-  }
+      data.view.beneficeAfflictionSections = {
+        beneficesExpanded: this._blessingCurseSectionState.benefices !== false,
+        afflictionsExpanded: this._blessingCurseSectionState.afflictions !== false
+      };
+      data.view.actions = await buildActorActionView({ actor: this.actor, system: data.system });
+      return data;
+    }
 
   activateListeners(html) {
     super.activateListeners(html);
@@ -1407,19 +1796,29 @@ export class FS2ECharacterSheet extends ActorSheet {
       event.preventDefault();
     });
 
-    html.on("drop", "[data-drop-history]", async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const slotIndex = Number(event.currentTarget?.dataset?.historySlot ?? -1);
-      await this._onDropHistory(event.originalEvent ?? event, slotIndex);
-    });
+      html.on("drop", "[data-drop-history]", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const slotIndex = Number(event.currentTarget?.dataset?.historySlot ?? -1);
+        await this._onDropHistory(event.originalEvent ?? event, slotIndex);
+      });
+
+      html.on("dragover", "[data-drop-action-list]", (event) => {
+        event.preventDefault();
+      });
+
+      html.on("drop", "[data-drop-action-list]", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        await this._onDropAction(event.originalEvent ?? event);
+      });
 
     html.on("click", ".open-species", async (event) => {
       event.preventDefault();
       const uuid = event.currentTarget?.dataset?.uuid;
       if (!uuid) return;
       const species = await fromUuid(uuid);
-      species?.sheet?.render(true);
+      await renderItemSheetFromActor(species);
     });
 
     html.on("click", ".clear-species", async (event) => {
@@ -1433,7 +1832,7 @@ export class FS2ECharacterSheet extends ActorSheet {
       const uuid = event.currentTarget?.dataset?.uuid;
       if (!uuid) return;
       const planet = await fromUuid(uuid);
-      planet?.sheet?.render(true);
+      await renderItemSheetFromActor(planet);
     });
 
     html.on("click", ".clear-planet", async (event) => {
@@ -1447,7 +1846,7 @@ export class FS2ECharacterSheet extends ActorSheet {
       const uuid = event.currentTarget?.dataset?.uuid;
       if (!uuid) return;
       const faction = await fromUuid(uuid);
-      faction?.sheet?.render(true);
+      await renderItemSheetFromActor(faction);
     });
 
     html.on("click", ".clear-faction", async (event) => {
@@ -1461,16 +1860,47 @@ export class FS2ECharacterSheet extends ActorSheet {
       const uuid = event.currentTarget?.dataset?.uuid;
       if (!uuid) return;
       const history = await fromUuid(uuid);
-      history?.sheet?.render(true);
+      await renderItemSheetFromActor(history);
     });
 
-    html.on("click", ".open-bonus-blessing-curse", async (event) => {
-      event.preventDefault();
-      const uuid = event.currentTarget?.dataset?.uuid;
-      if (!uuid) return;
-      const item = await fromUuid(uuid);
-      item?.sheet?.render(true);
-    });
+      html.on("click", ".open-bonus-blessing-curse, .open-bonus-benefice-affliction", async (event) => {
+        event.preventDefault();
+        const uuid = event.currentTarget?.dataset?.uuid;
+        if (!uuid) return;
+        const item = await fromUuid(uuid);
+        await renderItemSheetFromActor(item);
+      });
+
+      html.on("click", ".open-actor-action", async (event) => {
+        event.preventDefault();
+        const uuid = String(event.currentTarget?.dataset?.uuid ?? "").trim();
+        if (!uuid) return;
+        const item = await fromUuid(uuid).catch(() => null);
+        await renderItemSheetFromActor(item);
+      });
+
+      html.on("click", ".delete-actor-action", async (event) => {
+        event.preventDefault();
+        const itemId = String(event.currentTarget?.dataset?.itemId ?? "").trim();
+        if (!itemId) return;
+        await this.actor.deleteEmbeddedDocuments("Item", [itemId]);
+      });
+
+      html.on("click", ".roll-actor-action", async (event) => {
+        event.preventDefault();
+        const skillKey = String(event.currentTarget?.dataset?.skillKey ?? "").trim();
+        if (!skillKey) return;
+        const characteristicKey = String(event.currentTarget?.dataset?.characteristicKey ?? "").trim();
+        const title = String(event.currentTarget?.dataset?.title ?? "").trim();
+        await openSkillRollDialog({
+          actor: this.actor,
+          skillKey,
+          preset: {
+            characteristicKey,
+            title: title ? `${title} Roll` : undefined
+          }
+        });
+      });
 
     html.on("click", "[data-action='toggle-bc-section']", (event) => {
       event.preventDefault();
@@ -1551,11 +1981,12 @@ export class FS2ECharacterSheet extends ActorSheet {
       await this.actor.deleteEmbeddedDocuments("Item", speciesIds);
     }
 
-    const createData = itemDoc.toObject();
+    const createData = applySourceItemMetadata(itemDoc.toObject(), itemDoc);
     foundry.utils.setProperty(createData, "system.spiritAlwaysPrimary", selectedSpiritPrimary);
     delete createData._id;
 
     const [created] = await this.actor.createEmbeddedDocuments("Item", [createData]);
+    await syncEmbeddedItemLockFromSource(created, itemDoc);
     await this.actor.update({ "system.species": created?.name ?? itemDoc.name ?? "" });
   }
 
@@ -1574,9 +2005,10 @@ export class FS2ECharacterSheet extends ActorSheet {
       await this.actor.deleteEmbeddedDocuments("Item", planetIds);
     }
 
-    const createData = itemDoc.toObject();
+    const createData = applySourceItemMetadata(itemDoc.toObject(), itemDoc);
     delete createData._id;
     const [created] = await this.actor.createEmbeddedDocuments("Item", [createData]);
+    await syncEmbeddedItemLockFromSource(created, itemDoc);
     await this.actor.update({ "system.planet": created?.name ?? itemDoc.name ?? "" });
   }
 
@@ -1607,9 +2039,10 @@ export class FS2ECharacterSheet extends ActorSheet {
       await this.actor.deleteEmbeddedDocuments("Item", factionIds);
     }
 
-    const createData = itemDoc.toObject();
+    const createData = applySourceItemMetadata(itemDoc.toObject(), itemDoc);
     delete createData._id;
     const [created] = await this.actor.createEmbeddedDocuments("Item", [createData]);
+    await syncEmbeddedItemLockFromSource(created, itemDoc);
 
     await this.actor.update({ "system.faction": created?.name ?? itemDoc.name ?? "" });
   }
@@ -1672,6 +2105,13 @@ export class FS2ECharacterSheet extends ActorSheet {
     }
   }
 
+  async _syncEmbeddedReferenceItemLocks() {
+    const syncableItems = (this.actor.items ?? []).filter((item) => readEmbeddedSourceItemUuid(item));
+    if (!syncableItems.length) return;
+
+    await Promise.all(syncableItems.map((item) => syncEmbeddedItemLockFromSource(item)));
+  }
+
   async _ensureEmbeddedHistoriesForSlots() {
     const slots = this._readHistorySlots();
     let changed = false;
@@ -1721,16 +2161,14 @@ export class FS2ECharacterSheet extends ActorSheet {
         continue;
       }
 
-      const createData = sourceDoc.toObject();
-      createData.flags = createData.flags ?? {};
-      createData.flags.fs2e = {
-        ...(createData.flags.fs2e ?? {}),
+      const createData = applySourceItemMetadata(sourceDoc.toObject(), sourceDoc, {
         historySlotIndex: idx,
         historySourceUuid: String(sourceDoc.uuid ?? legacyUuid).trim()
-      };
+      });
       delete createData._id;
       const [created] = await this.actor.createEmbeddedDocuments("Item", [createData]);
       if (!created) continue;
+      await syncEmbeddedItemLockFromSource(created, sourceDoc);
 
       slot.id = String(created.id ?? "").trim();
       slot.uuid = String(created.uuid ?? "").trim();
@@ -1875,13 +2313,10 @@ export class FS2ECharacterSheet extends ActorSheet {
 
     await this._deleteHistorySlotLinkedItems(slotIndex);
 
-    const createData = itemDoc.toObject();
-    createData.flags = createData.flags ?? {};
-    createData.flags.fs2e = {
-      ...(createData.flags.fs2e ?? {}),
+    const createData = applySourceItemMetadata(itemDoc.toObject(), itemDoc, {
       historySlotIndex: slotIndex,
       historySourceUuid: String(itemDoc.uuid ?? "").trim()
-    };
+    });
     const resolvedSystem = await resolveHistoryCharacteristicAdjustments({
       actor: this.actor,
       itemName: itemDoc.name,
@@ -1898,6 +2333,7 @@ export class FS2ECharacterSheet extends ActorSheet {
     delete createData._id;
     const [created] = await this.actor.createEmbeddedDocuments("Item", [createData]);
     if (!created) return;
+    await syncEmbeddedItemLockFromSource(created, itemDoc);
 
     const grantedLearnedSkills = normalizeLearnedSkillPairs([
       ...parentSkillChoices,
@@ -1935,7 +2371,7 @@ export class FS2ECharacterSheet extends ActorSheet {
     this._lastHandledHistoryDropAt = Date.now();
   }
 
-  async _onDropItemCreate(itemData) {
+    async _onDropItemCreate(itemData) {
     const sourceItems = Array.isArray(itemData) ? itemData : [itemData];
     const hasHistory = sourceItems.some((entry) => String(entry?.type ?? "").trim() === "history");
     const lastHistoryDropAt = Number(this._lastHandledHistoryDropAt ?? 0);
@@ -1980,8 +2416,38 @@ export class FS2ECharacterSheet extends ActorSheet {
       await this._createLearnedGroupSkill(groupKey, childKey, display, amount);
     }
 
-    return created;
-  }
+      return created;
+    }
+
+    async _onDropAction(event) {
+      const dropData = TextEditor.getDragEventData(event);
+      if (!dropData) return;
+
+      const itemDoc = await Item.implementation.fromDropData(dropData);
+      if (!itemDoc || itemDoc.type !== "action") {
+        ui.notifications?.warn("Only Action items can be dropped here.");
+        return;
+      }
+
+      const droppedRefs = new Set([
+        canonicalToken(String(itemDoc.uuid ?? "").trim()),
+        ...readActionSourceRefs(itemDoc)
+      ].filter(Boolean));
+
+      const duplicate = (this.actor.items ?? []).some((item) => {
+        if (item?.type !== "action") return false;
+        const itemRefs = new Set(readActionSourceRefs(item));
+        return [...droppedRefs].some((token) => itemRefs.has(token));
+      });
+      if (duplicate) {
+        ui.notifications?.warn(`${itemDoc.name} is already on this character.`);
+        return;
+      }
+
+      const createData = applySourceItemMetadata(itemDoc.toObject(), itemDoc);
+      delete createData._id;
+      await this.actor.createEmbeddedDocuments("Item", [createData]);
+    }
 
   async _promptLearnedGroupSkill(groupKey, optionLabels = []) {
     const groupLabel = formatSkillLabel(groupKey) || "Skill";

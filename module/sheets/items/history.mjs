@@ -10,6 +10,7 @@ import {
 	normalizeSkillKey
 } from "../../global/skills/group-specializations.mjs";
 import { SPIRIT_LABELS, SPIRIT_PRIMARY_OPTIONS, normalizeAlwaysPrimary } from "../../global/spirit.mjs";
+import { setSheetForcedLockedFromActor } from "../../ui/sheet-lock-mode.mjs";
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
 
@@ -648,7 +649,12 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			const uuid = String(event.currentTarget?.dataset?.uuid ?? "").trim();
 			if (!uuid) return;
 			const item = await fromUuid(uuid).catch(() => null);
-			item?.sheet?.render(true);
+			const sheet = item?.sheet ?? null;
+			if (!sheet) return;
+			if (this._fs2eForceLockedFromActor === true) {
+				setSheetForcedLockedFromActor(sheet, true);
+			}
+			sheet.render(true);
 		});
 
 		const parseStateInput = (selector, fallback = []) => parseJsonSafe(root.querySelector(selector)?.value, fallback);

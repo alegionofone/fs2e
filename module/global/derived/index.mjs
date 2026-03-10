@@ -96,15 +96,20 @@ const applyVitalityState = (actor, granted) => {
   const endurance = system?.characteristics?.body?.endurance;
   const enduranceTotal = Math.max(0, getStatTotal(endurance));
   const nextBase = Math.max(0, 5 + enduranceTotal);
-  const previousBase = Math.max(0, toNumber(vitality.base, nextBase));
-  const previousMax = Math.max(0, getStatTotal({
-    base: previousBase,
-    mod: vitality.mod,
-    temp: vitality.temp,
-    history: vitality.history,
-    xp: vitality.xp,
-    granted: vitality.granted
-  }));
+  const previousMax = Math.max(0, toNumber(
+    vitality.max,
+    toNumber(
+      vitality.total,
+      getStatTotal({
+        base: vitality.base,
+        mod: vitality.mod,
+        temp: vitality.temp,
+        history: vitality.history,
+        xp: vitality.xp,
+        granted: vitality.granted
+      })
+    )
+  ));
 
   vitality.base = nextBase;
   vitality.granted = toNumber(granted);

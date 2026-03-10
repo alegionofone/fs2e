@@ -151,9 +151,50 @@
 			</section>
 			<section class="container shade traits-section" data-collapsible-section data-collapsed="0">
 				<h3>Benefices and Afflictions</h3>
-				<table class="traits-table combat-actions-table">
-					<thead><tr><th>Title</th><th class="traits-points-head">Points</th><th>Effect</th><th></th></tr></thead>
-					<tbody><tr class="traits-empty-row"><td colspan="4">Front-end shell only. Backend data wiring pending.</td></tr></tbody>
+				<table class="traits-table combat-actions-table fs2e-bc-table">
+					<tbody>
+						{{#if view.beneficeAfflictions.length}}
+							{{#if view.benefices.length}}
+								<tr class="fs2e-bc-section-row {{#unless view.beneficeAfflictionSections.beneficesExpanded}}is-collapsed{{/unless}}" data-action="toggle-bc-section" data-section="benefices">
+									<td colspan="4"><span class="fs2e-bc-section-text">Benefices</span><span class="fs2e-bc-section-icon" aria-hidden="true"></span></td>
+								</tr>
+								{{#if view.beneficeAfflictionSections.beneficesExpanded}}
+									<tr class="fs2e-bc-item-row">
+										<td colspan="4">
+											{{#each view.benefices}}
+												{{#if this.hasUuid}}
+													<a class="open-bonus-benefice-affliction" data-uuid="{{this.uuid}}">{{this.name}}</a>
+												{{else}}
+													{{this.name}}
+												{{/if}}{{#unless @last}}, {{/unless}}
+											{{/each}}
+										</td>
+									</tr>
+								{{/if}}
+							{{/if}}
+
+							{{#if view.afflictions.length}}
+								<tr class="fs2e-bc-section-row {{#unless view.beneficeAfflictionSections.afflictionsExpanded}}is-collapsed{{/unless}}" data-action="toggle-bc-section" data-section="afflictions">
+									<td colspan="4"><span class="fs2e-bc-section-text">Afflictions</span><span class="fs2e-bc-section-icon" aria-hidden="true"></span></td>
+								</tr>
+								{{#if view.beneficeAfflictionSections.afflictionsExpanded}}
+									<tr class="fs2e-bc-item-row">
+										<td colspan="4">
+											{{#each view.afflictions}}
+												{{#if this.hasUuid}}
+													<a class="open-bonus-benefice-affliction" data-uuid="{{this.uuid}}">{{this.name}}</a>
+												{{else}}
+													{{this.name}}
+												{{/if}}{{#unless @last}}, {{/unless}}
+											{{/each}}
+										</td>
+									</tr>
+								{{/if}}
+							{{/if}}
+						{{else}}
+							<tr class="traits-empty-row"><td colspan="4">No benefices or afflictions.</td></tr>
+						{{/if}}
+					</tbody>
 				</table>
 			</section>
 		</div>
@@ -169,21 +210,99 @@
 		</div>
 
 		<div class="tab combat traits" data-group="primary" data-tab="combat">
-			<section class="container shade traits-section" data-collapsible-section data-collapsed="0">
+			<section class="container shade traits-section" data-collapsible-section data-collapsed="0" data-drop-action-list="combat">
 				<h3>Combat Actions</h3>
 				<table class="traits-table combat-actions-table">
 					<thead><tr><th>Action</th><th class="traits-points-head">LVL</th><th>Roll</th><th class="traits-points-head">Goal</th><th class="traits-points-head">Init</th><th class="traits-points-head">DMG</th><th></th></tr></thead>
-					<tbody><tr class="traits-empty-row"><td colspan="7">Front-end shell only.</td></tr></tbody>
+					<tbody>
+						{{#if view.actions.combat.hasAny}}
+							{{#if view.actions.combat.basicRows.length}}
+								<tr class="fs2e-bc-section-row">
+									<td colspan="7"><span class="fs2e-bc-section-text">Basic Actions</span></td>
+								</tr>
+								{{#each view.actions.combat.basicRows}}
+									<tr class="combat-action-row">
+										<td class="traits-title-cell">
+											{{#if this.rollable}}
+												<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}">{{this.title}}</a>
+											{{else}}
+												{{this.title}}
+											{{/if}}
+										</td>
+										<td class="traits-points-cell">{{#if this.level}}{{this.level}}{{else}}-{{/if}}</td>
+										<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
+										<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
+										<td class="traits-points-cell">{{#if this.init}}{{this.init}}{{else}}-{{/if}}</td>
+										<td class="traits-points-cell">{{#if this.dmg}}{{this.dmg}}{{else}}-{{/if}}</td>
+										<td class="traits-open-cell fs2e-action-links-cell">
+											{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open">Open</a>{{/if}}
+											{{#if this.canDelete}}<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove">x</a>{{/if}}
+										</td>
+									</tr>
+								{{/each}}
+							{{/if}}
+							{{#each view.actions.combat.subtypeGroups}}
+								<tr class="fs2e-bc-section-row">
+									<td colspan="7"><span class="fs2e-bc-section-text">{{this.label}}</span></td>
+								</tr>
+								{{#each this.rows}}
+									<tr class="combat-action-row">
+										<td class="traits-title-cell">
+											{{#if this.rollable}}
+												<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}">{{this.title}}</a>
+											{{else}}
+												{{this.title}}
+											{{/if}}
+										</td>
+										<td class="traits-points-cell">{{#if this.level}}{{this.level}}{{else}}-{{/if}}</td>
+										<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
+										<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
+										<td class="traits-points-cell">{{#if this.init}}{{this.init}}{{else}}-{{/if}}</td>
+										<td class="traits-points-cell">{{#if this.dmg}}{{this.dmg}}{{else}}-{{/if}}</td>
+										<td class="traits-open-cell fs2e-action-links-cell">
+											{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open">Open</a>{{/if}}
+											{{#if this.canDelete}}<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove">x</a>{{/if}}
+										</td>
+									</tr>
+								{{/each}}
+							{{/each}}
+						{{else}}
+							<tr class="traits-empty-row"><td colspan="7">No combat actions.</td></tr>
+						{{/if}}
+					</tbody>
 				</table>
 			</section>
 		</div>
 
 		<div class="tab actions traits" data-group="primary" data-tab="actions">
-			<section class="container shade traits-section" data-collapsible-section data-collapsed="0">
+			<section class="container shade traits-section" data-collapsible-section data-collapsed="0" data-drop-action-list="normal">
 				<h3>Normal Actions</h3>
 				<table class="traits-table combat-actions-table">
 					<thead><tr><th>Action</th><th>Roll</th><th class="traits-points-head">Goal</th><th></th></tr></thead>
-					<tbody><tr class="traits-empty-row"><td colspan="4">Front-end shell only.</td></tr></tbody>
+					<tbody>
+						{{#if view.actions.normal.hasAny}}
+							{{#each view.actions.normal.rows}}
+								<tr class="combat-action-row">
+									<td class="traits-title-cell">
+										{{#if this.rollable}}
+											<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}">{{this.title}}</a>
+										{{else}}
+											{{this.title}}
+										{{/if}}
+										{{#if this.typeLabel}}<span class="fs2e-action-type-label">{{this.typeLabel}}</span>{{/if}}
+									</td>
+									<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
+									<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
+									<td class="traits-open-cell fs2e-action-links-cell">
+										{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open">Open</a>{{/if}}
+										{{#if this.canDelete}}<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove">x</a>{{/if}}
+									</td>
+								</tr>
+							{{/each}}
+						{{else}}
+							<tr class="traits-empty-row"><td colspan="4">No normal actions.</td></tr>
+						{{/if}}
+					</tbody>
 				</table>
 			</section>
 		</div>

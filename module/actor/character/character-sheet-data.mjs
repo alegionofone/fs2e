@@ -276,12 +276,14 @@ const clampToTrack = (value, length = RESOURCE_TRACK_LENGTH) => {
   return Math.max(0, Math.min(length, Math.floor(num)));
 };
 
-const buildTrackDots = (filled, length = RESOURCE_TRACK_LENGTH) => {
-  const activeCount = clampToTrack(filled, length);
+const buildTrackDots = ({ current = 0, max = 0 } = {}, length = RESOURCE_TRACK_LENGTH) => {
+  const currentCount = clampToTrack(current, length);
+  const maxCount = clampToTrack(max, length);
   return Array.from({ length }, (_, index) => ({
     index,
-    isFilled: index < activeCount,
-    isInactive: index >= activeCount
+    isFilled: index < currentCount,
+    isAvailable: index >= currentCount && index < maxCount,
+    isInactive: index >= maxCount
   }));
 };
 
@@ -300,10 +302,11 @@ const buildResourceView = (system) => {
   const vitalityValue = Number.isFinite(vitalityValueRaw)
     ? Math.max(0, Math.min(vitalityMax, vitalityValueRaw))
     : vitalityMax;
+  const wyrdMax = Math.max(0, Number(system?.wyrd?.max ?? 0));
   const wyrdValue = Math.max(0, Number(system?.wyrd?.value ?? 0));
   return {
-    vitalityDots: buildTrackDots(vitalityValue),
-    wyrdDots: buildTrackDots(wyrdValue),
+    vitalityDots: buildTrackDots({ current: vitalityValue, max: vitalityMax }),
+    wyrdDots: buildTrackDots({ current: wyrdValue, max: wyrdMax }),
     woundPenaltyCells: buildPenaltyCells(WOUND_PENALTY_VALUES, RESOURCE_TRACK_LENGTH)
   };
 };
@@ -525,13 +528,25 @@ export const buildCharacterSheetData = ({ actor, system, historySlots, sheetLock
 
   return {
     species: speciesItem
-      ? { id: speciesItem.id, name: speciesItem.name, uuid: speciesItem.uuid }
+      ? {
+        id: speciesItem.id,
+        name: speciesItem.name,
+        uuid: String(speciesItem.getFlag?.("fs2e", "sourceItemUuid") ?? speciesItem.uuid ?? "").trim()
+      }
       : null,
     planet: planetItem
-      ? { id: planetItem.id, name: planetItem.name, uuid: planetItem.uuid }
+      ? {
+        id: planetItem.id,
+        name: planetItem.name,
+        uuid: String(planetItem.getFlag?.("fs2e", "sourceItemUuid") ?? planetItem.uuid ?? "").trim()
+      }
       : null,
     faction: factionItem
-      ? { id: factionItem.id, name: factionItem.name, uuid: factionItem.uuid }
+      ? {
+        id: factionItem.id,
+        name: factionItem.name,
+        uuid: String(factionItem.getFlag?.("fs2e", "sourceItemUuid") ?? factionItem.uuid ?? "").trim()
+      }
       : null,
     histories: getHistorySlotDefinitions().map((slot, idx) => ({
       idx,

@@ -357,18 +357,22 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
   const selectedSkill = skills.find((entry) => entry.selected) ?? skills[0];
   if (!selectedSkill) return;
 
-  const characteristics = getCharacteristicOptions(actor, selectedSkill.defaultCharacteristic);
+  const preferredCharacteristicKey = String(
+    preset?.characteristicKey ?? selectedSkill.defaultCharacteristic
+  ).trim();
+  const characteristics = getCharacteristicOptions(actor, preferredCharacteristicKey);
   if (!characteristics.length) {
     ui.notifications?.warn?.("No rollable characteristics found on actor.");
     return;
   }
 
+  const presetTitle = String(preset?.title ?? "").trim();
   const dialogTitle = contestedResponder
     ? (() => {
       const attackerSkill = String(contestedRequest?.attackerResult?.skillLabel ?? "").trim();
       return attackerSkill ? `Contested ${attackerSkill}` : "Contested Roll";
     })()
-    : `${selectedSkill.label} Roll`;
+    : (presetTitle || `${selectedSkill.label} Roll`);
 
   const contestedAvailable = !contestedResponder && ((game.user?.targets?.size ?? 0) > 0);
   const content = await renderTemplate("systems/fs2e/templates/dialogs/dice-roller.hbs", {

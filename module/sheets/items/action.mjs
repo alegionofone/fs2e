@@ -12,6 +12,14 @@ const readActionNumber = (system, key) => {
 	return Number.isFinite(value) ? value : "";
 };
 
+const formatSignedActionValue = (system, key) => {
+	const raw = readActionField(system, key).trim();
+	if (!raw) return "";
+	const value = Number(raw);
+	if (!Number.isFinite(value)) return raw;
+	return value < 0 ? `${value}` : `+${value}`;
+};
+
 const toUniqueKeyedList = (entries = []) => {
 	const seen = new Set();
 	const out = [];
@@ -44,10 +52,9 @@ export class FS2EActionSheet extends FS2EItemSheet {
 		data.view.level = readActionNumber(system, "level");
 		data.view.characteristic = readActionField(system, "characteristic");
 		data.view.skill = readActionField(system, "skill");
-		data.view.init = readActionNumber(system, "init");
-		data.view.goal = readActionNumber(system, "goal");
+		data.view.init = formatSignedActionValue(system, "init");
+		data.view.goal = formatSignedActionValue(system, "goal");
 		data.view.dmg = readActionNumber(system, "dmg");
-		data.view.effect = readActionField(system, "effect");
 
 		return data;
 	}

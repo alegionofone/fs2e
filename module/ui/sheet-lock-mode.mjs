@@ -2,6 +2,7 @@ const MODULE_ID = "fs2e";
 const LOCK_SETTING_KEY = "sheetLockState";
 const LOCK_FLAG_KEY = "sheetLocked";
 const LOCK_BUTTON_CLASS = "fs2e-sheet-lock-toggle";
+const FORCED_LOCK_APP_KEY = "_fs2eForceLockedFromActor";
 const getSheetDocument = (app) => app?.actor ?? app?.item ?? app?.object ?? null;
 
 const supportsSheetLock = (document) => {
@@ -23,24 +24,42 @@ const writeLockMap = async (value) => {
 
 const getDocumentUuid = (document) => String(document?.uuid ?? "").trim();
 
-export const getSheetLockState = (document) => {
+export const setSheetForcedLockedFromActor = (app, locked = true) => {
+  if (!app) return app;
+  app[FORCED_LOCK_APP_KEY] = !!locked;
+  return app;
+};
+
+export const isSheetForcedLockedFromActor = (app) => app?.[FORCED_LOCK_APP_KEY] === true;
+
+export const getSheetLockState = (document, { app = null } = {}) => {
   const uuid = getDocumentUuid(document);
   if (!uuid) return { locked: false, supported: false, uuid: "" };
   const supported = supportsSheetLock(document);
   if (!supported) return { locked: false, supported: false, uuid };
+  if (isSheetForcedLockedFromActor(app)) {
+    return {
+      locked: true,
+      supported,
+      uuid,
+      forced: true
+    };
+  }
   const flagValue = document?.getFlag?.(MODULE_ID, LOCK_FLAG_KEY);
   if (typeof flagValue === "boolean") {
     return {
       locked: flagValue,
       supported,
-      uuid
+      uuid,
+      forced: false
     };
   }
   const map = readLockMap();
   return {
     locked: map[uuid] === true,
     supported,
-    uuid
+    uuid,
+    forced: false
   };
 };
 
@@ -67,15 +86,17 @@ const applyLockStateToSheet = (app, html, locked) => {
   appRoot.dataset.sheetLocked = locked ? "1" : "0";
 };
 
-const ensureLockButton = (app, locked) => {
+const ensureLockButton = (app, state) => {
   const appRoot = app?.element?.[0];
   if (!appRoot) return;
   const header = appRoot.querySelector(".window-header");
   if (!header) return;
 
   header.querySelector(`.${LOCK_BUTTON_CLASS}`)?.remove();
+  if (state?.forced) return;
 
   const button = document.createElement("a");
+  const locked = state?.locked === true;
   button.className = `header-control ${LOCK_BUTTON_CLASS} ${locked ? "is-locked" : "is-unlocked"}`;
   button.title = locked ? "Unlock Sheet" : "Lock Sheet";
   button.setAttribute("aria-label", button.title);
@@ -98,8 +119,8 @@ const ensureLockButton = (app, locked) => {
 const onRenderSheet = (app, html) => {
   const document = getSheetDocument(app);
   if (!supportsSheetLock(document)) return;
-  const state = getSheetLockState(document);
-  ensureLockButton(app, state.locked);
+  const state = getSheetLockState(document, { app });
+  ensureLockButton(app, state);
   applyLockStateToSheet(app, html, state.locked);
 };
 
