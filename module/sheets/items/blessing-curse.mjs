@@ -3,25 +3,31 @@ import { CHARACTERISTIC_DEFINITIONS } from "../../global/characteristics/definit
 import { LEARNED_SKILLS_BANK, NATURAL_SKILLS_BANK } from "../../global/skills/definitions.mjs";
 
 const readValue = (system, path, fallback = "") => {
-	const value = foundry.utils.getProperty(system, path);
-	return value === undefined || value === null ? fallback : value;
+	const directValue = foundry.utils.getProperty(system, path);
+	if (directValue !== undefined && directValue !== null) return directValue;
+
+	const legacyValue = foundry.utils.getProperty(system, `data.${path}`);
+	return legacyValue === undefined || legacyValue === null ? fallback : legacyValue;
 };
 
 const normalizeSignedNumber = (value) => {
 	const text = String(value ?? "").trim();
 	if (!text) return "0";
-	const match = text.replace(/\s+/g, "").match(/^([+-]?)(\d{1,2})$/);
+	const normalizedText = text.replace(/[−–—]/g, "-").replace(/\s+/g, "");
+	const match = normalizedText.match(/^([+-]?)(\d{1,2})$/);
 	if (!match) return "0";
-	const sign = match[1] === "-" ? "-" : "";
+	const sign = match[1] === "-" ? "-" : match[1] === "+" ? "+" : "";
 	return `${sign}${Number(match[2])}`;
 };
 
 const normalizeEffectAmount = (value) => {
 	const text = String(value ?? "").trim();
 	if (!text) return "";
-	const match = text.replace(/\s+/g, "").match(/^([+-])(\d{1,2})$/);
+	const normalizedText = text.replace(/[−–—]/g, "-").replace(/\s+/g, "");
+	const match = normalizedText.match(/^([+-]?)(\d{1,2})$/);
 	if (!match) return "";
-	return `${match[1]}${Number(match[2])}`;
+	const sign = match[1] === "-" ? "-" : "+";
+	return `${sign}${Number(match[2])}`;
 };
 
 const uniqueByKey = (entries = []) => {
@@ -37,12 +43,55 @@ const uniqueByKey = (entries = []) => {
 	return out.sort((a, b) => a.label.localeCompare(b.label));
 };
 
+const CHARACTERISTIC_LABEL_BY_KEY = Object.fromEntries(
+	CHARACTERISTIC_DEFINITIONS.map((entry) => [String(entry?.key ?? "").trim(), String(entry?.label ?? "").trim()])
+);
+
+const SKILL_LABEL_BY_KEY = Object.fromEntries(
+	[...NATURAL_SKILLS_BANK, ...LEARNED_SKILLS_BANK].map((entry) => [String(entry?.key ?? "").trim(), String(entry?.label ?? "").trim()])
+);
+
+const formatBlessingCurseTarget = (target) => {
+	const text = String(target ?? "").trim();
+	if (!text) return "";
+
+	const [type, key] = text.split(":");
+	const normalizedType = String(type ?? "").trim().toLowerCase();
+	const normalizedKey = String(key ?? "").trim();
+	if (!normalizedKey) return text;
+
+	if (normalizedType === "characteristic") {
+		return String(CHARACTERISTIC_LABEL_BY_KEY[normalizedKey] ?? normalizedKey).trim();
+	}
+
+	if (normalizedType === "skill") {
+		return String(SKILL_LABEL_BY_KEY[normalizedKey] ?? normalizedKey).trim();
+	}
+
+	return text;
+};
+
+const buildBlessingCurseSummaryText = (system = {}) => {
+	const amount = String(readValue(system, "effectLine.amount", "")).trim();
+	const target = formatBlessingCurseTarget(readValue(system, "effectLine.target", ""));
+	const note = String(readValue(system, "effectLine.note", "")).trim();
+	const points = String(readValue(system, "points", "")).trim();
+	const effect = [amount, target, note].filter(Boolean).join(" ");
+	const pointsText = points ? `(${points}pts)` : "";
+	return [effect, pointsText].filter(Boolean).join(" ").trim();
+};
+
 export class FS2EBlessingCurseSheet extends FS2EItemSheet {
 	async getData(options = {}) {
 		const data = await super.getData(options);
-		const system = data.system ?? {};
+		const system = foundry.utils.mergeObject(
+			foundry.utils.deepClone(this.item?._source?.system ?? {}),
+			data.system ?? {},
+			{ inplace: false }
+		);
 
 		data.view = data.view ?? {};
+		data.system = system;
 
 		const characteristicTargets = uniqueByKey(
 			CHARACTERISTIC_DEFINITIONS
@@ -59,23 +108,30 @@ export class FS2EBlessingCurseSheet extends FS2EItemSheet {
 			...LEARNED_SKILLS_BANK.map((entry) => ({ key: `skill:${entry.key}`, label: entry.label }))
 		]).map((entry) => ({ value: entry.key, label: entry.label }));
 
-		data.view.alwaysActive = Boolean(readValue(system, "alwaysActive", false));
 		data.view.points = normalizeSignedNumber(readValue(system, "points", "0"));
 		data.view.effectLine = {
 			amount: normalizeEffectAmount(readValue(system, "effectLine.amount", "")),
 			target: String(readValue(system, "effectLine.target", "")).trim(),
 			note: String(readValue(system, "effectLine.note", "")).trim()
 		};
+		data.view.lockedEffectSummary = buildBlessingCurseSummaryText(system);
 
 		return data;
 	}
 
 	async _updateObject(event, formData) {
-		formData["system.alwaysActive"] = !!formData["system.alwaysActive"];
-		formData["system.points"] = normalizeSignedNumber(formData["system.points"]);
-		formData["system.effectLine.amount"] = normalizeEffectAmount(formData["system.effectLine.amount"]);
-		formData["system.effectLine.target"] = String(formData["system.effectLine.target"] ?? "").trim();
-		formData["system.effectLine.note"] = String(formData["system.effectLine.note"] ?? "").trim();
+		if (Object.prototype.hasOwnProperty.call(formData, "system.points")) {
+			formData["system.points"] = normalizeSignedNumber(formData["system.points"]);
+		}
+		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.amount")) {
+			formData["system.effectLine.amount"] = normalizeEffectAmount(formData["system.effectLine.amount"]);
+		}
+		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.target")) {
+			formData["system.effectLine.target"] = String(formData["system.effectLine.target"] ?? "").trim();
+		}
+		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.note")) {
+			formData["system.effectLine.note"] = String(formData["system.effectLine.note"] ?? "").trim();
+		}
 		return super._updateObject(event, formData);
 	}
 }

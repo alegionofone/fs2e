@@ -1086,16 +1086,29 @@
         "common"
       ]
     },
-    "beneficeAffliction": {
-      "templates": [
-        "common"
-      ]
-    },
-    "blessingCurse": {
-      "templates": [
-        "common"
-      ]
-    },
+      "beneficeAffliction": {
+        "templates": [
+          "common"
+        ],
+        "points": "0",
+        "effectLine": {
+          "amount": "",
+          "target": "",
+          "note": ""
+        }
+      },
+      "blessingCurse": {
+        "templates": [
+          "common"
+        ],
+        "points": "0",
+        "alwaysActive": false,
+        "effectLine": {
+          "amount": "",
+          "target": "",
+          "note": ""
+        }
+      },
     "equipment": {
       "templates": [
         "common"

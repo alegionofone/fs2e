@@ -124,6 +124,44 @@ const parseJsonArray = (value, { fieldLabel }) => {
 	return parsed;
 };
 
+const CHARACTERISTIC_LABEL_BY_KEY = Object.fromEntries(
+	CHARACTERISTIC_DEFINITIONS.map((entry) => [String(entry?.key ?? "").trim(), String(entry?.label ?? "").trim()])
+);
+
+const SKILL_LABEL_BY_KEY = Object.fromEntries(
+	[...NATURAL_SKILLS_BANK, ...LEARNED_SKILLS_BANK].map((entry) => [String(entry?.key ?? "").trim(), String(entry?.label ?? "").trim()])
+);
+
+const formatBlessingCurseTarget = (target) => {
+	const text = String(target ?? "").trim();
+	if (!text) return "";
+
+	const [type, key] = text.split(":");
+	const normalizedType = String(type ?? "").trim().toLowerCase();
+	const normalizedKey = String(key ?? "").trim();
+	if (!normalizedKey) return text;
+
+	if (normalizedType === "characteristic") {
+		return String(CHARACTERISTIC_LABEL_BY_KEY[normalizedKey] ?? normalizedKey).trim();
+	}
+
+	if (normalizedType === "skill") {
+		return String(SKILL_LABEL_BY_KEY[normalizedKey] ?? normalizedKey).trim();
+	}
+
+	return text;
+};
+
+const buildBlessingCurseSummaryText = (system = {}) => {
+	const amount = String(system?.effectLine?.amount ?? "").trim();
+	const target = formatBlessingCurseTarget(system?.effectLine?.target);
+	const note = String(system?.effectLine?.note ?? "").trim();
+	const points = String(system?.points ?? "").trim();
+	const effect = [amount, target, note].filter(Boolean).join(" ");
+	const pointsText = points ? `(${points}pts)` : "";
+	return [effect, pointsText].filter(Boolean).join(" ").trim();
+};
+
 const CHARACTERISTIC_PATH_BY_KEY = {
 	strength: "body.strength",
 	dexterity: "body.dexterity",
@@ -456,7 +494,9 @@ const resolveLinkedItems = async (entries = []) => {
 			return {
 				uuid,
 				name,
-				hasUuid: Boolean(uuid)
+				hasUuid: Boolean(uuid),
+				type: String(item?.type ?? "").trim(),
+				summaryText: item?.type === "blessingCurse" ? buildBlessingCurseSummaryText(item.system ?? {}) : ""
 			};
 		})
 	);

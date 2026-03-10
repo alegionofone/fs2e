@@ -2,18 +2,6 @@ const MODULE_ID = "fs2e";
 const LOCK_SETTING_KEY = "sheetLockState";
 const LOCK_FLAG_KEY = "sheetLocked";
 const LOCK_BUTTON_CLASS = "fs2e-sheet-lock-toggle";
-const ITEM_TAG_BLOCK_EVENTS = ["click", "mousedown", "keydown"];
-const ITEM_TAG_BLOCK_SELECTOR = [
-  ".fs2e-tag-chip-remove",
-  ".history-chip-remove",
-  ".tagify__tag__removeBtn",
-  ".fs2e-tag-input",
-  ".history-language-input",
-  ".tagify__input",
-  ".tagify"
-].join(", ");
-const ITEM_TAG_BLOCK_HANDLERS = new WeakMap();
-
 const getSheetDocument = (app) => app?.actor ?? app?.item ?? app?.object ?? null;
 
 const supportsSheetLock = (document) => {
@@ -79,48 +67,6 @@ const applyLockStateToSheet = (app, html, locked) => {
   appRoot.dataset.sheetLocked = locked ? "1" : "0";
 };
 
-const setItemTagLockInterceptors = (root, locked) => {
-  if (!root) return;
-
-  const existingHandler = ITEM_TAG_BLOCK_HANDLERS.get(root);
-
-  if (!locked) {
-    if (!existingHandler) return;
-    for (const eventName of ITEM_TAG_BLOCK_EVENTS) {
-      root.removeEventListener(eventName, existingHandler, true);
-    }
-    ITEM_TAG_BLOCK_HANDLERS.delete(root);
-    return;
-  }
-
-  if (existingHandler) return;
-
-  const handler = (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const blockedNode = target.closest(ITEM_TAG_BLOCK_SELECTOR);
-    if (!blockedNode || !root.contains(blockedNode)) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-  };
-
-  for (const eventName of ITEM_TAG_BLOCK_EVENTS) {
-    root.addEventListener(eventName, handler, true);
-  }
-  ITEM_TAG_BLOCK_HANDLERS.set(root, handler);
-};
-
-const applyItemTagLockState = (html, locked) => {
-  const root = html?.[0];
-  if (!root) return;
-
-  setItemTagLockInterceptors(root, !!locked);
-
-  for (const node of root.querySelectorAll(".tagify__tag__removeBtn, .fs2e-tag-chip-remove, .history-chip-remove")) {
-    node.hidden = !!locked;
-  }
-};
-
 const ensureLockButton = (app, locked) => {
   const appRoot = app?.element?.[0];
   if (!appRoot) return;
@@ -141,9 +87,6 @@ const ensureLockButton = (app, locked) => {
     event.stopPropagation();
     const document = getSheetDocument(app);
     if (!supportsSheetLock(document)) return;
-    if (typeof app?.submit === "function") {
-      await app.submit({ preventClose: true }).catch(() => {});
-    }
     await setSheetLockState(document, !locked);
     app.render(true);
   });
@@ -158,9 +101,6 @@ const onRenderSheet = (app, html) => {
   const state = getSheetLockState(document);
   ensureLockButton(app, state.locked);
   applyLockStateToSheet(app, html, state.locked);
-  if (document?.documentName === "Item") {
-    applyItemTagLockState(html, state.locked);
-  }
 };
 
 export const registerSheetLockMode = () => {

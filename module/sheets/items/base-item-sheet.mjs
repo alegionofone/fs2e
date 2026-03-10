@@ -10,29 +10,29 @@ export class FS2EItemSheet extends ItemSheet {
 
   _prepareTagifyInput(input) {
     if (!input) return;
-    const locked = getSheetLockState(this.item).locked;
-    if (locked) return;
     input.removeAttribute("disabled");
     input.removeAttribute("readonly");
   }
 
-  _bindTagifyDropdownInteractions(tagify) {
+  _setTagifyInteractive(tagify, interactive) {
     if (!tagify) return;
 
-    if (!getSheetLockState(this.item).locked) {
-      if (typeof tagify.setDisabled === "function") tagify.setDisabled(false);
-      else if (typeof tagify.setReadonly === "function") tagify.setReadonly(false);
-      else {
-        if (tagify.settings) {
-          tagify.settings.disabled = false;
-          tagify.settings.readonly = false;
-        }
-        if (typeof tagify.setContentEditable === "function") tagify.setContentEditable(true);
+    if (typeof tagify.setReadonly === "function") tagify.setReadonly(!interactive);
+    else if (typeof tagify.setDisabled === "function") tagify.setDisabled(!interactive);
+    else {
+      if (tagify.settings) {
+        tagify.settings.readonly = !interactive;
+        tagify.settings.disabled = false;
       }
+      if (typeof tagify.setContentEditable === "function") tagify.setContentEditable(!!interactive);
     }
+  }
+
+  _bindTagifyDropdownInteractions(tagify) {
+    if (!tagify) return;
+    this._setTagifyInteractive(tagify, true);
 
     const showDropdown = () => {
-      if (getSheetLockState(this.item).locked) return;
       const currentValue = String(tagify.input?.raw?.call(tagify) ?? "").trim();
       tagify.dropdown.show(currentValue);
     };
@@ -83,6 +83,21 @@ export class FS2EItemSheet extends ItemSheet {
         : [];
 
     return [...new Set(values.map((tag) => String(tag).trim()).filter(Boolean))];
+  }
+
+  async _pickHeaderImage() {
+    const current = String(this.item?.img ?? "").trim();
+    const fp = new FilePicker({
+      type: "image",
+      current,
+      callback: async (path) => {
+        const next = String(path ?? "").trim();
+        if (!next || next === current) return;
+        await this.item.update({ img: next });
+      }
+    });
+
+    return fp.browse();
   }
 
   _measureDesiredHeight() {
@@ -226,6 +241,14 @@ export class FS2EItemSheet extends ItemSheet {
     html.on("click", ".sheet-tabs .item", () => this._scheduleHeightSyncBurst());
     html.on("input keyup paste", ".editor-content", () => this._scheduleHeightSyncBurst());
 
+    if (this.isEditable && !getSheetLockState(this.item).locked) {
+      html.on("click", ".profile-img[data-edit='img']", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        await this._pickHeaderImage();
+      });
+    }
+
     const root = html[0];
     this._setupHeightObservers(root);
 
@@ -234,6 +257,7 @@ export class FS2EItemSheet extends ItemSheet {
       this._headerTagify?.destroy();
       const whitelist = getTagMenuForItemType(this.item.type);
       const current = this._normalizeTags(this._getStoredTags());
+      const sheetLocked = getSheetLockState(this.item).locked === true;
       this._prepareTagifyInput(input);
 
       this._headerTagify = new Tagify(input, {
@@ -249,7 +273,8 @@ export class FS2EItemSheet extends ItemSheet {
       });
 
       if (current.length) this._headerTagify.addTags(current, true, true);
-      this._bindTagifyDropdownInteractions(this._headerTagify);
+      if (sheetLocked) this._setTagifyInteractive(this._headerTagify, false);
+      else this._bindTagifyDropdownInteractions(this._headerTagify);
       let syncingHeaderTags = false;
       const commitHeaderTags = async () => {
         this._scheduleHeightSyncBurst();

@@ -112,6 +112,35 @@
             .fs2e-tag-surface .tagify,
             .tagify.fs2e-tagify-base {
                 background: var(--color-grey-lt-40) !important;
+                opacity: 1;
+            }
+
+            .fs2e-tag-surface .tagify[readonly] > .tagify__input,
+            .tagify.fs2e-tagify-base[readonly] > .tagify__input {
+                width: 0 !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: 0 !important;
+            }
+
+            .fs2e-tag-surface .tagify[readonly] .tagify__tag > div::before,
+            .tagify.fs2e-tagify-base[readonly] .tagify__tag > div::before {
+                animation: none !important;
+                background: none !important;
+                box-shadow: 0 0 0 var(--tag-inset-shadow-size) var(--tag-bg) inset !important;
+                filter: none !important;
+            }
+
+            .fs2e-tag-surface .tagify[readonly] .tagify__tag .tagify__tag__removeBtn,
+            .tagify.fs2e-tagify-base[readonly] .tagify__tag .tagify__tag__removeBtn {
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+
+            .fs2e-tag-surface .tagify[readonly] .tagify__tag,
+            .tagify.fs2e-tagify-base[readonly] .tagify__tag {
+                margin-block: 5px !important;
             }
         }
     }

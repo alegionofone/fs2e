@@ -3,25 +3,31 @@ import { CHARACTERISTIC_DEFINITIONS } from "../../global/characteristics/definit
 import { LEARNED_SKILLS_BANK, NATURAL_SKILLS_BANK } from "../../global/skills/definitions.mjs";
 
 const readValue = (system, path, fallback = "") => {
-	const value = foundry.utils.getProperty(system, path);
-	return value === undefined || value === null ? fallback : value;
+	const directValue = foundry.utils.getProperty(system, path);
+	if (directValue !== undefined && directValue !== null) return directValue;
+
+	const legacyValue = foundry.utils.getProperty(system, `data.${path}`);
+	return legacyValue === undefined || legacyValue === null ? fallback : legacyValue;
 };
 
 const normalizeSignedNumber = (value) => {
 	const text = String(value ?? "").trim();
 	if (!text) return "0";
-	const match = text.replace(/\s+/g, "").match(/^([+-]?)(\d{1,2})$/);
+	const normalizedText = text.replace(/[−–—]/g, "-").replace(/\s+/g, "");
+	const match = normalizedText.match(/^([+-]?)(\d{1,2})$/);
 	if (!match) return "0";
-	const sign = match[1] === "-" ? "-" : "";
+	const sign = match[1] === "-" ? "-" : match[1] === "+" ? "+" : "";
 	return `${sign}${Number(match[2])}`;
 };
 
 const normalizeEffectAmount = (value) => {
 	const text = String(value ?? "").trim();
 	if (!text) return "";
-	const match = text.replace(/\s+/g, "").match(/^([+-])(\d{1,2})$/);
+	const normalizedText = text.replace(/[−–—]/g, "-").replace(/\s+/g, "");
+	const match = normalizedText.match(/^([+-]?)(\d{1,2})$/);
 	if (!match) return "";
-	return `${match[1]}${Number(match[2])}`;
+	const sign = match[1] === "-" ? "-" : "+";
+	return `${sign}${Number(match[2])}`;
 };
 
 const uniqueByKey = (entries = []) => {
@@ -40,9 +46,14 @@ const uniqueByKey = (entries = []) => {
 export class FS2EBeneficeAfflictionSheet extends FS2EItemSheet {
 	async getData(options = {}) {
 		const data = await super.getData(options);
-		const system = data.system ?? {};
+		const system = foundry.utils.mergeObject(
+			foundry.utils.deepClone(this.item?._source?.system ?? {}),
+			data.system ?? {},
+			{ inplace: false }
+		);
 
 		data.view = data.view ?? {};
+		data.system = system;
 
 		const characteristicTargets = uniqueByKey(
 			CHARACTERISTIC_DEFINITIONS
@@ -70,10 +81,18 @@ export class FS2EBeneficeAfflictionSheet extends FS2EItemSheet {
 	}
 
 	async _updateObject(event, formData) {
-		formData["system.points"] = normalizeSignedNumber(formData["system.points"]);
-		formData["system.effectLine.amount"] = normalizeEffectAmount(formData["system.effectLine.amount"]);
-		formData["system.effectLine.target"] = String(formData["system.effectLine.target"] ?? "").trim();
-		formData["system.effectLine.note"] = String(formData["system.effectLine.note"] ?? "").trim();
+		if (Object.prototype.hasOwnProperty.call(formData, "system.points")) {
+			formData["system.points"] = normalizeSignedNumber(formData["system.points"]);
+		}
+		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.amount")) {
+			formData["system.effectLine.amount"] = normalizeEffectAmount(formData["system.effectLine.amount"]);
+		}
+		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.target")) {
+			formData["system.effectLine.target"] = String(formData["system.effectLine.target"] ?? "").trim();
+		}
+		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.note")) {
+			formData["system.effectLine.note"] = String(formData["system.effectLine.note"] ?? "").trim();
+		}
 		return super._updateObject(event, formData);
 	}
 }

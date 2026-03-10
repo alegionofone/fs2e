@@ -229,6 +229,31 @@ nav.tabs [data-tab]:hover {
 .app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .fs2e-tag-surface .tagify,
 .app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .tagify.fs2e-tagify-base {
   background: var(--color-grey-lt-40) !important;
+  opacity: 1;
+}
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .fs2e-tag-surface .tagify[readonly] > .tagify__input,
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .tagify.fs2e-tagify-base[readonly] > .tagify__input {
+  width: 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .fs2e-tag-surface .tagify[readonly] .tagify__tag > div::before,
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .tagify.fs2e-tagify-base[readonly] .tagify__tag > div::before {
+  animation: none !important;
+  background: none !important;
+  box-shadow: 0 0 0 var(--tag-inset-shadow-size) var(--tag-bg) inset !important;
+  filter: none !important;
+}
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .fs2e-tag-surface .tagify[readonly] .tagify__tag .tagify__tag__removeBtn,
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .tagify.fs2e-tagify-base[readonly] .tagify__tag .tagify__tag__removeBtn {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .fs2e-tag-surface .tagify[readonly] .tagify__tag,
+.app.window-app.sheet.item.fs2e-sheet-locked .sheet-tags-slot .tagify.fs2e-tagify-base[readonly] .tagify__tag {
+  margin-block: 5px !important;
 }
 /* Tooltip formatting */
 #tooltip.fs2e-multiline {
@@ -1663,7 +1688,7 @@ nav.tabs [data-tab]:hover {
   border: 0;
   width: 100%;
   padding-bottom: 1px;
-  border-bottom: 1px solid currentColor;
+  border-bottom: 1px solid var(--color-grey-lt);
   font-size: var(--font-size-15);
   font-style: italic;
   font-weight: 700;
@@ -1821,8 +1846,9 @@ nav.tabs [data-tab]:hover {
 .app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-input-points {
   text-align: center;
 }
-.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-always-active-row {
-  margin-bottom: 0;
+.app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-locked-summary {
+  margin: 0;
+  line-height: 1.5;
 }
 @media (max-width: 540px) {
   .app.window-app.sheet.item .fs2e-item-sheet .blessing-curse-effect-grid {
@@ -2115,6 +2141,13 @@ nav.tabs [data-tab]:hover {
   color: inherit;
   text-decoration: underline;
   cursor: pointer;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .history-locked-item-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 4px;
+  font-weight: 700;
 }
 @media (max-width: 720px) {
   .app.window-app.sheet.item .fs2e-item-sheet .history-mod-row,

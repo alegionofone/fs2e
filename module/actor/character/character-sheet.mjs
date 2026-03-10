@@ -397,11 +397,10 @@ const readCharacteristicChoiceOptions = (entry) => {
 const promptHistoryCharacteristicChoices = async ({ historyName, slotLabel, rows = [] }) => {
   if (!rows.length) return {};
 
-  const dialogTitleParts = ["Characteristic Assignment"];
-  if (historyName) dialogTitleParts.push(String(historyName));
-  if (slotLabel) dialogTitleParts.push(String(slotLabel));
+  const dialogTitle = "Trait Assignment";
 
   const content = await renderTemplate("systems/fs2e/templates/dialogs/history-characteristic-choice.hbs", {
+    title: dialogTitle,
     rows
   });
 
@@ -415,7 +414,7 @@ const promptHistoryCharacteristicChoices = async ({ historyName, slotLabel, rows
 
     let dialog = null;
     dialog = new Dialog({
-      title: dialogTitleParts.join(" - "),
+      title: dialogTitle,
       content,
       buttons: {},
       render: (html) => {
@@ -466,15 +465,6 @@ let lastParentSkillPrompt = { key: "", at: 0, result: null };
 
 const buildParentSkillChildOptions = ({ actor, groupKey }) => {
   const baseLabels = Array.isArray(LEARNED_GROUP_OPTION_LABELS[groupKey]) ? LEARNED_GROUP_OPTION_LABELS[groupKey] : [];
-  const groupValue = actor?.system?.skills?.learned?.[groupKey];
-  const existing = isLearnedGroupContainer(groupValue)
-    ? Object.entries(groupValue)
-      .filter(([key, value]) => !isDisplayMetaKey(key) && hasSkillScore(value))
-      .map(([key, value]) => {
-        const label = String(value?.display ?? "").trim() || formatSkillLabel(key);
-        return { key: String(key ?? "").trim(), label };
-      })
-    : [];
 
   const out = [];
   const seen = new Set();
@@ -488,7 +478,6 @@ const buildParentSkillChildOptions = ({ actor, groupKey }) => {
     out.push({ key: normalizedKey, label: normalizedLabel });
   };
 
-  for (const entry of existing) push(entry);
   for (const label of baseLabels) push({ key: normalizeSkillKey(label), label });
 
   return out.sort((a, b) => a.label.localeCompare(b.label));
@@ -529,6 +518,7 @@ const promptParentSkillChoices = async ({ itemName, rows = [] }) => {
 
   const rowsForTemplate = rows.map((row) => {
     const defaultKey = String(row?.defaultKey ?? "").trim().toLowerCase();
+    const customValue = String(row?.customValue ?? "").trim();
     const options = (Array.isArray(row?.options) ? row.options : []).map((option, idx) => {
       const optionKey = String(option?.key ?? "").trim().toLowerCase();
       return {
@@ -540,7 +530,8 @@ const promptParentSkillChoices = async ({ itemName, rows = [] }) => {
     });
     return {
       ...row,
-      options
+      options,
+      customValue
     };
   });
 
@@ -794,8 +785,10 @@ const resolveHistoryCharacteristicAdjustments = async ({ actor, itemName, slotLa
 
   for (const entry of baseSkillAdjustments) {
     const normalizedPath = normalizeSkillEffectPath(entry?.path || entry?.key);
-    const match = String(normalizedPath).match(/^learned\.([^.]+)$/i);
-    const groupKey = String(match?.[1] ?? "").trim();
+    const parentMatch = String(normalizedPath).match(/^learned\.([^.]+)$/i);
+    const childMatch = String(normalizedPath).match(/^learned\.([^.]+)\.([^.]+)$/i);
+    const groupKey = String(parentMatch?.[1] ?? childMatch?.[1] ?? "").trim();
+    const existingChildKey = normalizeSkillKey(childMatch?.[2]);
     const isParentGroup = groupKey && LEARNED_SKILL_GROUP_KEYS.has(groupKey);
 
     if (!isParentGroup) {
@@ -810,14 +803,24 @@ const resolveHistoryCharacteristicAdjustments = async ({ actor, itemName, slotLa
     }
 
     parentPathsToSkip.add(normalizedPath);
+    const explicitDisplay = String(entry?.display ?? "").trim();
+    const labelText = String(entry?.label ?? "").trim();
+    const entryDisplay = explicitDisplay || (
+      labelText.includes(":")
+        ? String(labelText.split(":").slice(1).join(":")).trim()
+        : ""
+    );
+    const matchingOption = options.find((option) => String(option?.key ?? "").trim().toLowerCase() === existingChildKey?.toLowerCase());
     pendingParentRows.push({
       id: `${groupKey}-${pendingParentRows.length}`,
       groupKey,
       groupLabel: formatSkillLabel(groupKey),
       entry,
       options,
-      defaultKey: String(options[0]?.key ?? "")
+      defaultKey: matchingOption ? String(matchingOption.key ?? "") : String(options[0]?.key ?? ""),
+      customValue: matchingOption ? "" : (entryDisplay || String(childMatch?.[2] ?? "").trim())
     });
+    if (childMatch) continue;
   }
 
   if (pendingParentRows.length) {
@@ -858,11 +861,13 @@ const resolveHistoryCharacteristicAdjustments = async ({ actor, itemName, slotLa
     mergeSkillEffect(skillEffects, path, entry?.value);
   }
 
-  // Preserve source-only mapped skills, but do not double-count paths already rebuilt from adjustments.
-  for (const [path, amount] of Object.entries(sourceSkillEffects)) {
-    const key = normalizeSkillEffectPath(path);
-    if (!key || normalizedPaths.has(key) || parentPathsToSkip.has(key)) continue;
-    skillEffects[key] = Number(amount);
+  // Only fall back to legacy effect-map skills when there are no explicit skill adjustments on the item.
+  if (!rawSkillAdjustments.length) {
+    for (const [path, amount] of Object.entries(sourceSkillEffects)) {
+      const key = normalizeSkillEffectPath(path);
+      if (!key || normalizedPaths.has(key) || parentPathsToSkip.has(key)) continue;
+      skillEffects[key] = Number(amount);
+    }
   }
 
   nextSystem.characteristicsAdjustments = resolvedAdjustments;
@@ -2046,6 +2051,7 @@ export class FS2ECharacterSheet extends ActorSheet {
     const normalizedGroupKey = String(groupKey ?? "").trim();
     const normalizedChildKey = normalizeSkillKey(childKey);
     const displayLabel = String(display ?? "").trim();
+    const numericAmount = Number.isFinite(Number(amount)) ? Number(amount) : 0;
     if (!normalizedGroupKey || !normalizedChildKey || !displayLabel) return;
 
     const learned = foundry.utils.deepClone(this.actor.system?.skills?.learned ?? {});
@@ -2057,7 +2063,8 @@ export class FS2ECharacterSheet extends ActorSheet {
       const current = group[existingEntry] ?? {};
       group[existingEntry] = {
         ...current,
-        display: displayLabel
+        display: displayLabel,
+        history: numericAmount
       };
       await this.actor.update({ [`system.skills.learned.${normalizedGroupKey}`]: group });
       return;
@@ -2068,7 +2075,7 @@ export class FS2ECharacterSheet extends ActorSheet {
       mod: 0,
       temp: 0,
       max: 8,
-      history: 0,
+      history: numericAmount,
       xp: 0,
       roll: 0,
       display: displayLabel

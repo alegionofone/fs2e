@@ -42,22 +42,30 @@
           {{/if}}
 
           {{#if view.lockedBlessingCurseItems.length}}
-          <div class="history-traits-block">
-            <h3>Blessings/Curses</h3>
-            <p class="history-locked-summary">
+            <div class="history-traits-block">
+              <h3>Blessings/Curses</h3>
               {{#each view.lockedBlessingCurseItems}}
-                {{#if this.hasUuid}}<a class="open-history-linked-item" data-uuid="{{this.uuid}}">{{this.name}}</a>{{else}}{{this.name}}{{/if}}{{#unless @last}}, {{/unless}}
+              <p class="history-locked-summary">
+                {{#if this.hasUuid}}
+                <a class="open-history-linked-item history-locked-item-link" data-uuid="{{this.uuid}}">
+                  <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                  <strong>{{this.name}}:</strong>
+                </a>
+                {{else}}
+                <strong>{{this.name}}:</strong>
+                {{/if}}
+                {{#if this.summaryText}}{{this.summaryText}}{{else}}No effect data.{{/if}}
+              </p>
               {{/each}}
-            </p>
-          </div>
-          {{/if}}
+            </div>
+            {{/if}}
 
           {{#if view.lockedBeneficeAfflictionItems.length}}
           <div class="history-traits-block">
             <h3>Benefices/Afflictions</h3>
             <p class="history-locked-summary">
               {{#each view.lockedBeneficeAfflictionItems}}
-                {{#if this.hasUuid}}<a class="open-history-linked-item" data-uuid="{{this.uuid}}">{{this.name}}</a>{{else}}{{this.name}}{{/if}}{{#unless @last}}, {{/unless}}
+                {{#if this.hasUuid}}<a class="open-history-linked-item history-locked-item-link" data-uuid="{{this.uuid}}"><i class="fa-solid fa-briefcase" aria-hidden="true"></i><strong>{{this.name}}</strong></a>{{else}}<strong>{{this.name}}</strong>{{/if}}{{#unless @last}}, {{/unless}}
               {{/each}}
             </p>
           </div>

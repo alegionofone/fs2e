@@ -11,6 +11,12 @@
 
     <div class="tab" data-group="primary" data-tab="effect">
       <section class="item-section">
+        {{#if view.sheetLock.locked}}
+        <p class="blessing-curse-locked-summary">
+          <strong>{{item.name}}:</strong>
+          {{#if view.lockedEffectSummary}}{{view.lockedEffectSummary}}{{else}}No effect data.{{/if}}
+        </p>
+        {{else}}
         <div class="blessing-curse-effect-grid">
           <span class="blessing-curse-effect-label">Bonus</span>
           <span class="blessing-curse-effect-label">Trait</span>
@@ -62,13 +68,7 @@
             placeholder="0"
           />
         </div>
-
-        <label class="species-form-row blessing-curse-always-active-row">
-          <span class="species-row-label">Always Active</span>
-          <span class="species-row-value">
-            <input name="system.alwaysActive" type="checkbox" {{#if view.alwaysActive}}checked{{/if}} />
-          </span>
-        </label>
+        {{/if}}
       </section>
     </div>
   </section>
