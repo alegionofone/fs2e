@@ -217,54 +217,74 @@
 					<tbody>
 						{{#if view.actions.combat.hasAny}}
 							{{#if view.actions.combat.basicRows.length}}
-								<tr class="fs2e-bc-section-row">
-									<td colspan="7"><span class="fs2e-bc-section-text">Basic Actions</span></td>
+								<tr class="combat-subheading-row" data-action="toggle-action-section" data-section="basic" data-collapsed="{{#if view.actionSections.basicExpanded}}0{{else}}1{{/if}}">
+									<td colspan="7">
+										<button type="button" class="combat-subheading-toggle">Basic Actions</button>
+									</td>
 								</tr>
-								{{#each view.actions.combat.basicRows}}
-									<tr class="combat-action-row">
-										<td class="traits-title-cell">
-											{{#if this.rollable}}
-												<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}">{{this.title}}</a>
-											{{else}}
-												{{this.title}}
-											{{/if}}
-										</td>
-										<td class="traits-points-cell">{{#if this.level}}{{this.level}}{{else}}-{{/if}}</td>
-										<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
-										<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
-										<td class="traits-points-cell">{{#if this.init}}{{this.init}}{{else}}-{{/if}}</td>
-										<td class="traits-points-cell">{{#if this.dmg}}{{this.dmg}}{{else}}-{{/if}}</td>
-										<td class="traits-open-cell fs2e-action-links-cell">
-											{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open">Open</a>{{/if}}
-											{{#if this.canDelete}}<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove">x</a>{{/if}}
-										</td>
-									</tr>
-								{{/each}}
+								{{#if view.actionSections.basicExpanded}}
+									{{#each view.actions.combat.basicRows}}
+										<tr class="combat-action-row" data-combat-group-row="basic">
+											<td class="traits-title-cell">
+												{{#if this.rollable}}
+													<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}" data-is-combat="true">{{this.title}}</a>
+												{{else}}
+													{{this.title}}
+												{{/if}}
+											</td>
+											<td class="traits-points-cell">{{#if this.level}}{{this.level}}{{else}}-{{/if}}</td>
+											<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
+											<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
+											<td class="traits-points-cell">{{#if this.init}}{{this.init}}{{else}}-{{/if}}</td>
+											<td class="traits-points-cell">{{#if this.dmg}}{{this.dmg}}{{else}}-{{/if}}</td>
+											<td class="traits-open-cell fs2e-action-links-cell">
+												<span class="traits-open-actions">
+													{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open Action"><i class="fa-solid fa-briefcase"></i></a>{{/if}}
+													{{#if this.canDelete}}
+														<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove Action">x</a>
+													{{else}}
+														<span class="delete-actor-action-placeholder" aria-hidden="true">x</span>
+													{{/if}}
+												</span>
+											</td>
+										</tr>
+									{{/each}}
+								{{/if}}
 							{{/if}}
 							{{#each view.actions.combat.subtypeGroups}}
-								<tr class="fs2e-bc-section-row">
-									<td colspan="7"><span class="fs2e-bc-section-text">{{this.label}}</span></td>
+								<tr class="combat-subheading-row" data-action="toggle-action-section" data-section="{{this.key}}" data-collapsed="{{#if this.expanded}}0{{else}}1{{/if}}">
+									<td colspan="7">
+										<button type="button" class="combat-subheading-toggle">{{this.label}}</button>
+									</td>
 								</tr>
-								{{#each this.rows}}
-									<tr class="combat-action-row">
-										<td class="traits-title-cell">
-											{{#if this.rollable}}
-												<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}">{{this.title}}</a>
-											{{else}}
-												{{this.title}}
-											{{/if}}
-										</td>
-										<td class="traits-points-cell">{{#if this.level}}{{this.level}}{{else}}-{{/if}}</td>
-										<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
-										<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
-										<td class="traits-points-cell">{{#if this.init}}{{this.init}}{{else}}-{{/if}}</td>
-										<td class="traits-points-cell">{{#if this.dmg}}{{this.dmg}}{{else}}-{{/if}}</td>
-										<td class="traits-open-cell fs2e-action-links-cell">
-											{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open">Open</a>{{/if}}
-											{{#if this.canDelete}}<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove">x</a>{{/if}}
-										</td>
-									</tr>
-								{{/each}}
+								{{#if this.expanded}}
+									{{#each this.rows}}
+										<tr class="combat-action-row" data-combat-group-row="{{../key}}">
+											<td class="traits-title-cell">
+												{{#if this.rollable}}
+													<a class="roll-actor-action" data-skill-key="{{this.skillKey}}" data-characteristic-key="{{this.characteristicKey}}" data-title="{{this.title}}" data-is-combat="true">{{this.title}}</a>
+												{{else}}
+													{{this.title}}
+												{{/if}}
+											</td>
+											<td class="traits-points-cell">{{#if this.level}}{{this.level}}{{else}}-{{/if}}</td>
+											<td>{{#if this.roll}}{{this.roll}}{{else}}-{{/if}}</td>
+											<td class="traits-points-cell">{{#if this.goal}}{{this.goal}}{{else}}-{{/if}}</td>
+											<td class="traits-points-cell">{{#if this.init}}{{this.init}}{{else}}-{{/if}}</td>
+											<td class="traits-points-cell">{{#if this.dmg}}{{this.dmg}}{{else}}-{{/if}}</td>
+											<td class="traits-open-cell fs2e-action-links-cell">
+												<span class="traits-open-actions">
+													{{#if this.uuid}}<a class="open-actor-action" data-uuid="{{this.uuid}}" title="Open Action"><i class="fa-solid fa-briefcase"></i></a>{{/if}}
+													{{#if this.canDelete}}
+														<a class="delete-actor-action" data-item-id="{{this.id}}" title="Remove Action">x</a>
+													{{else}}
+														<span class="delete-actor-action-placeholder" aria-hidden="true">x</span>
+													{{/if}}
+												</span>
+											</td>
+										</tr>
+									{{/each}}
+								{{/if}}
 							{{/each}}
 						{{else}}
 							<tr class="traits-empty-row"><td colspan="7">No combat actions.</td></tr>

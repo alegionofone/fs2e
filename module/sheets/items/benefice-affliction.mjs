@@ -42,6 +42,7 @@ export class FS2EBeneficeAfflictionSheet extends FS2EItemSheet {
 		if (Object.prototype.hasOwnProperty.call(formData, "system.effectLine.note")) {
 			formData["system.effectLine.note"] = String(formData["system.effectLine.note"] ?? "").trim();
 		}
+
 		return super._updateObject(event, formData);
 	}
 }

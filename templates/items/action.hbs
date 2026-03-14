@@ -4,6 +4,7 @@
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">Description</a>
     <a class="item" data-tab="action">Action</a>
+    <a class="item" data-tab="hooks">Hooks</a>
   </nav>
 
   <section class="sheet-body">
@@ -12,10 +13,12 @@
     <div class="tab" data-group="primary" data-tab="action">
       <section class="item-section fs2e-action-sheet-grid">
         <div class="fs2e-action-row">
-          <label class="fs2e-action-cell fs2e-action-cell-level">
-            <span class="fs2e-action-head">Level</span>
-            <input class="traits-input" name="system.level" type="number" step="1" value="{{view.level}}" />
-          </label>
+          {{#if view.showCombatFields}}
+            <label class="fs2e-action-cell fs2e-action-cell-level">
+              <span class="fs2e-action-head">Level</span>
+              <input class="traits-input" name="system.level" type="number" step="1" value="{{view.level}}" />
+            </label>
+          {{/if}}
 
           <div class="fs2e-action-cell fs2e-action-cell-roll">
             <span class="fs2e-action-head">Characteristic</span>
@@ -40,21 +43,77 @@
             </div>
           </div>
 
-          <label class="fs2e-action-cell fs2e-action-cell-compact">
-            <span class="fs2e-action-head">Initiative</span>
-            <input class="traits-input" name="system.init" type="text" value="{{view.init}}" />
-          </label>
+          {{#if view.showCombatFields}}
+            <label class="fs2e-action-cell fs2e-action-cell-compact">
+              <span class="fs2e-action-head">Initiative</span>
+              <input class="traits-input" name="system.init" type="text" value="{{view.init}}" />
+            </label>
 
-          <label class="fs2e-action-cell fs2e-action-cell-compact">
-            <span class="fs2e-action-head">Goal</span>
-            <input class="traits-input" name="system.goal" type="text" value="{{view.goal}}" />
-          </label>
+            <label class="fs2e-action-cell fs2e-action-cell-compact">
+              <span class="fs2e-action-head">Goal</span>
+              <input class="traits-input" name="system.goal" type="text" value="{{view.goal}}" />
+            </label>
 
-          <label class="fs2e-action-cell fs2e-action-cell-compact">
-            <span class="fs2e-action-head">Damage</span>
-            <input class="traits-input" name="system.dmg" type="number" step="1" value="{{view.dmg}}" />
-          </label>
+            <label class="fs2e-action-cell fs2e-action-cell-compact">
+              <span class="fs2e-action-head">Damage</span>
+              <input class="traits-input" name="system.dmg" type="number" step="1" value="{{view.dmg}}" />
+            </label>
+          {{/if}}
         </div>
+      </section>
+    </div>
+
+    <div class="tab" data-group="primary" data-tab="hooks">
+      <section class="item-section fs2e-hook-section">
+        {{#if view.actorHooks.length}}
+          <div class="fs2e-hook-list">
+            {{#each view.actorHooks}}
+              <fieldset class="fs2e-hook-entry">
+                <div class="fs2e-hook-header">
+                  <label class="fs2e-hook-title">
+                    <span class="species-row-label">Hook</span>
+                    <input type="text" name="system.actorHooks.{{this.index}}.hook" value="{{this.hook}}" readonly />
+                  </label>
+                  {{#if ../view.canEditHooks}}
+                    <button type="button" class="fs2e-hook-delete" data-action="hook-delete" data-index="{{this.index}}" title="Delete Hook">x</button>
+                  {{/if}}
+                </div>
+
+                <label class="species-form-row fs2e-hook-code-row">
+                  <span class="species-row-label">Code</span>
+                  <span class="species-row-value">
+                    <textarea
+                      class="fs2e-hook-editor"
+                      name="system.actorHooks.{{this.index}}.fn"
+                      rows="8"
+                      placeholder="// Hook code here"
+                      {{#unless ../view.canEditHooks}}readonly{{/unless}}
+                    >{{this.fn}}</textarea>
+                  </span>
+                </label>
+              </fieldset>
+            {{/each}}
+          </div>
+        {{else}}
+          <p class="blessing-curse-locked-summary">No hooks registered.</p>
+        {{/if}}
+
+        <fieldset class="fs2e-hook-entry fs2e-hook-add-row">
+          <legend>Register Hook</legend>
+          <label class="species-form-row">
+            <span class="species-row-label">Hook</span>
+            <span class="species-row-value fs2e-hook-add-controls">
+              <select name="addHook" {{#unless view.canEditHooks}}disabled{{/unless}}>
+                <option value=""></option>
+                {{#each view.actorHookChoices}}
+                  <option value="{{this.key}}">{{this.label}}</option>
+                {{/each}}
+              </select>
+              <button type="button" class="fs2e-hook-add" data-action="hook-add" {{#unless view.canEditHooks}}disabled{{/unless}}>Add</button>
+            </span>
+          </label>
+          <p class="blessing-curse-locked-summary">Structure only: these hooks are stored on the item, but no runtime executor is wired yet.</p>
+        </fieldset>
       </section>
     </div>
   </section>

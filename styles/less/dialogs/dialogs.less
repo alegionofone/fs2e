@@ -32,7 +32,8 @@
 
 .fs2e.dialog {
   &.dice-roller,
-  &.chargen-choice {
+  &.chargen-choice,
+  &.initiative-dialog {
     height: auto !important;
   }
 
@@ -40,6 +41,15 @@
     &.app.window-app.dialog.fs2e {
       background: var(--background-space) no-repeat left top;
       // Keep artwork static while resizing dialog; render 2x zoomed out.
+      background-size: 500% auto;
+      padding-top: 0;
+      border: var(--border-gold-dk-mid);
+    }
+  }
+
+  &.initiative-dialog {
+    &.app.window-app.dialog.fs2e {
+      background: var(--background-space) no-repeat left top;
       background-size: 500% auto;
       padding-top: 0;
       border: var(--border-gold-dk-mid);
@@ -58,7 +68,8 @@
 
 // Shared dialog body styles
 .fs2e-dice-roller,
-.fs2e-chargen-choice {
+.fs2e-chargen-choice,
+.fs2e-initiative-dialog {
   height: auto !important;
   display: flex;
   flex-direction: column;
@@ -475,6 +486,47 @@
     line-height: 1;
     padding: 0;
     min-width: var(--space-24);
+  }
+}
+
+.fs2e-initiative-dialog {
+  .fs2e-initiative-help {
+    margin-bottom: var(--space-8);
+    font-size: var(--font-size-12);
+    color: var(--color-gold-lt-mid);
+    line-height: 1.35;
+  }
+
+  .fs2e-initiative-grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .fs2e-initiative-slot {
+    display: grid;
+    gap: var(--space-4);
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .fs2e-initiative-summary {
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-12);
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-8);
+    border-top: var(--border-gold-dk-mid);
+  }
+
+  .fs2e-initiative-summary-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: center;
+    font-size: var(--font-size-12);
   }
 }
 

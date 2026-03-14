@@ -74,11 +74,18 @@
           {{#if view.lockedActionItems.length}}
           <div class="history-traits-block">
             <h3>Actions</h3>
+            {{#each view.lockedActionItems}}
             <p class="history-locked-summary">
-              {{#each view.lockedActionItems}}
-                {{#if this.hasUuid}}<a class="open-history-linked-item" data-uuid="{{this.uuid}}">{{this.name}}</a>{{else}}{{this.name}}{{/if}}{{#unless @last}}, {{/unless}}
-              {{/each}}
+              {{#if this.hasUuid}}
+              <a class="open-history-linked-item history-locked-item-link" data-uuid="{{this.uuid}}">
+                <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                <strong>{{this.name}}</strong>
+              </a>
+              {{else}}
+              <strong>{{this.name}}</strong>
+              {{/if}}
             </p>
+            {{/each}}
           </div>
           {{/if}}
         {{else}}

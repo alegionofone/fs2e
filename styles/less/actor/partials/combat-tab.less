@@ -1,5 +1,63 @@
 .fs2e.sheet.actor {
     .tab.combat {
+        .traits-open-actions {
+            display: inline-grid;
+            grid-template-columns: 1.25em 1.25em;
+            align-items: center;
+            justify-items: center;
+            column-gap: var(--space-6);
+        }
+
+        .open-actor-action,
+        .delete-actor-action,
+        .delete-actor-action-placeholder {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.25em;
+            line-height: 1;
+        }
+
+        .delete-actor-action-placeholder {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .combat-subheading-row td {
+            color: var(--color-gold-mid);
+            font-weight: 600;
+            padding-top: var(--space-6);
+            cursor: default;
+            user-select: none;
+        }
+
+        .combat-subheading-toggle {
+            appearance: none;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            padding: 0;
+            text-align: left;
+            font: inherit;
+        }
+
+        .combat-subheading-row[data-collapsed="0"] .combat-subheading-toggle::after {
+            content: " [-]";
+            opacity: 0.7;
+        }
+
+        .combat-subheading-row[data-collapsed="1"] .combat-subheading-toggle::after {
+            content: " [+]";
+            opacity: 0.7;
+        }
+
+        .combat-action-row .traits-title-cell {
+            padding-left: var(--space-16);
+        }
+
         .fs2e-action-links-cell {
             white-space: nowrap;
 

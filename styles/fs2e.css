@@ -304,10 +304,17 @@ nav.tabs [data-tab]:hover {
   background: none;
 }
 .fs2e.dialog.dice-roller,
-.fs2e.dialog.chargen-choice {
+.fs2e.dialog.chargen-choice,
+.fs2e.dialog.initiative-dialog {
   height: auto !important;
 }
 .fs2e.dialog.dice-roller.app.window-app.dialog.fs2e {
+  background: var(--background-space) no-repeat left top;
+  background-size: 500% auto;
+  padding-top: 0;
+  border: var(--border-gold-dk-mid);
+}
+.fs2e.dialog.initiative-dialog.app.window-app.dialog.fs2e {
   background: var(--background-space) no-repeat left top;
   background-size: 500% auto;
   padding-top: 0;
@@ -320,7 +327,8 @@ nav.tabs [data-tab]:hover {
   overflow: visible !important;
 }
 .fs2e-dice-roller,
-.fs2e-chargen-choice {
+.fs2e-chargen-choice,
+.fs2e-initiative-dialog {
   height: auto !important;
   display: flex;
   flex-direction: column;
@@ -329,27 +337,32 @@ nav.tabs [data-tab]:hover {
   color: var(--color-gold-lt);
 }
 .fs2e-dice-roller .fs2e-dialog-header,
-.fs2e-chargen-choice .fs2e-dialog-header {
+.fs2e-chargen-choice .fs2e-dialog-header,
+.fs2e-initiative-dialog .fs2e-dialog-header {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   margin-top: 0;
 }
 .fs2e-dice-roller .fs2e-dialog-header h2,
-.fs2e-chargen-choice .fs2e-dialog-header h2 {
+.fs2e-chargen-choice .fs2e-dialog-header h2,
+.fs2e-initiative-dialog .fs2e-dialog-header h2 {
   font-family: 'p22', Georgia, sans-serif;
   margin: 0;
   border: 0;
 }
 .fs2e-dice-roller .fs2e-subtitle,
-.fs2e-chargen-choice .fs2e-subtitle {
+.fs2e-chargen-choice .fs2e-subtitle,
+.fs2e-initiative-dialog .fs2e-subtitle {
   font-size: var(--font-size-12);
   color: var(--color-gold-mid);
 }
 .fs2e-dice-roller input,
 .fs2e-chargen-choice input,
+.fs2e-initiative-dialog input,
 .fs2e-dice-roller select,
-.fs2e-chargen-choice select {
+.fs2e-chargen-choice select,
+.fs2e-initiative-dialog select {
   background: transparent;
   border: var(--border-gold-dk-mid);
   color: var(--color-gold-lt);
@@ -357,19 +370,23 @@ nav.tabs [data-tab]:hover {
   font-size: var(--font-size-12);
 }
 .fs2e-dice-roller select option,
-.fs2e-chargen-choice select option {
+.fs2e-chargen-choice select option,
+.fs2e-initiative-dialog select option {
   color: #000;
 }
 .fs2e-dice-roller .fs2e-section,
-.fs2e-chargen-choice .fs2e-section {
+.fs2e-chargen-choice .fs2e-section,
+.fs2e-initiative-dialog .fs2e-section {
   padding: var(--space-8);
   border: var(--border-gold-dk-mid);
   background: var(--color-grey-dk-mid-80);
 }
 .fs2e-dice-roller .fs2e-section h3,
 .fs2e-chargen-choice .fs2e-section h3,
+.fs2e-initiative-dialog .fs2e-section h3,
 .fs2e-dice-roller .fs2e-section .fs2e-section-heading,
-.fs2e-chargen-choice .fs2e-section .fs2e-section-heading {
+.fs2e-chargen-choice .fs2e-section .fs2e-section-heading,
+.fs2e-initiative-dialog .fs2e-section .fs2e-section-heading {
   font-family: 'p22', Georgia, sans-serif;
   margin: 0 0 var(--space-6);
   background: var(--color-gold-dk);
@@ -377,7 +394,8 @@ nav.tabs [data-tab]:hover {
   border: 0;
 }
 .fs2e-dice-roller .fs2e-section .fs2e-section-heading,
-.fs2e-chargen-choice .fs2e-section .fs2e-section-heading {
+.fs2e-chargen-choice .fs2e-section .fs2e-section-heading,
+.fs2e-initiative-dialog .fs2e-section .fs2e-section-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -385,40 +403,49 @@ nav.tabs [data-tab]:hover {
   user-select: none;
 }
 .fs2e-dice-roller .fs2e-section .fs2e-section-heading::after,
-.fs2e-chargen-choice .fs2e-section .fs2e-section-heading::after {
+.fs2e-chargen-choice .fs2e-section .fs2e-section-heading::after,
+.fs2e-initiative-dialog .fs2e-section .fs2e-section-heading::after {
   content: "-";
   font-size: var(--font-size-14);
   color: var(--color-gold-lt-mid);
   line-height: 1;
 }
 .fs2e-dice-roller .fs2e-section .fs2e-section-heading:focus,
-.fs2e-chargen-choice .fs2e-section .fs2e-section-heading:focus {
+.fs2e-chargen-choice .fs2e-section .fs2e-section-heading:focus,
+.fs2e-initiative-dialog .fs2e-section .fs2e-section-heading:focus {
   outline: 1px solid var(--color-gold-mid);
 }
 .fs2e-dice-roller .fs2e-section[data-collapsed="1"] .fs2e-section-heading,
-.fs2e-chargen-choice .fs2e-section[data-collapsed="1"] .fs2e-section-heading {
+.fs2e-chargen-choice .fs2e-section[data-collapsed="1"] .fs2e-section-heading,
+.fs2e-initiative-dialog .fs2e-section[data-collapsed="1"] .fs2e-section-heading {
   margin-bottom: 0;
 }
 .fs2e-dice-roller .fs2e-section[data-collapsed="1"] .fs2e-section-heading::after,
-.fs2e-chargen-choice .fs2e-section[data-collapsed="1"] .fs2e-section-heading::after {
+.fs2e-chargen-choice .fs2e-section[data-collapsed="1"] .fs2e-section-heading::after,
+.fs2e-initiative-dialog .fs2e-section[data-collapsed="1"] .fs2e-section-heading::after {
   content: "+";
 }
 .fs2e-dice-roller .fs2e-section[data-collapsed="1"] > :not(.fs2e-section-heading),
-.fs2e-chargen-choice .fs2e-section[data-collapsed="1"] > :not(.fs2e-section-heading) {
+.fs2e-chargen-choice .fs2e-section[data-collapsed="1"] > :not(.fs2e-section-heading),
+.fs2e-initiative-dialog .fs2e-section[data-collapsed="1"] > :not(.fs2e-section-heading) {
   display: none;
 }
 .fs2e-dice-roller .fs2e-grid-roll-main,
 .fs2e-chargen-choice .fs2e-grid-roll-main,
+.fs2e-initiative-dialog .fs2e-grid-roll-main,
 .fs2e-dice-roller .fs2e-grid-roll-comp,
-.fs2e-chargen-choice .fs2e-grid-roll-comp {
+.fs2e-chargen-choice .fs2e-grid-roll-comp,
+.fs2e-initiative-dialog .fs2e-grid-roll-comp {
   display: grid;
   grid-template-columns: 9fr 1fr;
   gap: var(--space-8) var(--space-10);
 }
 .fs2e-dice-roller .fs2e-grid-roll-main label,
 .fs2e-chargen-choice .fs2e-grid-roll-main label,
+.fs2e-initiative-dialog .fs2e-grid-roll-main label,
 .fs2e-dice-roller .fs2e-grid-roll-comp label,
-.fs2e-chargen-choice .fs2e-grid-roll-comp label {
+.fs2e-chargen-choice .fs2e-grid-roll-comp label,
+.fs2e-initiative-dialog .fs2e-grid-roll-comp label {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -426,34 +453,41 @@ nav.tabs [data-tab]:hover {
 }
 .fs2e-dice-roller .fs2e-inline-block,
 .fs2e-chargen-choice .fs2e-inline-block,
+.fs2e-initiative-dialog .fs2e-inline-block,
 .fs2e-dice-roller .fs2e-diff-inline,
-.fs2e-chargen-choice .fs2e-diff-inline {
+.fs2e-chargen-choice .fs2e-diff-inline,
+.fs2e-initiative-dialog .fs2e-diff-inline {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 .fs2e-dice-roller .fs2e-sustain-sep,
-.fs2e-chargen-choice .fs2e-sustain-sep {
+.fs2e-chargen-choice .fs2e-sustain-sep,
+.fs2e-initiative-dialog .fs2e-sustain-sep {
   grid-column: 1 / -1;
   height: 1px;
   background: var(--color-gold-dk-mid);
   margin: var(--space-4) 0;
 }
 .fs2e-dice-roller .fs2e-inline-field,
-.fs2e-chargen-choice .fs2e-inline-field {
+.fs2e-chargen-choice .fs2e-inline-field,
+.fs2e-initiative-dialog .fs2e-inline-field {
   display: flex;
   align-items: center;
   gap: var(--space-8);
 }
 .fs2e-dice-roller .fs2e-inline-field select,
 .fs2e-chargen-choice .fs2e-inline-field select,
+.fs2e-initiative-dialog .fs2e-inline-field select,
 .fs2e-dice-roller .fs2e-inline-field input[type="text"],
-.fs2e-chargen-choice .fs2e-inline-field input[type="text"] {
+.fs2e-chargen-choice .fs2e-inline-field input[type="text"],
+.fs2e-initiative-dialog .fs2e-inline-field input[type="text"] {
   width: var(--fs2e-select-width);
   box-shadow: none;
 }
 .fs2e-dice-roller .fs2e-equation-row,
-.fs2e-chargen-choice .fs2e-equation-row {
+.fs2e-chargen-choice .fs2e-equation-row,
+.fs2e-initiative-dialog .fs2e-equation-row {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(4rem, 0.7fr);
@@ -461,11 +495,13 @@ nav.tabs [data-tab]:hover {
   align-items: end;
 }
 .fs2e-dice-roller .fs2e-equation-row > .fs2e-inline-plus,
-.fs2e-chargen-choice .fs2e-equation-row > .fs2e-inline-plus {
+.fs2e-chargen-choice .fs2e-equation-row > .fs2e-inline-plus,
+.fs2e-initiative-dialog .fs2e-equation-row > .fs2e-inline-plus {
   padding-bottom: var(--space-6);
 }
 .fs2e-dice-roller .fs2e-inline-title,
-.fs2e-chargen-choice .fs2e-inline-title {
+.fs2e-chargen-choice .fs2e-inline-title,
+.fs2e-initiative-dialog .fs2e-inline-title {
   color: var(--color-gold-mid);
   white-space: nowrap;
   font-size: var(--font-size-12);
@@ -474,7 +510,8 @@ nav.tabs [data-tab]:hover {
   align-items: center;
 }
 .fs2e-dice-roller .fs2e-inline-plus,
-.fs2e-chargen-choice .fs2e-inline-plus {
+.fs2e-chargen-choice .fs2e-inline-plus,
+.fs2e-initiative-dialog .fs2e-inline-plus {
   color: var(--color-gold-mid);
   display: inline-flex;
   align-items: center;
@@ -482,73 +519,88 @@ nav.tabs [data-tab]:hover {
 }
 .fs2e-dice-roller .fs2e-diff-title-row,
 .fs2e-chargen-choice .fs2e-diff-title-row,
+.fs2e-initiative-dialog .fs2e-diff-title-row,
 .fs2e-dice-roller .fs2e-diff-input-row,
-.fs2e-chargen-choice .fs2e-diff-input-row {
+.fs2e-chargen-choice .fs2e-diff-input-row,
+.fs2e-initiative-dialog .fs2e-diff-input-row {
   display: grid;
   grid-template-columns: var(--fs2e-select-width) 1ch var(--fs2e-select-width);
   column-gap: var(--space-8);
   align-items: center;
 }
 .fs2e-dice-roller .fs2e-diff-title-row,
-.fs2e-chargen-choice .fs2e-diff-title-row {
+.fs2e-chargen-choice .fs2e-diff-title-row,
+.fs2e-initiative-dialog .fs2e-diff-title-row {
   font-size: var(--font-size-12);
   min-height: var(--fs2e-title-row-height);
 }
 .fs2e-dice-roller .fs2e-diff-title-main,
-.fs2e-chargen-choice .fs2e-diff-title-main {
+.fs2e-chargen-choice .fs2e-diff-title-main,
+.fs2e-initiative-dialog .fs2e-diff-title-main {
   grid-column: 1 / 3;
 }
 .fs2e-dice-roller .fs2e-diff-title-custom,
-.fs2e-chargen-choice .fs2e-diff-title-custom {
+.fs2e-chargen-choice .fs2e-diff-title-custom,
+.fs2e-initiative-dialog .fs2e-diff-title-custom {
   grid-column: 3 / 4;
 }
 .fs2e-dice-roller .fs2e-diff-input-row select,
 .fs2e-chargen-choice .fs2e-diff-input-row select,
+.fs2e-initiative-dialog .fs2e-diff-input-row select,
 .fs2e-dice-roller .fs2e-diff-input-row input,
-.fs2e-chargen-choice .fs2e-diff-input-row input {
+.fs2e-chargen-choice .fs2e-diff-input-row input,
+.fs2e-initiative-dialog .fs2e-diff-input-row input {
   width: 100%;
 }
 .fs2e-dice-roller .fs2e-eq-field,
-.fs2e-chargen-choice .fs2e-eq-field {
+.fs2e-chargen-choice .fs2e-eq-field,
+.fs2e-initiative-dialog .fs2e-eq-field {
   display: grid;
   grid-template-rows: var(--fs2e-title-row-height) auto;
   gap: var(--space-4);
 }
 .fs2e-dice-roller .fs2e-eq-spacer,
-.fs2e-chargen-choice .fs2e-eq-spacer {
+.fs2e-chargen-choice .fs2e-eq-spacer,
+.fs2e-initiative-dialog .fs2e-eq-spacer {
   min-height: var(--fs2e-title-row-height);
 }
 .fs2e-dice-roller .fs2e-eq-merge,
-.fs2e-chargen-choice .fs2e-eq-merge {
+.fs2e-chargen-choice .fs2e-eq-merge,
+.fs2e-initiative-dialog .fs2e-eq-merge {
   grid-template-rows: auto;
   align-items: center;
 }
 .fs2e-dice-roller .fs2e-comp-label,
-.fs2e-chargen-choice .fs2e-comp-label {
+.fs2e-chargen-choice .fs2e-comp-label,
+.fs2e-initiative-dialog .fs2e-comp-label {
   display: flex;
   align-items: center;
 }
 .fs2e-dice-roller .fs2e-eq-row,
-.fs2e-chargen-choice .fs2e-eq-row {
+.fs2e-chargen-choice .fs2e-eq-row,
+.fs2e-initiative-dialog .fs2e-eq-row {
   display: flex;
   align-items: center;
   width: 100%;
   gap: var(--space-6);
 }
 .fs2e-dice-roller .fs2e-eq-row input,
-.fs2e-chargen-choice .fs2e-eq-row input {
+.fs2e-chargen-choice .fs2e-eq-row input,
+.fs2e-initiative-dialog .fs2e-eq-row input {
   width: 100%;
   min-width: 2.5rem;
   text-align: center;
 }
 .fs2e-dice-roller .fs2e-actions,
-.fs2e-chargen-choice .fs2e-actions {
+.fs2e-chargen-choice .fs2e-actions,
+.fs2e-initiative-dialog .fs2e-actions {
   display: flex;
   gap: var(--space-8);
   align-items: center;
 }
 .fs2e-dice-roller .fs2e-actions button,
-.fs2e-chargen-choice .fs2e-actions button {
+.fs2e-chargen-choice .fs2e-actions button,
+.fs2e-initiative-dialog .fs2e-actions button {
   padding: var(--space-4) var(--space-8);
   flex: 1 1 0;
   border: var(--border-gold-mid);
@@ -557,7 +609,8 @@ nav.tabs [data-tab]:hover {
   cursor: pointer;
 }
 .fs2e-dice-roller .fs2e-actions-block,
-.fs2e-chargen-choice .fs2e-actions-block {
+.fs2e-chargen-choice .fs2e-actions-block,
+.fs2e-initiative-dialog .fs2e-actions-block {
   display: flex;
   grid-column: 1;
   grid-row: span 2;
@@ -565,36 +618,44 @@ nav.tabs [data-tab]:hover {
   gap: var(--space-8);
 }
 .fs2e-dice-roller .fs2e-actions-total,
-.fs2e-chargen-choice .fs2e-actions-total {
+.fs2e-chargen-choice .fs2e-actions-total,
+.fs2e-initiative-dialog .fs2e-actions-total {
   grid-column: 2;
   grid-row: span 2;
   align-self: center;
 }
 .fs2e-dice-roller .fs2e-span-full,
-.fs2e-chargen-choice .fs2e-span-full {
+.fs2e-chargen-choice .fs2e-span-full,
+.fs2e-initiative-dialog .fs2e-span-full {
   grid-column: 1 / -1;
 }
 .fs2e-dice-roller .fs2e-roll-bc-modifiers,
-.fs2e-chargen-choice .fs2e-roll-bc-modifiers {
+.fs2e-chargen-choice .fs2e-roll-bc-modifiers,
+.fs2e-initiative-dialog .fs2e-roll-bc-modifiers {
   display: contents;
 }
 .fs2e-dice-roller .fs2e-roll-bc-modifiers[hidden],
-.fs2e-chargen-choice .fs2e-roll-bc-modifiers[hidden] {
+.fs2e-chargen-choice .fs2e-roll-bc-modifiers[hidden],
+.fs2e-initiative-dialog .fs2e-roll-bc-modifiers[hidden] {
   display: none;
 }
 .fs2e-dice-roller .fs2e-bc-modifier-label,
 .fs2e-chargen-choice .fs2e-bc-modifier-label,
+.fs2e-initiative-dialog .fs2e-bc-modifier-label,
 .fs2e-dice-roller .fs2e-bc-modifier-field,
-.fs2e-chargen-choice .fs2e-bc-modifier-field {
+.fs2e-chargen-choice .fs2e-bc-modifier-field,
+.fs2e-initiative-dialog .fs2e-bc-modifier-field {
   align-self: center;
 }
 .fs2e-dice-roller .fs2e-bc-modifier-label .fs2e-inline-title,
-.fs2e-chargen-choice .fs2e-bc-modifier-label .fs2e-inline-title {
+.fs2e-chargen-choice .fs2e-bc-modifier-label .fs2e-inline-title,
+.fs2e-initiative-dialog .fs2e-bc-modifier-label .fs2e-inline-title {
   white-space: normal;
   line-height: 1.2;
 }
 .fs2e-dice-roller .fs2e-grid-roll-actions,
-.fs2e-chargen-choice .fs2e-grid-roll-actions {
+.fs2e-chargen-choice .fs2e-grid-roll-actions,
+.fs2e-initiative-dialog .fs2e-grid-roll-actions {
   margin-top: var(--space-8);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -602,7 +663,8 @@ nav.tabs [data-tab]:hover {
   gap: var(--space-8);
 }
 .fs2e-dice-roller .fs2e-grid-roll-actions button,
-.fs2e-chargen-choice .fs2e-grid-roll-actions button {
+.fs2e-chargen-choice .fs2e-grid-roll-actions button,
+.fs2e-initiative-dialog .fs2e-grid-roll-actions button {
   padding: var(--space-4) var(--space-8);
   border: var(--border-gold-mid);
   background: var(--color-grey-mid);
@@ -612,7 +674,8 @@ nav.tabs [data-tab]:hover {
   min-width: 0;
 }
 .fs2e-dice-roller .fs2e-radio-row,
-.fs2e-chargen-choice .fs2e-radio-row {
+.fs2e-chargen-choice .fs2e-radio-row,
+.fs2e-initiative-dialog .fs2e-radio-row {
   display: grid;
   grid-template-columns: 74px repeat(3, max-content);
   align-items: center;
@@ -621,7 +684,8 @@ nav.tabs [data-tab]:hover {
   min-height: var(--fs2e-title-row-height);
 }
 .fs2e-dice-roller .fs2e-radio-row label,
-.fs2e-chargen-choice .fs2e-radio-row label {
+.fs2e-chargen-choice .fs2e-radio-row label,
+.fs2e-initiative-dialog .fs2e-radio-row label {
   display: grid;
   grid-template-columns: auto auto;
   align-items: center;
@@ -630,12 +694,14 @@ nav.tabs [data-tab]:hover {
   line-height: 1;
 }
 .fs2e-dice-roller .fs2e-radio-row input[type="radio"],
-.fs2e-chargen-choice .fs2e-radio-row input[type="radio"] {
+.fs2e-chargen-choice .fs2e-radio-row input[type="radio"],
+.fs2e-initiative-dialog .fs2e-radio-row input[type="radio"] {
   margin: 0;
   transform: translateY(-1px);
 }
 .fs2e-dice-roller .fs2e-radio-row .fs2e-inline-title,
-.fs2e-chargen-choice .fs2e-radio-row .fs2e-inline-title {
+.fs2e-chargen-choice .fs2e-radio-row .fs2e-inline-title,
+.fs2e-initiative-dialog .fs2e-radio-row .fs2e-inline-title {
   min-height: 0;
   display: inline-flex;
   align-items: center;
@@ -643,56 +709,67 @@ nav.tabs [data-tab]:hover {
   line-height: 1;
 }
 .fs2e-dice-roller .fs2e-radio-mod,
-.fs2e-chargen-choice .fs2e-radio-mod {
+.fs2e-chargen-choice .fs2e-radio-mod,
+.fs2e-initiative-dialog .fs2e-radio-mod {
   margin-left: var(--space-4);
   position: relative;
   top: var(--space-2);
 }
 .fs2e-dice-roller .fs2e-roll-mode-toggles,
-.fs2e-chargen-choice .fs2e-roll-mode-toggles {
+.fs2e-chargen-choice .fs2e-roll-mode-toggles,
+.fs2e-initiative-dialog .fs2e-roll-mode-toggles {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
 }
 .fs2e-dice-roller .fs2e-roll-mode-group,
-.fs2e-chargen-choice .fs2e-roll-mode-group {
+.fs2e-chargen-choice .fs2e-roll-mode-group,
+.fs2e-initiative-dialog .fs2e-roll-mode-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
 }
 .fs2e-dice-roller .fs2e-roll-mode-group[data-enabled="0"],
-.fs2e-chargen-choice .fs2e-roll-mode-group[data-enabled="0"] {
+.fs2e-chargen-choice .fs2e-roll-mode-group[data-enabled="0"],
+.fs2e-initiative-dialog .fs2e-roll-mode-group[data-enabled="0"] {
   display: none;
 }
 .fs2e-dice-roller .fs2e-comp-section[data-enabled="0"],
 .fs2e-chargen-choice .fs2e-comp-section[data-enabled="0"],
+.fs2e-initiative-dialog .fs2e-comp-section[data-enabled="0"],
 .fs2e-dice-roller .fs2e-sustain-section[data-enabled="0"],
-.fs2e-chargen-choice .fs2e-sustain-section[data-enabled="0"] {
+.fs2e-chargen-choice .fs2e-sustain-section[data-enabled="0"],
+.fs2e-initiative-dialog .fs2e-sustain-section[data-enabled="0"] {
   display: none;
 }
 .fs2e-dice-roller .fs2e-inline-result,
-.fs2e-chargen-choice .fs2e-inline-result {
+.fs2e-chargen-choice .fs2e-inline-result,
+.fs2e-initiative-dialog .fs2e-inline-result {
   font-size: var(--font-size-12);
   color: var(--color-gold-lt-mid);
 }
 .fs2e-dice-roller .fs2e-toggle,
-.fs2e-chargen-choice .fs2e-toggle {
+.fs2e-chargen-choice .fs2e-toggle,
+.fs2e-initiative-dialog .fs2e-toggle {
   display: flex;
   align-items: center;
   gap: var(--space-6);
 }
 .fs2e-dice-roller .fs2e-gn-input,
-.fs2e-chargen-choice .fs2e-gn-input {
+.fs2e-chargen-choice .fs2e-gn-input,
+.fs2e-initiative-dialog .fs2e-gn-input {
   width: 50%;
   min-width: 2.5rem;
 }
 .fs2e-dice-roller .fs2e-eq-row .fs2e-gn-input,
-.fs2e-chargen-choice .fs2e-eq-row .fs2e-gn-input {
+.fs2e-chargen-choice .fs2e-eq-row .fs2e-gn-input,
+.fs2e-initiative-dialog .fs2e-eq-row .fs2e-gn-input {
   width: 50%;
   min-width: 2.5rem;
 }
 .fs2e-dice-roller .fs2e-main-skill-display,
-.fs2e-chargen-choice .fs2e-main-skill-display {
+.fs2e-chargen-choice .fs2e-main-skill-display,
+.fs2e-initiative-dialog .fs2e-main-skill-display {
   border: 0;
   background: transparent;
   padding-left: 0;
@@ -700,26 +777,30 @@ nav.tabs [data-tab]:hover {
   width: var(--fs2e-select-width);
 }
 .fs2e-dice-roller .fs2e-main-accent-block,
-.fs2e-chargen-choice .fs2e-main-accent-block {
+.fs2e-chargen-choice .fs2e-main-accent-block,
+.fs2e-initiative-dialog .fs2e-main-accent-block {
   margin-top: var(--space-8);
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
 }
 .fs2e-dice-roller .fs2e-main-accent-sep,
-.fs2e-chargen-choice .fs2e-main-accent-sep {
+.fs2e-chargen-choice .fs2e-main-accent-sep,
+.fs2e-initiative-dialog .fs2e-main-accent-sep {
   height: 1px;
   background: var(--color-gold-dk-mid);
 }
 .fs2e-dice-roller .fs2e-main-accent-row,
-.fs2e-chargen-choice .fs2e-main-accent-row {
+.fs2e-chargen-choice .fs2e-main-accent-row,
+.fs2e-initiative-dialog .fs2e-main-accent-row {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-8);
 }
 .fs2e-dice-roller .fs2e-main-accent-control,
-.fs2e-chargen-choice .fs2e-main-accent-control {
+.fs2e-chargen-choice .fs2e-main-accent-control,
+.fs2e-initiative-dialog .fs2e-main-accent-control {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
@@ -727,13 +808,15 @@ nav.tabs [data-tab]:hover {
   margin-left: auto;
 }
 .fs2e-dice-roller .fs2e-main-accent-control .fs2e-gn-input,
-.fs2e-chargen-choice .fs2e-main-accent-control .fs2e-gn-input {
+.fs2e-chargen-choice .fs2e-main-accent-control .fs2e-gn-input,
+.fs2e-initiative-dialog .fs2e-main-accent-control .fs2e-gn-input {
   width: 2.5rem;
   min-width: 2.5rem;
   text-align: center;
 }
 .fs2e-dice-roller .fs2e-accent-btn,
-.fs2e-chargen-choice .fs2e-accent-btn {
+.fs2e-chargen-choice .fs2e-accent-btn,
+.fs2e-initiative-dialog .fs2e-accent-btn {
   border: var(--border-gold-mid);
   background: var(--color-grey-mid);
   color: var(--color-gold-lt);
@@ -743,6 +826,39 @@ nav.tabs [data-tab]:hover {
   line-height: 1;
   padding: 0;
   min-width: var(--space-24);
+}
+.fs2e-initiative-dialog .fs2e-initiative-help {
+  margin-bottom: var(--space-8);
+  font-size: var(--font-size-12);
+  color: var(--color-gold-lt-mid);
+  line-height: 1.35;
+}
+.fs2e-initiative-dialog .fs2e-initiative-grid {
+  display: grid;
+  gap: var(--space-8);
+}
+.fs2e-initiative-dialog .fs2e-initiative-slot {
+  display: grid;
+  gap: var(--space-4);
+}
+.fs2e-initiative-dialog .fs2e-initiative-slot select {
+  width: 100%;
+  min-width: 0;
+}
+.fs2e-initiative-dialog .fs2e-initiative-summary {
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-12);
+  display: grid;
+  gap: var(--space-6);
+  padding-top: var(--space-8);
+  border-top: var(--border-gold-dk-mid);
+}
+.fs2e-initiative-dialog .fs2e-initiative-summary-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: center;
+  font-size: var(--font-size-12);
 }
 .fs2e-parent-skill-choice .fs2e-chargen-choice-container {
   display: flex;
@@ -1218,6 +1334,11 @@ nav.tabs [data-tab]:hover {
   min-width: 2ch;
   text-align: right;
 }
+.fs2e.sheet.actor .roll-actor-action:hover {
+  color: var(--color-grey-lt);
+  cursor: pointer;
+  text-shadow: none;
+}
 .fs2e.sheet.actor .fs2e-grid-skills-learned {
   display: block;
   column-count: 3;
@@ -1581,6 +1702,56 @@ nav.tabs [data-tab]:hover {
   color: var(--color-gold-mid);
   font-size: var(--font-size-11);
 }
+.fs2e.sheet.actor .tab.combat .traits-open-actions {
+  display: inline-grid;
+  grid-template-columns: 1.25em 1.25em;
+  align-items: center;
+  justify-items: center;
+  column-gap: var(--space-6);
+}
+.fs2e.sheet.actor .tab.combat .open-actor-action,
+.fs2e.sheet.actor .tab.combat .delete-actor-action,
+.fs2e.sheet.actor .tab.combat .delete-actor-action-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  line-height: 1;
+}
+.fs2e.sheet.actor .tab.combat .delete-actor-action-placeholder {
+  visibility: hidden;
+  pointer-events: none;
+}
+.fs2e.sheet.actor .tab.combat .combat-subheading-row td {
+  color: var(--color-gold-mid);
+  font-weight: 600;
+  padding-top: var(--space-6);
+  cursor: default;
+  user-select: none;
+}
+.fs2e.sheet.actor .tab.combat .combat-subheading-toggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+}
+.fs2e.sheet.actor .tab.combat .combat-subheading-row[data-collapsed="0"] .combat-subheading-toggle::after {
+  content: " [-]";
+  opacity: 0.7;
+}
+.fs2e.sheet.actor .tab.combat .combat-subheading-row[data-collapsed="1"] .combat-subheading-toggle::after {
+  content: " [+]";
+  opacity: 0.7;
+}
+.fs2e.sheet.actor .tab.combat .combat-action-row .traits-title-cell {
+  padding-left: var(--space-16);
+}
 .fs2e.sheet.actor .tab.combat .fs2e-action-links-cell {
   white-space: nowrap;
 }
@@ -1608,6 +1779,12 @@ nav.tabs [data-tab]:hover {
 .fs2e.sheet.actor .traits .traits-section .traits-table thead th {
   color: var(--color-gold-mid);
   border-top: 0;
+}
+.fs2e.sheet.actor .traits .traits-section .traits-table tbody tr,
+.fs2e.sheet.actor .traits .traits-section .traits-table tbody tr:nth-child(odd),
+.fs2e.sheet.actor .traits .traits-section .traits-table tbody tr:nth-child(even),
+.fs2e.sheet.actor .traits .traits-section .traits-table tbody tr:hover {
+  background: transparent !important;
 }
 .fs2e.sheet.actor .traits .traits-section .traits-table tbody td {
   color: var(--color-gold-lt);
@@ -1964,6 +2141,58 @@ nav.tabs [data-tab]:hover {
   .app.window-app.sheet.item.action .fs2e-action-row {
     grid-template-columns: 1fr;
   }
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-entry {
+  margin: 0;
+  padding: var(--space-8);
+  border: 1px solid var(--color-grey-lt);
+  background: var(--color-grey-mid-20);
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-header {
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-delete,
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-add {
+  flex: 0 0 auto;
+  min-width: 64px;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-add-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-8);
+  align-items: center;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-code-row {
+  align-items: start;
+}
+.app.window-app.sheet.item .fs2e-item-sheet .fs2e-hook-editor {
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+  font-family: Consolas, "Courier New", monospace;
+  line-height: 1.4;
+  white-space: pre;
+}
+.app.window-app.sheet.item .fs2e-item-sheet.fs2e-benefice-affliction-sheet .fs2e-hook-section {
+  gap: 0;
 }
 .fs2e-item-sheet .fs2e-item-header {
   display: flex;

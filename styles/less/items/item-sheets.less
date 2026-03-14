@@ -317,6 +317,70 @@
         }
     }
 
+    .fs2e-item-sheet .fs2e-hook-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-10);
+    }
+
+    .fs2e-item-sheet .fs2e-hook-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-10);
+    }
+
+    .fs2e-item-sheet .fs2e-hook-entry {
+        margin: 0;
+        padding: var(--space-8);
+        border: 1px solid var(--color-grey-lt);
+        background: var(--color-grey-mid-20);
+    }
+
+    .fs2e-item-sheet .fs2e-hook-header {
+        display: flex;
+        gap: var(--space-8);
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: var(--space-8);
+    }
+
+    .fs2e-item-sheet .fs2e-hook-title {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .fs2e-item-sheet .fs2e-hook-delete,
+    .fs2e-item-sheet .fs2e-hook-add {
+        flex: 0 0 auto;
+        min-width: 64px;
+    }
+
+    .fs2e-item-sheet .fs2e-hook-add-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: var(--space-8);
+        align-items: center;
+    }
+
+    .fs2e-item-sheet .fs2e-hook-code-row {
+        align-items: start;
+    }
+
+    .fs2e-item-sheet .fs2e-hook-editor {
+        width: 100%;
+        min-height: 160px;
+        resize: vertical;
+        font-family: Consolas, "Courier New", monospace;
+        line-height: 1.4;
+        white-space: pre;
+    }
+
+    .fs2e-item-sheet.fs2e-benefice-affliction-sheet {
+        .fs2e-hook-section {
+            gap: 0;
+        }
+    }
+
 }
 
 @import "partials/item-header.less";

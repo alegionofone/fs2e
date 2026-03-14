@@ -7,11 +7,11 @@
   <div class="fs2e-roll-mode-toggles">
     {{#if contestedAvailable}}
       <div class="fs2e-roll-mode-group fs2e-roll-mode-group-contested">
-        <label class="fs2e-toggle"><input id="fs2e-contested-toggle" type="checkbox" {{#if contestedEnabled}}checked{{/if}} /> Contested Roll</label>
+        <label class="fs2e-toggle"><input id="fs2e-contested-toggle" type="checkbox" {{#if contestedEnabled}}checked{{/if}} /> {{contestedLabel}}</label>
       </div>
     {{/if}}
 
-    {{#unless contestedResponder}}
+    {{#if allowSustain}}
     <div class="fs2e-roll-mode-group fs2e-roll-mode-group-sustain">
       <label class="fs2e-toggle"><input id="fs2e-sustain-toggle" type="checkbox" /> Sustained Roll</label>
       <section class="fs2e-section fs2e-sustain-section" data-section-id="sustain" data-collapsed="0" data-enabled="0">
@@ -50,7 +50,7 @@
         </div>
       </section>
     </div>
-    {{/unless}}
+    {{/if}}
 
     <div class="fs2e-roll-mode-group fs2e-roll-mode-group-comp">
       <label class="fs2e-toggle"><input id="fs2e-comp-toggle" type="checkbox" /> Complementary Roll</label>
@@ -195,9 +195,9 @@
       <div class="fs2e-actions-block">
         <div class="fs2e-radio-row">
           <span class="fs2e-inline-title">Actions</span>
-          <label><input type="radio" name="fs2e-actions" value="1" checked /><span class="fs2e-radio-mod">-0</span></label>
-          <label><input type="radio" name="fs2e-actions" value="2" /><span class="fs2e-radio-mod">-4</span></label>
-          <label><input type="radio" name="fs2e-actions" value="3" /><span class="fs2e-radio-mod">-6</span></label>
+          <label><input type="radio" name="fs2e-actions" value="1" {{#if actionDefaults.one}}checked{{/if}} /><span class="fs2e-radio-mod">-0</span></label>
+          <label><input type="radio" name="fs2e-actions" value="2" {{#if actionDefaults.two}}checked{{/if}} /><span class="fs2e-radio-mod">-4</span></label>
+          <label><input type="radio" name="fs2e-actions" value="3" {{#if actionDefaults.three}}checked{{/if}} /><span class="fs2e-radio-mod">-6</span></label>
         </div>
         <div class="fs2e-radio-row">
           <span class="fs2e-inline-title">Retries</span>

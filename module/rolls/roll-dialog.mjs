@@ -346,8 +346,17 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
 
   const contestedResponder = !!preset?.contestedResponder;
   const contestedRequest = preset?.contestedRequest ?? null;
+  const forceCombatRoll = !!preset?.forceCombatRoll;
+  const allowSustain = !forceCombatRoll && !contestedResponder;
+  const attackerSkillKey = String(contestedRequest?.attackerResult?.skillKey ?? "").trim();
+  const attackerCharacteristicKey = String(contestedRequest?.attackerResult?.characteristicKey ?? "").trim();
 
-  const initialSkillKey = String(skillKey ?? "").trim();
+  const initialSkillKey = String(
+    skillKey
+    ?? preset?.skillKey
+    ?? attackerSkillKey
+    ?? ""
+  ).trim();
   const skills = getSkillOptions(actor, initialSkillKey);
   if (!skills.length) {
     ui.notifications?.warn?.("This skill is not rollable yet on this actor.");
@@ -358,7 +367,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
   if (!selectedSkill) return;
 
   const preferredCharacteristicKey = String(
-    preset?.characteristicKey ?? selectedSkill.defaultCharacteristic
+    preset?.characteristicKey ?? attackerCharacteristicKey ?? selectedSkill.defaultCharacteristic
   ).trim();
   const characteristics = getCharacteristicOptions(actor, preferredCharacteristicKey);
   if (!characteristics.length) {
@@ -374,7 +383,8 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
     })()
     : (presetTitle || `${selectedSkill.label} Roll`);
 
-  const contestedAvailable = !contestedResponder && ((game.user?.targets?.size ?? 0) > 0);
+  const contestedAvailable = !contestedResponder && (forceCombatRoll || ((game.user?.targets?.size ?? 0) > 0));
+  const initialActions = clamp(toNumber(preset?.actions, 1), 1, 3);
   const content = await renderTemplate("systems/fs2e/templates/dialogs/dice-roller.hbs", {
     title: dialogTitle,
     subtitle: selectedSkill.complementary ? `Complementary: ${selectedSkill.complementary}` : "",
@@ -385,8 +395,15 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
     characteristics,
     difficulties: DIFFICULTY_OPTIONS,
     contestedAvailable,
-    contestedEnabled: preset?.contestedEnabled ?? contestedAvailable,
-    contestedResponder
+    contestedEnabled: preset?.contestedEnabled ?? forceCombatRoll,
+    contestedResponder,
+    allowSustain,
+    contestedLabel: forceCombatRoll ? "Opposed Roll" : "Contested Roll",
+    actionDefaults: {
+      one: initialActions === 1,
+      two: initialActions === 2,
+      three: initialActions === 3
+    }
   });
   const availableBlessingCurseModifiers = await resolveActorBlessingCurseModifiers(actor);
 
@@ -497,16 +514,16 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
 
           const contestedEnabled = !!root.querySelector("#fs2e-contested-toggle")?.checked;
           const compEnabled = !!root.querySelector("#fs2e-comp-toggle")?.checked;
-          const sustainEnabled = !contestedEnabled && !!root.querySelector("#fs2e-sustain-toggle")?.checked;
+          const sustainEnabled = allowSustain && !contestedEnabled && !!root.querySelector("#fs2e-sustain-toggle")?.checked;
           const compSection = root.querySelector(".fs2e-comp-section");
           const sustainSection = root.querySelector(".fs2e-sustain-section");
           const sustainGroup = root.querySelector(".fs2e-roll-mode-group-sustain");
           if (compSection) compSection.dataset.enabled = compEnabled ? "1" : "0";
           if (sustainSection) sustainSection.dataset.enabled = sustainEnabled ? "1" : "0";
-          if (sustainGroup) sustainGroup.dataset.enabled = contestedEnabled ? "0" : "1";
+          if (sustainGroup) sustainGroup.dataset.enabled = allowSustain && !contestedEnabled ? "1" : "0";
 
           const sustainToggle = root.querySelector("#fs2e-sustain-toggle");
-          if (contestedEnabled && sustainToggle) sustainToggle.checked = false;
+          if ((!allowSustain || contestedEnabled) && sustainToggle) sustainToggle.checked = false;
 
           if (!compEnabled && state.complementaryVp !== 0) {
             state.complementaryVp = 0;
@@ -707,7 +724,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           const result = await rollCheck({ gn: config.gn, accent: config.accent });
 
           const contestedEnabled = !!root.querySelector("#fs2e-contested-toggle")?.checked;
-          const sustainEnabled = !contestedEnabled && !!root.querySelector("#fs2e-sustain-toggle")?.checked;
+          const sustainEnabled = allowSustain && !contestedEnabled && !!root.querySelector("#fs2e-sustain-toggle")?.checked;
           const sustainTask = Math.max(0, readInputNumber(root, "#fs2e-sustain-task"));
           const sustainCurrent = Math.max(0, readInputNumber(root, "#fs2e-sustain-current"));
           const sustainTotal = sustainEnabled ? sustainCurrent + result.vp : result.vp;
@@ -742,6 +759,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
 
             const attackerResult = {
               skillKey: config.skillKey,
+              characteristicKey: config.characteristicKey,
               skillLabel: config.skillLabel,
               gn: config.gn,
               roll: result.die,
@@ -775,6 +793,8 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
                   preset: {
                     contestedResponder: true,
                     contestedEnabled: false,
+                    skillKey: config.skillKey,
+                    characteristicKey: config.characteristicKey,
                     contestedRequest: {
                       attackerUuid: requestPayload.attackerUuid,
                       attackerResult: requestPayload.attackerResult
@@ -889,7 +909,7 @@ export const openSkillRollDialog = async ({ actor, skillKey, preset = null }) =>
           if (compDiffBase) compDiffBase.value = "0";
           if (sustainTask) sustainTask.value = "6";
 
-          const actionDefault = root.querySelector("input[name='fs2e-actions'][value='1']");
+          const actionDefault = root.querySelector(`input[name='fs2e-actions'][value='${initialActions}']`);
           const retryDefault = root.querySelector("input[name='fs2e-retries'][value='0']");
           const accentInput = root.querySelector("#fs2e-accent-value");
           if (actionDefault) actionDefault.checked = true;

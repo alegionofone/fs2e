@@ -1,0 +1,47 @@
+<form class="fs2e-initiative-dialog">
+  <header class="fs2e-dialog-header">
+    <h2>{{actorName}}</h2>
+    <div class="fs2e-subtitle">Round {{round}} action plan</div>
+  </header>
+
+  <section class="fs2e-section" data-section-id="initiative-plan" data-collapsed="0">
+    <div class="fs2e-section-heading">Combat Actions</div>
+    <div class="fs2e-initiative-help">
+      Select up to three combat actions. Only one action with the Attack tag can be selected. If an Attack action is selected, its skill plus the action's initiative modifier becomes the initiative value for the round. The total selected actions sets the multi-action penalty used when combat roll dialogs open.
+    </div>
+
+    <div class="fs2e-initiative-grid">
+      {{#each slots}}
+        <label class="fs2e-initiative-slot">
+          <span class="fs2e-inline-title">Action {{this.slot}}</span>
+          <select class="fs2e-init-slot-select" data-slot="{{this.slot}}">
+            <option value="">None</option>
+            {{#each this.actionOptions}}
+              <option value="{{this.uuid}}" {{#if this.selected}}selected{{/if}}>{{this.optionLabel}}</option>
+            {{/each}}
+          </select>
+        </label>
+      {{/each}}
+    </div>
+
+    <div class="fs2e-initiative-summary">
+      <div class="fs2e-initiative-summary-row">
+        <span class="fs2e-inline-title">Selected Actions</span>
+        <span data-initiative-count>0 / 3</span>
+      </div>
+      <div class="fs2e-initiative-summary-row">
+        <span class="fs2e-inline-title">Multi-Action Modifier</span>
+        <span data-initiative-penalty>0</span>
+      </div>
+      <div class="fs2e-initiative-summary-row">
+        <span class="fs2e-inline-title">Initiative</span>
+        <span data-initiative-formula>No initiative value</span>
+      </div>
+    </div>
+
+    <div class="fs2e-actions">
+      <button type="button" data-action="save">Save Plan</button>
+      <button type="button" data-action="cancel">Cancel</button>
+    </div>
+  </section>
+</form>

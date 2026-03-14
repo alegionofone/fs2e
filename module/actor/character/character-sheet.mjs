@@ -16,6 +16,7 @@ import {
   getSkillTotalByKey
 } from "../../rolls/roll-options.mjs";
 import { promptSpeciesSpiritChoice } from "../../ui/dialogs/species-spirit-choice.mjs";
+import { getCurrentCombatActionCountForActor } from "../../ui/dialogs/initiative-dialog.mjs";
 import { getSheetLockState, setSheetForcedLockedFromActor } from "../../ui/sheet-lock-mode.mjs";
 import {
   buildCharacterSheetData,
@@ -295,6 +296,50 @@ const buildActionFallbackRow = ({ entry, inherited = true }) => ({
   combatGroupLabel: ""
 });
 
+const ACTION_COMPENDIUM_PACK = "fs2e.actions";
+
+const compareActionTitles = (a, b) => String(a?.title ?? "").localeCompare(String(b?.title ?? ""));
+
+const readCombatLevelSortValue = (row) => {
+  const raw = String(row?.level ?? "").trim();
+  if (!raw) return Number.POSITIVE_INFINITY;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY;
+};
+
+const compareCombatRows = (a, b) => {
+  const levelDiff = readCombatLevelSortValue(a) - readCombatLevelSortValue(b);
+  if (levelDiff !== 0) return levelDiff;
+  return compareActionTitles(a, b);
+};
+
+const readActionTagTokens = (item) => new Set(
+  readActionTags(item).map((tag) => canonicalToken(tag)).filter(Boolean)
+);
+
+const loadCompendiumCombatActionRows = async ({ actor, seenRefs }) => {
+  const pack = game?.packs?.get?.(ACTION_COMPENDIUM_PACK) ?? null;
+  if (!pack) return [];
+
+  const docs = await pack.getDocuments().catch(() => []);
+  const out = [];
+
+  for (const doc of docs) {
+    if (doc?.documentName !== "Item" || doc?.type !== "action") continue;
+
+    const tagTokens = readActionTagTokens(doc);
+    if (!tagTokens.has(ACTION_COMBAT_TAG)) continue;
+
+    const refs = readActionSourceRefs(doc);
+    if (refs.some((ref) => seenRefs.has(ref))) continue;
+
+    out.push(buildActorActionRow({ actor, item: doc, canDelete: false, inherited: true }));
+    for (const ref of refs) seenRefs.add(ref);
+  }
+
+  return out;
+};
+
 const buildActorActionView = async ({ actor, system }) => {
   const embeddedRows = [];
   const seenRefs = new Set();
@@ -335,9 +380,10 @@ const buildActorActionView = async ({ actor, system }) => {
     if (token) seenRefs.add(token);
   }
 
-  const allRows = [...embeddedRows, ...inheritedRows].sort((a, b) => a.title.localeCompare(b.title));
-  const combatRows = allRows.filter((row) => row.isCombat);
-  const normalRows = allRows.filter((row) => !row.isCombat);
+  const compendiumCombatRows = await loadCompendiumCombatActionRows({ actor, seenRefs });
+  const allRows = [...embeddedRows, ...inheritedRows, ...compendiumCombatRows];
+  const combatRows = allRows.filter((row) => row.isCombat).sort(compareCombatRows);
+  const normalRows = allRows.filter((row) => !row.isCombat).sort(compareActionTitles);
   const basicRows = combatRows.filter((row) => row.combatGroupKey === "basic");
   const subtypeGroups = ACTION_COMBAT_SUBTYPE_DEFINITIONS
     .filter((entry) => entry.key !== "basic")
@@ -679,12 +725,28 @@ const normalizeSkillAdjustmentsFromSystem = (system = {}) => {
     return adjustments
       .map((entry) => {
         const key = String(entry?.key ?? "").trim();
-        if (!key) return null;
+        const explicitChoices = Array.isArray(entry?.choice)
+          ? entry.choice
+            .map((choice) => {
+              const choiceKey = String(choice?.key ?? "").trim();
+              const choicePath = normalizeSkillEffectPath(choice?.path || choiceKey);
+              const value = Number(choice?.value ?? 0);
+              if ((!choiceKey && !choicePath) || !Number.isFinite(value)) return null;
+              return {
+                ...choice,
+                key: choiceKey,
+                path: choicePath
+              };
+            })
+            .filter(Boolean)
+          : [];
         const path = normalizeSkillEffectPath(entry?.path || key);
+        if (!key && !explicitChoices.length) return null;
         return {
           ...entry,
           key,
-          path
+          path,
+          choice: explicitChoices
         };
       })
       .filter(Boolean);
@@ -702,6 +764,86 @@ const normalizeSkillAdjustmentsFromSystem = (system = {}) => {
       };
     })
     .filter(Boolean);
+};
+
+const readSkillChoiceOptions = (entry) => {
+  const explicitChoices = Array.isArray(entry?.choice)
+    ? entry.choice
+      .map((choice) => {
+        const key = String(choice?.key ?? "").trim();
+        const path = normalizeSkillEffectPath(choice?.path || key);
+        const value = Number(choice?.value ?? 0);
+        if ((!key && !path) || !Number.isFinite(value)) return null;
+        const label = String(choice?.label ?? SKILL_DEFINITIONS_BY_KEY[key]?.label ?? formatSkillLabel(key)).trim();
+        return { key, path, label, value };
+      })
+      .filter(Boolean)
+    : [];
+  return explicitChoices;
+};
+
+const promptHistorySkillChoices = async ({ historyName, slotLabel, rows = [] }) => {
+  if (!rows.length) return {};
+
+  const dialogTitle = "Skill Assignment";
+  const content = await renderTemplate("systems/fs2e/templates/dialogs/history-characteristic-choice.hbs", {
+    title: dialogTitle,
+    rows
+  });
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+
+    let dialog = null;
+    dialog = new Dialog({
+      title: dialogTitle,
+      content,
+      buttons: {},
+      render: (html) => {
+        const root = html?.[0];
+        if (!root) return;
+
+        const readSelections = () => {
+          const selections = {};
+          for (const row of rows) {
+            if (row.mode === "radio") {
+              const selected = String(root.querySelector(`input[name="${row.radioName}"]:checked`)?.value ?? "").trim();
+              selections[row.id] = selected;
+              continue;
+            }
+            const selected = String(root.querySelector(`select[name="historyCharacteristicChoice-${row.id}"]`)?.value ?? "").trim();
+            selections[row.id] = selected;
+          }
+          return selections;
+        };
+
+        root.querySelector('[data-action="apply"]')?.addEventListener("click", (event) => {
+          event.preventDefault();
+          finish(readSelections());
+          dialog?.close();
+        });
+
+        root.querySelector('[data-action="cancel"]')?.addEventListener("click", (event) => {
+          event.preventDefault();
+          finish(null);
+          dialog?.close();
+        });
+      },
+      close: () => finish(null)
+    }, {
+      classes: ["fs2e", "dialog", "chargen-choice"],
+      width: 460,
+      height: "auto",
+      resizable: true
+    });
+
+    dialog.render(true);
+  });
 };
 
 const inferAnyGroupLabel = ({ entryLabel, options }) => {
@@ -1125,21 +1267,71 @@ const resolveHistoryCharacteristicAdjustments = async ({ actor, itemName, slotLa
       const key = String(entry?.key ?? "").trim();
       const path = String(entry?.path ?? "").trim();
       const value = Number(entry?.value ?? 0);
-      if (!key || !Number.isFinite(value)) return null;
+      const choices = readSkillChoiceOptions(entry);
+      if (!Number.isFinite(value) && !choices.length) return null;
+      if (!key && !choices.length) return null;
       return {
         key,
         path,
         label: String(entry?.label ?? SKILL_DEFINITIONS_BY_KEY[key]?.label ?? formatSkillLabel(key)).trim(),
-        value
+        value,
+        choice: choices
       };
     })
     .filter(Boolean);
 
+  const pendingSkillRows = [];
   const pendingParentRows = [];
   const normalizedSkillAdjustments = [];
   const parentPathsToSkip = new Set();
 
   for (const entry of baseSkillAdjustments) {
+    const choiceOptions = readSkillChoiceOptions(entry);
+    if (choiceOptions.length >= 2) {
+      const rowId = `skill-row-${rowCounter++}`;
+      const mappedOptions = choiceOptions
+        .map((option) => {
+          const key = String(option?.key ?? "").trim();
+          const path = String(option?.path ?? "").trim();
+          const value = Number(option?.value ?? 0);
+          const label = String(option?.label ?? SKILL_DEFINITIONS_BY_KEY[key]?.label ?? formatSkillLabel(key)).trim();
+          if ((!key && !path) || !Number.isFinite(value) || !label) return null;
+          return {
+            id: `${rowId}-${path || key}`,
+            key,
+            path,
+            label,
+            value,
+            displayLabel: `${label} ${formatSignedAmount(value)}`
+          };
+        })
+        .filter(Boolean);
+      if (mappedOptions.length >= 2) {
+        pendingSkillRows.push({
+          id: rowId,
+          mode: mappedOptions.length === 2 ? "radio" : "select",
+          isRadio: mappedOptions.length === 2,
+          isSelect: mappedOptions.length !== 2,
+          radioName: `fs2e-history-skill-choice-${Math.random().toString(36).slice(2)}`,
+          anyLabel: "Choose Skill",
+          left: mappedOptions[0] ?? null,
+          right: mappedOptions[1] ?? null,
+          options: mappedOptions
+        });
+        continue;
+      }
+    }
+    if (choiceOptions.length === 1) {
+      const choice = choiceOptions[0];
+      normalizedSkillAdjustments.push({
+        key: String(choice.key ?? "").trim(),
+        path: String(choice.path ?? "").trim(),
+        label: String(choice.label ?? "").trim(),
+        value: Number(choice.value ?? 0)
+      });
+      continue;
+    }
+
     const normalizedPath = normalizeSkillEffectPath(entry?.path || entry?.key);
     const parentMatch = String(normalizedPath).match(/^learned\.([^.]+)$/i);
     const childMatch = String(normalizedPath).match(/^learned\.([^.]+)\.([^.]+)$/i);
@@ -1177,6 +1369,27 @@ const resolveHistoryCharacteristicAdjustments = async ({ actor, itemName, slotLa
       customValue: matchingOption ? "" : (entryDisplay || String(childMatch?.[2] ?? "").trim())
     });
     if (childMatch) continue;
+  }
+
+  if (pendingSkillRows.length) {
+    const selections = await promptHistorySkillChoices({
+      historyName: itemName,
+      slotLabel,
+      rows: pendingSkillRows
+    });
+    if (!selections) return null;
+
+    for (const row of pendingSkillRows) {
+      const selectedId = String(selections[row.id] ?? "").trim();
+      const selected = row.options.find((option) => option.id === selectedId) ?? row.options[0];
+      if (!selected) continue;
+      normalizedSkillAdjustments.push({
+        key: String(selected.key ?? "").trim(),
+        path: String(selected.path ?? "").trim(),
+        label: String(selected.label ?? "").trim(),
+        value: Number(selected.value ?? 0)
+      });
+    }
   }
 
   if (pendingParentRows.length) {
@@ -1690,6 +1903,14 @@ export class FS2ECharacterSheet extends ActorSheet {
     afflictions: true
   };
 
+  _actionSectionState = {
+    basic: true,
+    fencing: true,
+    martial: true,
+    shield: true,
+    firearms: true
+  };
+
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["fs2e", "sheet", "actor", "character"],
@@ -1756,6 +1977,17 @@ export class FS2ECharacterSheet extends ActorSheet {
         afflictionsExpanded: this._blessingCurseSectionState.afflictions !== false
       };
       data.view.actions = await buildActorActionView({ actor: this.actor, system: data.system });
+      data.view.actionSections = {
+        basicExpanded: this._actionSectionState.basic !== false,
+        fencingExpanded: this._actionSectionState.fencing !== false,
+        martialExpanded: this._actionSectionState.martial !== false,
+        shieldExpanded: this._actionSectionState.shield !== false,
+        firearmsExpanded: this._actionSectionState.firearms !== false
+      };
+      data.view.actions.combat.subtypeGroups = (data.view.actions?.combat?.subtypeGroups ?? []).map((entry) => ({
+        ...entry,
+        expanded: this._actionSectionState[String(entry?.key ?? "").trim()] !== false
+      }));
       return data;
     }
 
@@ -1892,12 +2124,16 @@ export class FS2ECharacterSheet extends ActorSheet {
         if (!skillKey) return;
         const characteristicKey = String(event.currentTarget?.dataset?.characteristicKey ?? "").trim();
         const title = String(event.currentTarget?.dataset?.title ?? "").trim();
+        const forceCombatRoll = String(event.currentTarget?.dataset?.isCombat ?? "").trim() === "true";
         await openSkillRollDialog({
           actor: this.actor,
           skillKey,
           preset: {
+            actions: forceCombatRoll ? getCurrentCombatActionCountForActor(this.actor) || 1 : undefined,
             characteristicKey,
-            title: title ? `${title} Roll` : undefined
+            title: title ? `${title} Roll` : undefined,
+            forceCombatRoll,
+            contestedEnabled: forceCombatRoll
           }
         });
       });
@@ -1907,6 +2143,14 @@ export class FS2ECharacterSheet extends ActorSheet {
       const section = String(event.currentTarget?.dataset?.section ?? "").trim();
       if (!section || !Object.prototype.hasOwnProperty.call(this._blessingCurseSectionState, section)) return;
       this._blessingCurseSectionState[section] = !this._blessingCurseSectionState[section];
+      this.render(false);
+    });
+
+    html.on("click", "[data-action='toggle-action-section']", (event) => {
+      event.preventDefault();
+      const section = String(event.currentTarget?.dataset?.section ?? "").trim();
+      if (!section || !Object.prototype.hasOwnProperty.call(this._actionSectionState, section)) return;
+      this._actionSectionState[section] = !this._actionSectionState[section];
       this.render(false);
     });
 

@@ -1085,6 +1085,7 @@
         "templates": [
           "common"
         ],
+        "actorHooks": [],
         "chart": "",
         "level": "",
         "characteristic": "",

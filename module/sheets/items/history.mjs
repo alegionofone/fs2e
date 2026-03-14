@@ -378,6 +378,12 @@ const mapSkillKeyToPath = (key) => {
 const mapSkillEntryToPath = (entry = {}) => {
 	const explicitPath = String(entry?.path ?? "").trim();
 	if (explicitPath) return mapSkillKeyToPath(explicitPath);
+	const choices = asArray(entry?.choice);
+	if (choices.length === 1) {
+		const choicePath = String(choices[0]?.path ?? "").trim();
+		if (choicePath) return mapSkillKeyToPath(choicePath);
+		return mapSkillKeyToPath(choices[0]?.key);
+	}
 	return mapSkillKeyToPath(entry?.key);
 };
 
@@ -424,6 +430,15 @@ const adjustmentsToCharacteristicEffects = (adjustments = []) => {
 const adjustmentsToSkillEffects = (adjustments = []) => {
 	const effects = {};
 	for (const entry of asArray(adjustments)) {
+		const choices = asArray(entry?.choice);
+		if (choices.length >= 2) {
+			// Skip unresolved choice entries until resolved on actor drop.
+			continue;
+		}
+		if (choices.length === 1) {
+			mergeAmount(effects, mapSkillEntryToPath(choices[0]), Number(choices[0]?.value ?? 0));
+			continue;
+		}
 		mergeAmount(effects, mapSkillEntryToPath(entry), Number(entry?.value ?? 0));
 	}
 	return effects;
@@ -479,9 +494,44 @@ const formatCharacteristicAdjustmentSummary = (entry = {}, characteristicLabelBy
 };
 
 const formatSkillAdjustmentSummary = (entry = {}, skillLabelByKey = {}) => {
+	const choices = asArray(entry?.choice);
+	if (choices.length >= 2) {
+		const explicitLabel = String(entry?.label ?? "").trim();
+		if (explicitLabel) return explicitLabel;
+		return choices
+			.map((choice) => {
+				const key = String(choice?.key ?? "").trim();
+				const label = String(choice?.label ?? skillLabelByKey[key] ?? key).trim();
+				return `${label} ${formatSigned(choice?.value)}`;
+			})
+			.filter(Boolean)
+			.join(" or ");
+	}
+	if (choices.length === 1) {
+		const choice = choices[0];
+		const key = String(choice?.key ?? "").trim();
+		const label = String(choice?.label ?? skillLabelByKey[key] ?? key).trim();
+		return `${label} ${formatSigned(choice?.value)}`;
+	}
 	const amount = Number(entry?.value ?? 0);
 	const label = String(entry?.label ?? skillLabelByKey[String(entry?.key ?? "").trim()] ?? entry?.key ?? "").trim();
 	return `${label} ${formatSigned(amount)}`;
+};
+
+const mergeSkillChoiceEntries = (entries = []) => {
+	const out = [];
+	const seen = new Set();
+	for (const entry of asArray(entries)) {
+		const key = String(entry?.key ?? "").trim();
+		const path = String(entry?.path ?? "").trim();
+		const label = String(entry?.label ?? "").trim();
+		const value = Number(entry?.value ?? 0);
+		const token = `${path.toLowerCase()}::${key.toLowerCase()}`;
+		if ((!path && !key) || !Number.isFinite(value) || seen.has(token)) continue;
+		seen.add(token);
+		out.push({ key, path, label, value, display: String(entry?.display ?? "").trim() });
+	}
+	return out;
 };
 
 const resolveLinkedItems = async (entries = []) => {
@@ -1079,11 +1129,7 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 			renderChipList({
 				selector: ".history-skills-list",
 				list: state.skillsAdjustments,
-				toLabel: (entry) => {
-					const amount = Number(entry?.value ?? 0);
-					const label = String(entry?.label ?? skillLabelByKey[String(entry?.key ?? "").trim()] ?? entry?.key ?? "").trim();
-					return `${label} ${amount > 0 ? `+${amount}` : amount}`;
-				},
+				toLabel: (entry) => formatSkillAdjustmentSummary(entry, skillLabelByKey),
 				removeClass: "remove-history-skill"
 			});
 		};
@@ -1139,13 +1185,13 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 		});
 
 		root.querySelector(".add-history-skill")?.addEventListener("click", async () => {
-		const addSkill = async ({ selectSelector, amountSelector }) => {
+			const buildSkillSelection = async ({ selectSelector, amountSelector }) => {
 				const select = root.querySelector(selectSelector);
 				const amountInput = root.querySelector(amountSelector);
 				const key = String(select?.value ?? "").trim();
-				if (!key) return false;
+				if (!key) return null;
 				const amount = Number(amountInput?.value ?? 0);
-				if (!Number.isFinite(amount)) return false;
+				if (!Number.isFinite(amount)) return null;
 				const label = String(select?.selectedOptions?.[0]?.textContent ?? skillLabelByKey[key] ?? key).trim();
 
 				const isParentGroup = LEARNED_SKILL_GROUP_KEYS.has(key);
@@ -1171,39 +1217,75 @@ export class FS2EHistorySheet extends FS2EItemSheet {
 						groupLabel: label,
 						options
 					});
-					if (!selection) return false;
+					if (!selection) return null;
 
 					const childKey = normalizeSkillKey(selection.childKey);
 					const display = String(selection.display ?? "").trim() || formatSkillLabel(childKey);
-					if (!childKey) return false;
+					if (!childKey) return null;
 
-					state.skillsAdjustments.push({
+					return {
 						key,
-						path: `learned.${key}.${childKey}`,
 						label: `${label}: ${display}`,
-						display,
-						value: amount
-					});
-				} else {
-					state.skillsAdjustments.push({
+						amount,
+						choices: [{
+							key,
+							path: `learned.${key}.${childKey}`,
+							label: `${label}: ${display}`,
+							display,
+							value: amount
+						}]
+					};
+				}
+
+				return {
+					key,
+					label,
+					amount,
+					choices: [{
 						key,
 						path: mapSkillKeyToPath(key),
 						label,
 						value: amount
-					});
-				}
-
-				if (select) select.value = "";
-				if (amountInput) amountInput.value = "1";
-				return true;
+					}]
+				};
 			};
 
-			const firstAdded = await addSkill({ selectSelector: ".history-skill-select-a", amountSelector: ".history-skill-amount-a" });
-			const secondAdded = await addSkill({ selectSelector: ".history-skill-select-b", amountSelector: ".history-skill-amount-b" });
-			if (firstAdded || secondAdded) {
-				syncAll();
-				await persistSkillAdjustments();
+			const first = await buildSkillSelection({ selectSelector: ".history-skill-select-a", amountSelector: ".history-skill-amount-a" });
+			const second = await buildSkillSelection({ selectSelector: ".history-skill-select-b", amountSelector: ".history-skill-amount-b" });
+
+			if (!first && !second) return;
+
+			if (first && second) {
+				state.skillsAdjustments.push({
+					key: "choice",
+					label: `${first.label} ${formatSigned(first.amount)} or ${second.label} ${formatSigned(second.amount)}`,
+					choice: mergeSkillChoiceEntries([...(first.choices ?? []), ...(second.choices ?? [])]),
+					value: 0
+				});
+			} else {
+				const selected = first ?? second;
+				if (selected?.choices?.length === 1) {
+					const concrete = selected.choices[0];
+					state.skillsAdjustments.push({
+						key: concrete.key,
+						path: concrete.path,
+						label: concrete.label,
+						display: concrete.display,
+						value: Number(concrete.value ?? selected.amount)
+					});
+				}
 			}
+
+			const resetSelect = (selector, amountSelector) => {
+				const select = root.querySelector(selector);
+				const amountInput = root.querySelector(amountSelector);
+				if (select) select.value = "";
+				if (amountInput) amountInput.value = "1";
+			};
+			resetSelect(".history-skill-select-a", ".history-skill-amount-a");
+			resetSelect(".history-skill-select-b", ".history-skill-amount-b");
+			syncAll();
+			await persistSkillAdjustments();
 		});
 
 		root.addEventListener("click", async (event) => {
